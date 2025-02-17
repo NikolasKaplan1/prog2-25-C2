@@ -1,8 +1,18 @@
-# Enciclopedia
+# Name
  Proyecto de programacion II
 
 
 
+
+# Description
+Una pequeña descripción de lo que trata nuestro proyecto
+
+
+# Necesary tools
+Todas las cosas que serán decesarias para el correcto funcionamiento de nuestro proyecto a la hora de corregir
+
+ej:
+pip install numpy # Para instalar la librería numpy
 
 
 
