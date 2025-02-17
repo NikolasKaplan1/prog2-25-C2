@@ -8,7 +8,7 @@
 Una pequeña descripción de lo que trata nuestro proyecto
 
 
-# Necesary tools
+# Necessary tools
 Todas las cosas que serán decesarias para el correcto funcionamiento de nuestro proyecto a la hora de corregir
 
 ej:
@@ -25,7 +25,7 @@ pip install numpy # Para instalar la librería numpy
 <tr>
     <td align="center">
         <a href="https://github.com/alg204">
-            <img src="https://https://avatars.githubusercontent.com/u/198967558?v=4" width="100;" alt="alg204"/>
+            <img src="https://avatars.githubusercontent.com/u/198967558?v=4" width="100;" alt="alg204"/>
             <br />
             <sub><b>alg204</b></sub>
         </a>
