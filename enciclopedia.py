@@ -1,4 +1,4 @@
-def obtener_definiciones(tema):
+def obtener_definicion(tema):
     definiciones = {
         # Aquí cada persona agregará su tema y definición
     }
