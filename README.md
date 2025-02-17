@@ -24,14 +24,14 @@
         <a href="https://https://github.com/ppf30">
             <img src="https://avatars.githubusercontent.com/u/198932016?v=4" width="100;" alt="ppf30"/>
             <br />
-            <sub><b>Hugourmaz</b></sub>
+            <sub><b>ppf30</b></sub>
         </a>
     </td>
     <td align="center">
         <a href="https://github.com/NikolasKaplan1">
             <img src="https://avatars.githubusercontent.com/u/199594735?v=4" width="100;" alt="nmk8"/>
             <br />
-            <sub><b>CARLOSMOLERA</b></sub>
+            <sub><b>nmk8</b></sub>
         </a>
     </td>
     <td align="center">
