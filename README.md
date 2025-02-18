@@ -45,8 +45,8 @@ pip install numpy # Para instalar la librería numpy
         </a>
     </td>
     <td align="center">
-        <a href="https://github.com/paatriiperezz">
-            <img src="https://avatars.githubusercontent.com/u/152264650?v=4" width="100;" alt="paatriiperezz"/>
+        <a href="https://github.com/Mohamed-Arahouani">
+            <img src="https://avatars.githubusercontent.com/u/199315152?v=4" width="100;" alt="mak5"/>
             <br />
             <sub><b>Mohamed</b></sub>
         </a>
