@@ -35,9 +35,9 @@ graph TD;
     liga --> juego(Juego);
     juego --> puntos(Puntuación);
 
-    classDef done fill:#00ff00,stroke:#000,stroke-width:2px;
-    classDef inprocess fill:#ffff00,stroke:#000,stroke-width:2px;
-    classDef notstarted fill:#ff0000,stroke:#000,stroke-width:2px;
+    classDef done fill:#00ff00,stroke:#000,stroke-width:2px,color:#000;
+    classDef inprocess fill:#ffff00,stroke:#000,stroke-width:2px,color:#000;
+    classDef notstarted fill:#ff0000,stroke:#000,stroke-width:2px,color:#000;
 
     class gestion_usu,liga done
     class mercado,plantilla inprocess
