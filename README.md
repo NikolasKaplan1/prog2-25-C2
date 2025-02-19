@@ -22,24 +22,25 @@ pip install numpy # Para instalar la librería numpy
 4. *******
 
 # Estructura
+- ![#00ff00](https://placehold.co/15x15/00ff00/00ff00.png) `Done`
+- ![#ffff00](https://placehold.co/15x15/ffff00/ffff00.png) `In process`
+- ![#ff0000](https://placehold.co/15x15/ff0000/ff0000.png) `Not started`
+
+```mermaid
 graph TD;
-    Weave --> Neuro_Storage;
-    Weave --> Neuro_Dataset;
-    Weave --> Optimization;
-    Weave --> Neuro_Functions;
-    Weave --> Neural_Network;
-    Weave --> Visualization;
-    
-    Neuro_Storage --> Saver;
-    Neuro_Dataset --> Loader;
-    Neural_Network --> Modules;
-    
-    classDef done fill:#00ff00,stroke:#000,stroke-width:2px;
-    classDef inprocess fill:#ffff00,stroke:#000,stroke-width:2px;
-    classDef notstarted fill:#ff0000,stroke:#000,stroke-width:2px;
-    
-    class Weave,Neuro_Storage,Neuro_Dataset,Optimization,Neuro_Functions,Neural_Network,Visualization done;
-    class Saver,Loader,Modules done;
+    gestion_usu(gestión de Usuarios) --> liga(Liga);
+    gestion_usu --> liga;
+    liga --> mercado(Mercado);
+    liga --> plantilla(Plantilla);
+    liga --> juego(Juego);
+    juego --> puntos(Puntuación);
+
+    classDef done fill:#000,stroke:#00ff00,stroke-width:2px;
+
+    class gestion_usu, liga, mercado, plantilla, juego, puntos;
+
+```
+
 # Colaboradores
 
 <!-- readme: collaborators -start -->
