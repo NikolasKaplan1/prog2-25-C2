@@ -23,23 +23,23 @@ pip install numpy # Para instalar la librería numpy
 
 # Estructura
 graph TD;
-    gestion_usu(gestión de Usuarios) --> liga(Liga);
-    gestion_usu --> liga;
-    liga --> mercado(Mercado);
-    liga --> plantilla(Plantilla);
-    liga --> juego(Juego);
-    juego --> puntos(Puntuación);
-
+    Weave --> Neuro_Storage;
+    Weave --> Neuro_Dataset;
+    Weave --> Optimization;
+    Weave --> Neuro_Functions;
+    Weave --> Neural_Network;
+    Weave --> Visualization;
+    
+    Neuro_Storage --> Saver;
+    Neuro_Dataset --> Loader;
+    Neural_Network --> Modules;
+    
     classDef done fill:#00ff00,stroke:#000,stroke-width:2px;
     classDef inprocess fill:#ffff00,stroke:#000,stroke-width:2px;
     classDef notstarted fill:#ff0000,stroke:#000,stroke-width:2px;
-
-    class gestion_usu,liga done;
-    class mercado,plantilla inprocess;
-    class juego,puntos notstarted;
-
-
-
+    
+    class Weave,Neuro_Storage,Neuro_Dataset,Optimization,Neuro_Functions,Neural_Network,Visualization done;
+    class Saver,Loader,Modules done;
 # Colaboradores
 
 <!-- readme: collaborators -start -->
