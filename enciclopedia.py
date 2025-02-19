@@ -5,5 +5,6 @@ def obtener_definicion(tema):
     return definiciones.get(tema.lower(), "Definición no encontrada")
 
 if __name__ == "__main__":
+    print('Hola')
     tema = input("Ingrese un tema: ")
     print(obtener_definicion(tema))
