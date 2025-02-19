@@ -39,11 +39,9 @@ graph TD;
     classDef inprocess fill:#ffff00,stroke:#000,stroke-width:2px,color:#000;
     classDef notstarted fill:#ff0000,stroke:#000,stroke-width:2px,color:#000;
 
-    class plantilla done
-    class puntos inprocess
-    class gestion_usu, liga, juego notstarted
-```
-
+    class gestion_usu,liga done;
+    class mercado,plantilla inprocess;
+    class juego,puntos notstarted;
 # Colaboradores
 
 <!-- readme: collaborators -start -->
