@@ -1,24 +1,46 @@
 # FOOTBALL MANAGER
- Proyecto de programacion II
 
 
 
 
-# Description
+
+# Descripción
 Una pequeña descripción de lo que trata nuestro proyecto
 
 
-# Necessary tools
+# Qué necesitas saber antes de probar nuestro código
 Todas las cosas que serán decesarias para el correcto funcionamiento de nuestro proyecto a la hora de corregir
 
 ej:
 pip install numpy # Para instalar la librería numpy
 
 
+# Distribución de tareas
+1. *******
+2. *******
+3. *******
+4. *******
+
+# Estructura
+graph TD;
+    gestion_usu(gestión de Usuarios) --> liga(Liga);
+    gestion_usu --> liga;
+    liga --> mercado(Mercado);
+    liga --> plantilla(Plantilla);
+    liga --> juego(Juego);
+    juego --> puntos(Puntuación);
+
+    classDef done fill:#00ff00,stroke:#000,stroke-width:2px;
+    classDef inprocess fill:#ffff00,stroke:#000,stroke-width:2px;
+    classDef notstarted fill:#ff0000,stroke:#000,stroke-width:2px;
+
+    class gestion_usu,liga done;
+    class mercado,plantilla inprocess;
+    class juego,puntos notstarted;
 
 
 
-# Collaborators
+# Colaboradores
 
 <!-- readme: collaborators -start -->
 <table>
@@ -52,4 +74,8 @@ pip install numpy # Para instalar la librería numpy
         </a>
     </td></tr>
 </table>
-<!-- readme: collaborators -end -->
+
+
+# Licencia
+
+Este proyecto está bajo la licencia MIT. Ver el archivo LICENSE para más detalles.
