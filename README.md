@@ -42,6 +42,7 @@ graph TD;
     class gestion_usu,liga done;
     class mercado,plantilla inprocess;
     class juego,puntos notstarted;
+```
 # Colaboradores
 
 <!-- readme: collaborators -start -->
