@@ -33,7 +33,6 @@ pip install numpy # Para instalar la librería numpy
 ```mermaid
 graph TD;
     gestion_usu(gestión de Usuarios) --> liga(Liga);
-    gestion_usu --> liga;
     liga --> mercado(Mercado);
     liga --> plantilla(Plantilla);
     liga --> juego(Juego);
