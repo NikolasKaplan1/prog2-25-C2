@@ -10,8 +10,11 @@
 
 # DESCRIPCIÓN
 Este simulador permitirá a los usuarios:
+
 · Comprar y vender acciones en base a datos reales del mercado.
+
 · Analizar el rendimiento de sus inversiones con gráficos.
+
 · Simular estrategais de inversión a corto y largo plazo.
 
 # Qué necesitas saber antes de probar nuestro código
