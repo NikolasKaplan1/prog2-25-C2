@@ -1,4 +1,4 @@
-# FOOTBALL MANAGER
+# SIMULADOR DE BOLSA DE VALORES
 
 <p align="center">
 <a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=30&duration=2000&pause=500&center=true&vCenter=true&multiline=true&repeat=false&random=false&width=800&height=100&lines= +Invierte,+Aprende,+Gana:+Simula+tu+Éxito+en+la+Bolsa+🚀+📈 alt="Typing SVG" /></a>
@@ -8,9 +8,11 @@
 ![Static Badge](https://img.shields.io/badge/Colaboradores-4-pink)
 
 
-# Descripción
-Una pequeña descripción de lo que trata nuestro proyecto
-
+# DESCRIPCIÓN
+Este simulador permitirá a los usuarios:
+· Comprar y vender acciones en base a datos reales del mercado.
+· Analizar el rendimiento de sus inversiones con gráficos.
+· Simular estrategais de inversión a corto y largo plazo.
 
 # Qué necesitas saber antes de probar nuestro código
 Todas las cosas que serán decesarias para el correcto funcionamiento de nuestro proyecto a la hora de corregir
