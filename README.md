@@ -18,11 +18,8 @@ Este simulador permitirá a los usuarios:
 · Simular estrategais de inversión a corto y largo plazo.
 
 # Qué necesitas saber antes de probar nuestro código
-Todas las cosas que serán decesarias para el correcto funcionamiento de nuestro proyecto a la hora de corregir
-
-ej:
-pip install numpy # Para instalar la librería numpy
-
+Para que no haya errores a la hora de probar nuestro código, te recomendamos ejecutar todo el interior de requirements.txt
+En este archivo se incluye la instalación de todas las librerías necesarias para la ejecución del *SIMULADOR DE BOLSA DE VALORES*.
 
 # Distribución de tareas
 1. *******
