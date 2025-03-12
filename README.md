@@ -33,20 +33,59 @@ En este archivo se incluye la instalación de todas las librerías necesarias pa
 - ![#ff0000](https://placehold.co/15x15/ff0000/ff0000.png) `Not started`
 
 ```mermaid
-graph TD;
-    gestion_usu(gestión de Usuarios) --> liga(Liga);
-    liga --> mercado(Mercado);
-    liga --> plantilla(Plantilla);
-    liga --> juego(Juego);
-    juego --> puntos(Puntuación);
-
-    classDef done fill:#00ff00,stroke:#000,stroke-width:2px,color:#000;
-    classDef inprocess fill:#ffff00,stroke:#000,stroke-width:2px,color:#000;
-    classDef notstarted fill:#ff0000,stroke:#000,stroke-width:2px,color:#000;
-
-    class gestion_usu,liga done;
-    class mercado,plantilla inprocess;
-    class juego,puntos notstarted;
+classDiagram
+    class Inversor {
+        +string nombre
+        +float capital
+        +List~Accion~ cartera
+        +comprar(accion: Accion, cantidad: int)
+        +vender(accion: Accion, cantidad: int)
+        +mostrar_cartera() str
+        +_str_() str
+    }
+    
+    class Accion {
+        +string simbolo
+        +string nombre
+        +float precio_actual
+        +float historial_precios[]
+        +actualizar_precio(nuevo_precio: float)
+        +_str_() str
+    }
+    
+    class Mercado {
+        +List~Accion~ lista_acciones
+        +registrar_accion(accion: Accion)
+        +obtener_precio(simbolo: str) float
+        +simular_movimientos()
+    }
+    
+    class Transaccion {
+        +Inversor inversor
+        +Accion accion
+        +int cantidad
+        +float precio
+        +_str_() str
+    }
+    
+    class IA {
+        +recomendar_inversion(inversor: Inversor) List~Accion~
+    }
+    
+    class InversorConservador {
+        +recomendar_compra() List~Accion~
+    }
+    
+    class InversorAgresivo {
+        +recomendar_compra() List~Accion~
+    }
+    
+    Inversor <|-- InversorConservador
+    Inversor <|-- InversorAgresivo
+    Inversor "1" -- "*" Accion : "posee"
+    Inversor "1" -- "*" Transaccion : "realiza"
+    Mercado "1" -- "*" Accion : "gestiona"
+    IA "1" -- "*" Accion : "recomienda"
 ```
 # Colaboradores
 
