@@ -87,6 +87,69 @@ classDiagram
     Mercado "1" -- "*" Accion : "gestiona"
     IA "1" -- "*" Accion : "recomienda"
 ```
+
+classDiagram
+    class Inversor {
+        +string nombre
+        +float capital
+        +List~Accion~ cartera
+        +comprar(accion: Accion, cantidad: int)
+        +vender(accion: Accion, cantidad: int)
+        +mostrar_cartera() str
+        +_str_() str
+    }
+    
+    class Accion {
+        +string simbolo
+        +string nombre
+        +float precio_actual
+        +float historial_precios[]
+        +actualizar_precio(nuevo_precio: float)
+        +_str_() str
+    }
+    
+    class Mercado {
+        +List~Accion~ lista_acciones
+        +registrar_accion(accion: Accion)
+        +obtener_precio(simbolo: str) float
+        +simular_movimientos()
+    }
+    
+    class Transaccion {
+        +Inversor inversor
+        +Accion accion
+        +int cantidad
+        +float precio
+        +_str_() str
+    }
+    
+    class IA {
+        +recomendar_inversion(inversor: Inversor) List~Accion~
+    }
+    
+    class InversorConservador {
+        +recomendar_compra() List~Accion~
+    }
+    
+    class InversorAgresivo {
+        +recomendar_compra() List~Accion~
+    }
+
+    class Proyecto {
+        +string nombre
+        +string estado
+        +cambiar_estado(nuevo_estado: string)
+        +_str_() str
+    }
+
+    Inversor <|-- InversorConservador
+    Inversor <|-- InversorAgresivo
+    Inversor "1" -- "*" Accion : "posee"
+    Inversor "1" -- "*" Transaccion : "realiza"
+    Mercado "1" -- "*" Accion : "gestiona"
+    IA "1" -- "*" Accion : "recomienda"
+    Proyecto "1" -- "*" Inversor : "involucra"
+
 # Colaboradores
 
 <!-- readme: collaborators -start -->
