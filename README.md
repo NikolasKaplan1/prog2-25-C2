@@ -86,7 +86,7 @@ classDiagram
     Inversor "1" -- "*" Transaccion : "realiza"
     Mercado "1" -- "*" Accion : "gestiona"
     IA "1" -- "*" Accion : "recomienda"
-```
+
 
 classDiagram
     class Inversor {
@@ -149,7 +149,7 @@ classDiagram
     Mercado "1" -- "*" Accion : "gestiona"
     IA "1" -- "*" Accion : "recomienda"
     Proyecto "1" -- "*" Inversor : "involucra"
-
+````
 # Colaboradores
 
 <!-- readme: collaborators -start -->
