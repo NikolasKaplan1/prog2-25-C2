@@ -88,7 +88,6 @@ classDiagram
     IA "1" -- "*" Accion : "recomienda"
 ```
 ```mermaid
-
 classDiagram
     class Inversor {
         +string nombre
@@ -150,6 +149,17 @@ classDiagram
     Mercado "1" -- "*" Accion : "gestiona"
     IA "1" -- "*" Accion : "recomienda"
     Proyecto "1" -- "*" Inversor : "involucra"
+
+    %% Definir colores para los estados del proyecto
+    class Proyecto estado_done estado_in_process estado_not_started
+
+    classDef estado_done fill:#00ff00,stroke:#000,color:#000;
+    classDef estado_in_process fill:#ffff00,stroke:#000,color:#000;
+    classDef estado_not_started fill:#ff0000,stroke:#000,color:#fff;
+
+    %% Aplicar los colores según el estado del proyecto
+    class Proyecto estado_not_started
+
 ```
 # Colaboradores
 
