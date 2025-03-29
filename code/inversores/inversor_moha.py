@@ -1,4 +1,4 @@
-class Inversor(Accion):
+class Inversor:
     def __init__(self, nombre: str, capital: float, cartera: dict[Accion, float]):
         self.nombre = nombre
         self.capital = capital
