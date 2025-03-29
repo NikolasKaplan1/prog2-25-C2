@@ -49,3 +49,4 @@ class Transaccion:
         """
         return (f"{self.inversor.nombre} compró {self.cantidad} acciones de {self.accion.nombre} "
                 "a {self.precio}$ cada una, el {self.fecha_hora.strftime('%Y-%m-%d %H:%M:%S')}.")
+    
