@@ -4,7 +4,6 @@ from inversores import Inversor
 
 
 class Transaccion:
-    def __init__(self, inversor, accion, cantidad, precio):
     def __init__(self, inversor: Inversor, accion: Accion, cantidad: int, precio: float):
         """
         Constructor de la clase Transaccion.
@@ -53,4 +52,3 @@ class Transaccion:
         """
         return (f"{self.inversor.nombre} compró {self.cantidad} acciones de {self.accion.nombre} "
                 "a {self.precio}$ cada una, el {self.fecha_hora.strftime('%Y-%m-%d %H:%M:%S')}.")
-    
