@@ -1,6 +1,6 @@
 from datetime import datetime
-from acciones import Accion
-from inversores import Inversor
+from accion import Accion
+from inversor import Inversor
 
 
 class Transaccion:

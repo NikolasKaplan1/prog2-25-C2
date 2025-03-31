@@ -1,3 +1,4 @@
+
 class Mercado:
     """
     La clase Mercado indica la lista de acciones que se encuentran ahora mismo disponibles. Además, 
@@ -44,5 +45,5 @@ class Mercado:
             if accion.simbolo == simbolo:
                 return accion.precio_actual
         print("No existe ninguna acción con ese símbolo")
-    def simular_movimientos:
+    def simular_movimientos():
         pass
