@@ -6,9 +6,9 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 from main import app
 from auth import authenticator
-from database import get_session, User
+from database import get_session, Inversor
 
-class TestUserEndpoints(unittest.TestCase):
+class TestinversorEndpoints(unittest.TestCase):
 
     def setUp(self):
         engine = create_engine(
@@ -35,42 +35,42 @@ class TestUserEndpoints(unittest.TestCase):
     def seed_db(self):
         with self.session as session:
             session.add_all([
-                User(nombre="Alice", email="alice@example.com", capital= 100.0),
-                User(nombre="Bob", email="bob@example.com", capital = 100.0),
-                User(nombre="Charlie", email="charlie@example.com", capital = 100.0)
+                Inversor(nombre="Alice", email="alice@example.com", capital= 100.0),
+                Inversor(nombre="Bob", email="bob@example.com", capital = 100.0),
+                Inversor(nombre="Charlie", email="charlie@example.com", capital = 100.0)
             ])
             session.commit()
 
-    def test_get_users_empty(self):
+    def test_get_inversors_empty(self):
         response = self.client.get("/inversores")
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.json(), list)
         self.assertEqual(len(response.json()), 0)
 
-    def test_get_users(self):
+    def test_get_inversors(self):
         self.seed_db()
         response = self.client.get("/inversores")
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.json(), list)
         self.assertEqual(len(response.json()), 3)
-        user = response.json()[0]
-        self.assertIsInstance(user, dict)
-        self.assertEqual(user, {"id": 1, "nombre": "Alice", "email":"alice@example.com", "capital": 100.0 })
-        user = response.json()[1]
-        self.assertIsInstance(user, dict)
-        self.assertEqual(user, {"id": 2, "nombre": "Bob", "email":"bob@example.com", "capital": 100.0 })
-        user = response.json()[2]
-        self.assertIsInstance(user, dict)
-        self.assertEqual(user, {"id": 3, "nombre": "Charlie", "email":"charlie@example.com", "capital": 100.0 })
+        inversor = response.json()[0]
+        self.assertIsInstance(inversor, dict)
+        self.assertEqual(inversor, {"id": 1, "nombre": "Alice", "email":"alice@example.com", "capital": 100.0 })
+        inversor = response.json()[1]
+        self.assertIsInstance(inversor, dict)
+        self.assertEqual(inversor, {"id": 2, "nombre": "Bob", "email":"bob@example.com", "capital": 100.0 })
+        inversor = response.json()[2]
+        self.assertIsInstance(inversor, dict)
+        self.assertEqual(inversor, {"id": 3, "nombre": "Charlie", "email":"charlie@example.com", "capital": 100.0 })
 
-    def test_get_user(self):
+    def test_get_inversor(self):
         self.seed_db()
         response = self.client.get("/inversor/1")
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.json(), dict)
         self.assertEqual(response.json(), {"id": 1, "nombre": "Alice", "email": "alice@example.com", "capital": 100.0})
     
-    def test_get_user_not_found(self):
+    def test_get_inversor_not_found(self):
         self.seed_db()
         response = self.client.get("/inversor/4")
         self.assertEqual(response.status_code, 404)
