@@ -1,54 +1,28 @@
+from sqlmodel import SQLModel, Field, Relationship
+from typing import Optional
 from datetime import datetime
-from accion import Accion
-from inversor import Inversor
 
-
-class Transaccion:
-    def __init__(self, inversor: Inversor, accion: Accion, cantidad: int, precio: float):
-        """
-        Constructor de la clase Transaccion.
-
-        :param inversor: Objeto de la clase inversor que realiza la transaccion.
-        :para accion: Objeto de la clase accion que se compra o vende
-        :param cantidad: Numero de acciones involucradas en la transaccion
-        :param precio: Precio de la accion en el momento de la transaccion
-
-
-        """
-        self.inversor = inversor
-        self.accion = accion
-        self.cantidad = cantidad
-        self.precio = precio
-        self.fecha_hora = datetime.now() # fecha y hora de la transacción
-
-
-    def calcular_total(self):
-        """
-        Calcula el costo total de la transaccion.
-        """
-        return self.cantidad * self.precio
-
-    def validar_transaccion(self):
-        """
-        Verifica si el inversor tiene suficiente capital para realizar la compra.
-        """
-        return self.inversor.capital >= self.calcular_total()
-
-    def ejecutar_transaccion(self):
-        """
-        Ejecuta la transacción en caso de ser válida, actualizando el capital del inversor
-        """
-        if self.validar_transaccion():
-            self.inversor.capital -= self.calcular_total()
-            self.inversor.cartera.append(self.accion)
-            print("Transaccion realizada correctamente: {self}")
-
-        else:
-            print("Fondos insuficientes para realizar la operación")
-
-    def __str__(self):
-        """
-        Devuelve una representación en cadena de la transacción.
-        """
-        return (f"{self.inversor.nombre} compró {self.cantidad} acciones de {self.accion.nombre} "
-                "a {self.precio}$ cada una, el {self.fecha_hora.strftime('%Y-%m-%d %H:%M:%S')}.")
+class Transaccion(SQLModel, table=True):
+    """
+    Modelo de datos para registrar una transacción.
+    
+    Campos:
+      - id: Identificador único autogenerado.
+      - cantidad: Número de acciones involucradas en la operación.
+      - precio: Precio de la acción en el momento de la transacción.
+      - timestamp: Fecha y hora en que se realizó la transacción.
+      - inversor_id: Clave foránea que enlaza con el Inversor.
+      - accion_id: Clave foránea que enlaza con la Accion.
+      - inversor: Relación inversa para acceder al inversor.
+      - accion: Relación inversa para acceder a la acción.
+    """
+    id: Optional[int] = Field(default=None, primary_key=True)
+    cantidad: float
+    precio: float
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    
+    inversor_id: int = Field(foreign_key="inversor.id")
+    accion_id: int = Field(foreign_key="accion.id")
+    
+    inversor: Optional["Inversor"] = Relationship(back_populates="transacciones")
+    accion: Optional["Accion"] = Relationship(back_populates="transacciones")
