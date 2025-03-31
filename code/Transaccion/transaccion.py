@@ -1,7 +1,9 @@
 from datetime import datetime
 
+
 class Transaccion:
     def __init__(self, inversor, accion, cantidad, precio):
+    def __init__(self, inversor: Inversor, accion: Accion, cantidad: int, precio: float):
         """
         Constructor de la clase Transaccion.
 
