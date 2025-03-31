@@ -6,13 +6,14 @@ import uvicorn
 from pydantic import BaseModel
 
 
+
 from database import get_session, create_db_and_tables, drop_db_and_tables, seed_users
+
 from models import Inversor
 
 
 app = FastAPI()
 router = APIRouter()
-
 
 class RespuestaInversor(BaseModel):
     id: int
@@ -33,6 +34,7 @@ def get_inversores(db: Session = Depends(get_session)):
     return [{"id": inversor.id, "nombre": inversor.nombre, "email": inversor.email, "capital": inversor.capital} for inversor in inversores]
 
 @router.get("/inversores/{inversor_id}", response_model = List[RespuestaInversor])
+
 def get_inversor(db: Session= Depends(get_session)):
     inversor = db.get(Inversor, id)
 

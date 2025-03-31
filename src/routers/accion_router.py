@@ -6,7 +6,9 @@ import uvicorn
 from pydantic import BaseModel
 
 
+
 from database import get_session, create_db_and_tables, drop_db_and_tables, seed_users
+
 from models import Accion
 
 app = FastAPI()
@@ -19,10 +21,12 @@ class RespuestaAcciones(BaseModel):
     nombre: str
     precio: float
 
+
 class NuevaAccion(BaseModel):
     simbolo: str
     nombre: str
     precio: float
+
 
 @router.get("/acciones", response_model = List(RespuestaAcciones))
 def get_acciones(db: Session = Depends(get_session)):
