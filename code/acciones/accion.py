@@ -60,3 +60,4 @@ class Accion:
         for key, value in self.historial_precios.items():
             print(f"{key}: {value}", end = '')
 
+
