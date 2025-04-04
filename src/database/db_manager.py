@@ -1,28 +1,42 @@
-import os
+
 from sqlmodel import SQLModel, create_engine, Session
 
-# Obtén la URL de la base de datos desde una variable de entorno, o usa SQLite por defecto.
-DATABASE_URL = "sqlite:///./database.db"
+from database.models import Inversor
 
-# Crea el engine para conectar con la base de datos.
+
+# Configurar la conexión a MySQL
+DATABASE_URL = "mysql+pymysql://user:password@localhost/movies"
+
+# Crear el motor de conexión
 engine = create_engine(DATABASE_URL, echo=True)
 
+# Función para obtener la sesión de base de datos
+def get_session():
+    session = Session(engine)
+    try:
+        return session  # Devolvemos la sesión directamente
+    except Exception as e:
+        session.rollback()  # Hacemos rollback si hay un error
+        raise e
+    finally:
+        session.close()  # Nos aseguramos de cerrar la sesión cuando se salga de la función
 
-from src.models.inversor import Inversor
-from src.models.accion import Accion
-from src.models.transaccion import Transaccion
-
+# Función para crear las tablas en la base de datos
 def create_db_and_tables():
-    """
-    Crea todas las tablas definidas en los modelos.
-    Se llama al arrancar la aplicación para asegurar que la BD esté lista.
-    """
     SQLModel.metadata.create_all(engine)
 
-def get_session():
-    """
-    Proporciona una sesión de base de datos.
-    Se utiliza como dependencia para interactuar con la BD en endpoints y otros scripts.
-    """
-    with Session(engine) as session:
-        yield session
+# Función para eliminar las tablas de la base de datos
+def drop_db_and_tables():
+    SQLModel.metadata.drop_all(engine)
+
+# Función seeder de usuarios
+def seed_users():
+    with get_session() as session:
+        inversores = [
+            Inversor(username="Alice", email="alice@example.com", capital=100.0),
+            Inversor(username="Bob", email="bob@example.com", capital=100.0),
+            Inversor(username="Charlie", email="charlie@example.com", capital=100.0),
+        ]
+        session.add_all(inversores)        
+        session.commit()
+

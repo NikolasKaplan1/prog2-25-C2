@@ -9,7 +9,7 @@ from pydantic import BaseModel
 
 from database import get_session, create_db_and_tables, drop_db_and_tables, seed_users
 
-from models import Inversor
+from database import Inversor
 
 
 app = FastAPI()
@@ -43,7 +43,7 @@ def get_inversor(db: Session= Depends(get_session)):
     return {"id": inversor.id, "nombre": inversor.nombre, "email": inversor.email, "capital": inversor.capital}
 
 @router.post("/inversores", response_model = RespuestaInversor, status_code= 201)
-def nuevo_inversor(inversor: NuevoInversor, db: Session=Depends[get_session]):
+def nuevo_inversor(inversor: NuevoInversor, db: Session=Depends(get_session)):
     nuevo_inversor = Inversor(**inversor.model_dump())
     db.add(nuevo_inversor)
     db.commit()

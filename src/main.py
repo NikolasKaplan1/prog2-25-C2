@@ -23,21 +23,21 @@ from database import create_db_and_tables, drop_db_and_tables, seed_users
 
 
 from routers.inversor_router import router as inversor_router
-from routers.accion_router import router as accion_router
+#from routers.accion_router import router as accion_router
 
 
 
 # Create logs folder if it doesn't exist
 os.makedirs('logs', exist_ok=True)
 
-logging.basicConfig(level=logging.INFO, filename='logs/movies.log', filemode='a', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, filename='logs/acciones.log', filemode='a', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logging.info("Creating db tables")
     drop_db_and_tables()
     create_db_and_tables()
-    logging.info("Seeding users")
+    logging.info("Seeding inversors")
     seed_users()
     logging.info("Application started")
     yield
@@ -49,7 +49,7 @@ app = FastAPI(lifespan=lifespan)
 
 # Registramos los routers
 app.include_router(inversor_router)
-app.include_router(accion_router)
+#app.include_router(accion_router)
 
 
 if __name__ == "__main__":
