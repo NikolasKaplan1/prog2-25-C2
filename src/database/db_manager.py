@@ -1,3 +1,4 @@
+
 from sqlmodel import SQLModel, create_engine, Session
 
 from database.models import Inversor
@@ -38,3 +39,4 @@ def seed_users():
         ]
         session.add_all(inversores)        
         session.commit()
+

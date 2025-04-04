@@ -1,81 +1,27 @@
-"""
-class Inversor:
-    def __init__(self, nombre: str, capital: float, cartera: dict[Accion, float]):
-        self.nombre = nombre
-        self.capital = capital
-        self.cartera = cartera
-    def comprar(self, accion: Accion, cantidad: float):
-        if accion not in self.cartera:
-            self.cartera[accion] = cantidad
-        else:
-            self.cartera[accion] += cantidad
-    def vender(self, accion: Accion, cantidad: float):
-        if accion not in self.cartera:
-            print(f"No puedes vender {accion} porque no tienes ese tipo de acción.")
-        elif self.cartera[accion] < cantidad:
-            print(f"No tienes tantas acciones de {accion}")
-        else:
-            self.cartera[accion] -= cantidad
+from sqlmodel import SQLModel, Field, Relationship
+from typing import Optional, List
 
-    def __str__(self):
-        return f"La cartera de {self.nombre} tiene un capital de {self.capital}" + \
-            + f"y contiene las siguientes acciones: {self.cartera}"
-
-"""
-
-from accion import Accion
-
-
-class Inversor:
+# Usamos una cadena para evitar problemas de import circular
+class Inversor(SQLModel, table=True):
     """
-    La clase Inversor representa a un persona que invierte en el mercado funanciero. Además le 
-    permite gestionar su capital a la cartera de acciones.
-
-    Métodos
-    -------------
-    comprar(accion, cantidad)
-        Verifica si es posible hacer una compra y le descuenta el coste. Añade las acciones a la cartera
-        y registra la transacción.
-
-
-    vender(accion, cantidad)
-        Verifica si hay suficientes acciones y las vende. Añade el dinero de la venta y registra
-        la transacción.
-
-    mostrar_cartera()
-        Devuelve un diccionario con las acciones y la cantidad que tiene.
-
-    __str__():
-        Devuelve una lista con todas las transacciones en formato texto.
-
+    Modelo de datos para un inversor.
+    
+    Campos:
+      - id: Identificador único autogenerado.
+      - nombre: Nombre del inversor.
+      - apellidos: Apellidos del inversor.
+      - email: Correo electrónico único (indexado).
+      - password: Contraseña hasheada.
+      - tarjeta_credito: Número de tarjeta de crédito (almacenado de forma segura, idealmente enmascarado o tokenizado).
+      - capital: Saldo de la cuenta (inicialmente 0 o el valor asignado).
+      - transacciones: Relación con las transacciones realizadas.
     """
-    def __init__(self, nombre:str, capital:float):
-        """
-        Parámetros
-        ---------------
-        nombre
-            Nombre del inversor.
-
-        capital
-            Cantidad de dinero que tiene el inversor en su cuenta.
-
-        cartera
-            Diccionario donde la claves son símbolos y los valores las cantidades de acciones que poseen.
-
-        """
-        self.nombre = nombre
-        self.capital = capital
-        self.cartera = {}
-
-
-    def comprar(self, accion:Accion, cantidad:int):
-        pass
-
-    def vender(self, accion:Accion, cantidad:int):
-        pass
-
-    def mostrar_cartera(self):
-        pass
-
-    def __str__(self):
-        pass
+    id: Optional[int] = Field(default=None, primary_key=True)
+    nombre: str = Field(max_length=100)
+    apellidos: str = Field(max_length=150)
+    email: str = Field(max_length=255, unique=True, index=True)
+    password: str = Field(max_length=255)
+    tarjeta_credito: str = Field(max_length=20)
+    capital: float = Field(default=0.0, ge=0)
+    
+    transacciones: List["Transaccion"] = Relationship(back_populates="inversor")
