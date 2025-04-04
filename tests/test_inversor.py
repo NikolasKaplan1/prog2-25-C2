@@ -8,7 +8,7 @@ from main import app
 from auth import authenticator
 from database import get_session, Inversor
 
-class TestinversorEndpoints(unittest.TestCase):
+class TestInversorEndpoints(unittest.TestCase):
 
     def setUp(self):
         engine = create_engine(
