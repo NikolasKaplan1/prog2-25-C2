@@ -64,7 +64,7 @@ class Accion:
             print(f"{key}: {value}", end = '')
 
 
-lass AccionReal(Accion):
+class AccionReal(Accion):
     """
     Clase AccionReal que extiende Accion y obtiene los datos reales usando yfinance.
     """
