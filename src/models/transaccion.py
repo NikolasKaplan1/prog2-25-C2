@@ -1,6 +1,8 @@
 from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional
 from datetime import datetime
+from inversor import Inversor
+from accion import Accion
 
 class Transaccion(SQLModel, table=True):
     """
