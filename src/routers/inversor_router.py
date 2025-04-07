@@ -1,58 +1,57 @@
-from typing import List
-from fastapi import FastAPI, APIRouter, Depends, HTTPException
-
-from sqlmodel import Session, select
-import uvicorn
-from pydantic import BaseModel
-
-
-
+from flask import Flask, request, jsonify, abort
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+import hashlib
 from database import get_session, create_db_and_tables, drop_db_and_tables, seed_users
-
+from flask_sqlalchemy import SQLAlchemy
 from database import Inversor
 
 
-app = FastAPI()
-router = APIRouter()
+app = Flask(__name__)
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///inversores.db"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-class RespuestaInversor(BaseModel):
-    id: int
-    nombre: str
-    email: str
-    capital: float
+db = SQLAlchemy(app)
+
+class Inversor(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(100), unique=True, nullable=False)
+    capital = db.Column(db.Float, nullable=False)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "nombre": self.nombre,
+            "email": self.email,
+            "capital": self.capital
+        }
     
+@app.route("/inversores", methods=["GET"])
+def get_inversor():
+    inversores = Inversor.query.all()
+    return jsonify([inversor.to_dict()] for inversor in inversores)
 
-class NuevoInversor(BaseModel):
-    nombre: str
-    email: str
-    capital: float
-    
-
-@router.get("/inversores", response_model = List[RespuestaInversor])
-def get_inversores(db: Session = Depends(get_session)):
-    inversores = db.exect(select(Inversor)).all()
-    return [{"id": inversor.id, "nombre": inversor.nombre, "email": inversor.email, "capital": inversor.capital} for inversor in inversores]
-
-@router.get("/inversores/{inversor_id}", response_model = List[RespuestaInversor])
-
-def get_inversor(db: Session= Depends(get_session)):
-    inversor = db.get(Inversor, id)
-
+@app.route("/inversores/<int:inversor_id>", methods=["GET"])
+def get_inversor_id(inversor_id):
+    inversor = Inversor.query.get(inversor_id)
     if inversor is None:
-        raise HTTPException(status_code = 404, detail= "Inversor no encontrado")
-    return {"id": inversor.id, "nombre": inversor.nombre, "email": inversor.email, "capital": inversor.capital}
+        abort(404, description="Inversor no encontrado")
+    return jsonify(inversor.to_dict())
 
-@router.post("/inversores", response_model = RespuestaInversor, status_code= 201)
-def nuevo_inversor(inversor: NuevoInversor, db: Session=Depends(get_session)):
-    nuevo_inversor = Inversor(**inversor.model_dump())
-    db.add(nuevo_inversor)
-    db.commit()
-    db.refresh(nuevo_inversor)
-    return nuevo_inversor
-
- 
-
-app.include_router(router)
+@app.route("/inversores", methods=["POST"])
+def post_nuevo_inversor():
+    data = request.get_json()
+    if not all(key in data for key in ("nombre", "email", "capital")):
+        abort(400, description= "Faltan campos obligatorios por completar")
+    
+    nuevo = Inversor(nombre=data["nombre"], email=data["email"], capital=data["capital"])
+    db.session.add(nuevo)
+    db.session.commit()
+    return jsonify(nuevo.to_dict())
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    app.run(debug=True, host="0.0.0.0", port= 8000)
+
+#cambios
+
+
