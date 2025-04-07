@@ -1,78 +1,62 @@
 import unittest
-from fastapi.testclient import TestClient
-from sqlmodel import SQLModel, create_engine, Session
-from sqlmodel.pool import StaticPool
-from unittest.mock import AsyncMock, MagicMock, patch
-
-from main import app
-from auth import authenticator
-from database import get_session, Inversor
+from main import app, db, Inversor
 
 class TestInversorEndpoints(unittest.TestCase):
 
     def setUp(self):
-        engine = create_engine(
-            "sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool
-        )
-        SQLModel.metadata.create_all(engine)
-        self.session = Session(engine)
-        def get_session_override():
-            yield self.session
-        app.dependency_overrides[get_session] = get_session_override
-        
-        self.mock_auth = MagicMock()
-        self.mock_auth.return_value = True
-        self.patcher = patch.object(authenticator, "__call__", self.mock_auth)
-        self.patcher.start()
+        # Configurar app en modo testing
+        app.config['TESTING'] = True
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+        app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-        app.lifespan = AsyncMock(return_value=None)
-        self.client = TestClient(app)       
-    
+        self.client = app.test_client()
+
+        # Crear base de datos temporal en memoria
+        with app.app_context():
+            db.create_all()
+
     def tearDown(self):
-        app.dependency_overrides.clear()
-        self.patcher.stop()
-    
-    def seed_db(self):
-        with self.session as session:
-            session.add_all([
-                Inversor(nombre="Alice", email="alice@example.com", capital= 100.0),
-                Inversor(nombre="Bob", email="bob@example.com", capital = 100.0),
-                Inversor(nombre="Charlie", email="charlie@example.com", capital = 100.0)
-            ])
-            session.commit()
+        # Eliminar base de datos después de cada test
+        with app.app_context():
+            db.session.remove()
+            db.drop_all()
 
-    def test_get_inversors_empty(self):
+    def seed_db(self):
+        with app.app_context():
+            inversores = [
+                Inversor(nombre="Alice", email="alice@example.com", capital=100.0),
+                Inversor(nombre="Bob", email="bob@example.com", capital=100.0),
+                Inversor(nombre="Charlie", email="charlie@example.com", capital=100.0),
+            ]
+            db.session.add_all(inversores)
+            db.session.commit()
+
+    def test_get_inversores_empty(self):
         response = self.client.get("/inversores")
         self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(response.json(), list)
-        self.assertEqual(len(response.json()), 0)
+        self.assertEqual(response.get_json(), [])
 
-    def test_get_inversors(self):
+    def test_get_inversores(self):
         self.seed_db()
         response = self.client.get("/inversores")
         self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(response.json(), list)
-        self.assertEqual(len(response.json()), 3)
-        inversor = response.json()[0]
-        self.assertIsInstance(inversor, dict)
-        self.assertEqual(inversor, {"id": 1, "nombre": "Alice", "email":"alice@example.com", "capital": 100.0 })
-        inversor = response.json()[1]
-        self.assertIsInstance(inversor, dict)
-        self.assertEqual(inversor, {"id": 2, "nombre": "Bob", "email":"bob@example.com", "capital": 100.0 })
-        inversor = response.json()[2]
-        self.assertIsInstance(inversor, dict)
-        self.assertEqual(inversor, {"id": 3, "nombre": "Charlie", "email":"charlie@example.com", "capital": 100.0 })
+        data = response.get_json()
+        self.assertEqual(len(data), 3)
+        self.assertEqual(data[0], {"id": 1, "nombre": "Alice", "email": "alice@example.com", "capital": 100.0})
+        self.assertEqual(data[1], {"id": 2, "nombre": "Bob", "email": "bob@example.com", "capital": 100.0})
+        self.assertEqual(data[2], {"id": 3, "nombre": "Charlie", "email": "charlie@example.com", "capital": 100.0})
 
     def test_get_inversor(self):
         self.seed_db()
-        response = self.client.get("/inversor/1")
+        response = self.client.get("/inversores/1")
         self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(response.json(), dict)
-        self.assertEqual(response.json(), {"id": 1, "nombre": "Alice", "email": "alice@example.com", "capital": 100.0})
-    
+        self.assertEqual(response.get_json(), {"id": 1, "nombre": "Alice", "email": "alice@example.com", "capital": 100.0})
+
     def test_get_inversor_not_found(self):
         self.seed_db()
-        response = self.client.get("/inversor/4")
+        response = self.client.get("/inversores/999")
         self.assertEqual(response.status_code, 404)
-        self.assertIsInstance(response.json(), dict)
-        self.assertEqual(response.json(), {"detail": "Inversor no encontrado"})
+        self.assertEqual(response.get_json(), {'message': 'Inversor no encontrado'})
+
+if __name__ == '__main__':
+    unittest.main()
