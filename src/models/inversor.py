@@ -1,5 +1,6 @@
 from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional, List
+from transaccion import Transaccion
 
 # Usamos una cadena para evitar problemas de import circular
 class Inversor(SQLModel, table=True):
