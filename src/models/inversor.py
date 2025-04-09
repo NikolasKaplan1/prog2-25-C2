@@ -1,29 +1,7 @@
-"""
-class Inversor:
-    def __init__(self, nombre: str, capital: float, cartera: dict[Accion, float]):
-        self.nombre = nombre
-        self.capital = capital
-        self.cartera = cartera
-    def comprar(self, accion: Accion, cantidad: float):
-        if accion not in self.cartera:
-            self.cartera[accion] = cantidad
-        else:
-            self.cartera[accion] += cantidad
-    def vender(self, accion: Accion, cantidad: float):
-        if accion not in self.cartera:
-            print(f"No puedes vender {accion} porque no tienes ese tipo de acción.")
-        elif self.cartera[accion] < cantidad:
-            print(f"No tienes tantas acciones de {accion}")
-        else:
-            self.cartera[accion] -= cantidad
+from .accion import Accion
+from .transaccion import Transaccion
+from typing import List
 
-    def __str__(self):
-        return f"La cartera de {self.nombre} tiene un capital de {self.capital}" + \
-            + f"y contiene las siguientes acciones: {self.cartera}"
-
-"""
-
-from accion import Accion
 
 
 class Inversor:
@@ -42,28 +20,36 @@ class Inversor:
         Dinero disponible en su cuenta
     
     cartera : dict
-        Acciones en posesión del inversor
+        Diccionario con las acciones que posee (clave: símbolo, valor: [Accion, cantidad]).
+    
+    transacciones : list[Transaccion]
     
     
     Métodos
     -------------
     comprar(accion, cantidad)
-        Verifica si es posible hacer una compra y le descuenta el coste. Añade las acciones a la cartera
-        y registra la transacción.
-
+        Compra acciones si tiene suficiente capital.
 
     vender(accion, cantidad)
-        Verifica si hay suficientes acciones y las vende. Añade el dinero de la venta y registra
-        la transacción.
+        Vende acciones si tiene suficientes.
 
     mostrar_cartera()
-        Devuelve un diccionario con las acciones y la cantidad que tiene.
+        Muestra el contenido de la cartera del inversor.
+    
+    registrar_transaccion()
+        Registra una transacción en el historial
 
-    __str__():
-        Devuelve una lista con todas las transacciones en formato texto.
+    __str__()
+        Muestra el resumen del inversor.
+    
+    __add__()
+        Sobrecarga para comprar acciones con +.
+    
+    __sub__() 
+        Sobrecarga para vender acciones con -.
 
     """
-    def __init__(self, nombre:str, capital:float, cartera: dict[Accion, float]):
+    def __init__(self, nombre:str, capital:float):
         """
         Parámetros
         ---------------
@@ -73,50 +59,149 @@ class Inversor:
         capital
             Cantidad de dinero que tiene el inversor en su cuenta.
 
-        cartera
-            Diccionario donde la claves son símbolos y los valores las cantidades de acciones que poseen.
-
         """
         self.nombre = nombre
         self.capital = capital
-        self.cartera = {}
+        self.cartera = {} # clave: simbolo, valor: [accion, cantidad]
+        self.transacciones = [] # lista de transacciones realizadas
 
 
-    def comprar(self, accion:Accion, cantidad:int):
+    def comprar(self, accion: Accion, cantidad: int):
+        
         """ Compra acciones si tiene suficiente capital"""
-        costo_total = accion.precio * cantidad
+        
+        costo_total = accion.precio_actual * cantidad
         if self.capital >= costo_total:
-            self.capital -= costo_total
-            self.cartera[accion.simbolo] -= self.cartera.get(accion.simbolo, 0) + cantidad
-            self.registrar_transaccion("Compra", accion.simbolo, cantidad, accion.precio)
+            self.capital -= costo_total  #se puede adquirir
+
+            if accion.simbolo in self.cartera:
+                self.cartera[accion.simbolo][1] += cantidad
+            else:
+                self.cartera[accion.simbolo] = [accion, cantidad]
+            
+            self.registrar_transaccion("Compra", accion, cantidad)
+            
         else:
-            print ("Fondos insuficientes")
+            raise ValueError ("No tienes suficiente dinero en cuenta para comprar")
 
 
     def vender(self, accion:Accion, cantidad:int):
-        """ Vende acciones si las tiene disponibles"""
-        if self.cartera.get(accion.simbolo, 0) >= cantidad:
-            self.capital += accion.precio * cantidad
-            self.cartera[accion.simbolo] -= cantidad
-            self.registrar_transaccion("Venta", accion.simbolo, cantidad, accion.precio)
+        
+        """ Vende acciones si el inversor tiene suficientes"""
+        
+        if accion.simbolo in self.cartera and self.cartera[accion.simbolo][1] >= cantidad:
+            self.capital += accion.precio_actual * cantidad
+            self.cartera[accion.simbolo][1] -= cantidad # se descuenta de la cartera al venderla
+            self.registrar_transaccion("Venta", accion, cantidad)
         else:
             print("No tienes suficientes acciones para vender")
     
     def mostrar_cartera(self):
-        """ Devuelve la cartera actual del inversor"""
-        return self.cartera
-
+        """ Devuelve un resumen del contenido de la cartera """
+        contenido = "Cartera de " + self.nombre + ":\n"
+        for i in self.cartera:
+            accion = self.cartera[i][0]
+            cantidad = self.cartera[i][1]
+            contenido += "- " + accion.nombre + " (" + i + "): " + str(cantidad) + " acciones\n"
+        contenido += "Capital disponible: " + str(round(self.capital, 2)) + "€"
+        return contenido
+    
+    def registrar_transaccion(self, tipo: str, accion: Accion, cantidad: int):
+     
+        """ Registra la transaccion en la lista de historial"""
+        if tipo == "Venta":
+            cantidad = -cantidad
+        transaccion = Transaccion(self, accion, cantidad, accion.precio_actual)
+        self.transacciones.append(transaccion)
+    
     def __str__(self):
-         return f"Inversor {self.nombre} - Capital: {self.capital} - Cartera: {self.cartera}"
+        return f"Inversor {self.nombre} - Capital: {round(self.capital, 2)}€ - Cartera: {self.cartera}"
+    
+    def __add__(self, other): # inversor adquiere x accion de x cantidad
+        """
+        Permite comprar acciones usando el operador +.
+
+        Parámetros
+        -------------
+            other : tuple
+                Tupla con la acción y la cantidad (accion, cantidad)
+        """
+
+        if isinstance(other, tuple) and len(other) == 2: # verificamos si el valor other es una tupla y tiene 2 elementos
+            accion, cantidad = other
+            self.comprar(accion, cantidad)
+
+        else:
+            raise TypeError ("Debes usar: inversor + (accion, cantidad)")
+
+    def __sub__(self, other):
+        if isinstance(other, tuple) and len(other) == 2:
+            accion, cantidad = other
+            self.vender(accion, cantidad)
+        else:
+            raise TypeError ("Debes usar: inversor - (accion, cantidad)")
 
 
-    def __add__(self, other):
-        """ Permite sumar el capital entre inversores"""
-        if isinstance(other, Inversor):
-            return Inversor(self.nombre + " & " + other.nombre, self.capital + other.capital)
-        pass
-        
 
-class InversorAgresivo(Inversor):
-    pass
+class InversorAgresivo(Inversor): # Busca ganancias rápidas y grandes
+    """
+    Inversor con estrategia agresiva:
+    Prefiere comprar acciones de precio alto (potencial de ganancia rápido)
+    """
+
+    def recomendar_compra(self):
+        """
+        Recomienda las acciones más caras de la cartera
+
+        Returns
+        ---------
+        list[str]
+            lista con los nombres y precios de las acciones recomendadas
+
+        """
+        acciones = list(self.cartera.values())
+        lista_precios = []
+        for accion, _ in acciones:
+            lista_precios.append([accion, accion.precio_actual])
+
+        for i in range(len(lista_precios)):
+            for j in range(i + 1, len(lista_precios)):
+                if lista_precios[i][1] < lista_precios[j][1]: # ordena de mayor a menor (estrategia agresiva)
+                    lista_precios[i], lista_precios[j] = lista_precios[j], lista_precios[i]
+
+        recomendaciones = []
+        for i in range(min(2, len(lista_precios))):
+            accion = lista_precios[i][0]
+            recomendaciones.append(accion.nombre + " a " + str(round(accion.precio_actual, 2)) + "€")
+
+        return recomendaciones
+
+class InversorPasivo(Inversor): # prefiere seguridad y estabilidad
+    def recomendar_compra(self):
+        """
+        Recomienda las dos acciones más baratas de la cartera.
+
+        Returns
+        -------------
+        list[str]
+            Lista con nombre y precio de las acciones recomendadas.
+        """
+        acciones = list(self.cartera.values())  # lista de [Accion, cantidad]
+
+        lista_precios = []
+        for accion, _ in acciones:
+            lista_precios.append([accion, accion.precio_actual])
+
+        for i in range(len(lista_precios)):
+            for j in range(i + 1, len(lista_precios)):
+                if lista_precios[i][1] > lista_precios[j][1]:
+                    lista_precios[i], lista_precios[j] = lista_precios[j], lista_precios[i]
+
+        recomendaciones = []
+        for i in range(min(2, len(lista_precios))):
+            accion = lista_precios[i][0]
+            recomendaciones.append(accion.nombre + " a " + str(round(accion.precio_actual, 2)) + "€")
+
+        return recomendaciones
+    
 
