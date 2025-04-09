@@ -31,6 +31,20 @@ class Inversor:
     La clase Inversor representa a un persona que invierte en el mercado funanciero. Además le 
     permite gestionar su capital a la cartera de acciones.
 
+    
+    Atributos
+    -------------
+
+    nombre : str
+        Nombre del inversor.
+    
+    capital : float
+        Dinero disponible en su cuenta
+    
+    cartera : dict
+        Acciones en posesión del inversor
+    
+    
     Métodos
     -------------
     comprar(accion, cantidad)
@@ -49,7 +63,7 @@ class Inversor:
         Devuelve una lista con todas las transacciones en formato texto.
 
     """
-    def __init__(self, nombre:str, capital:float):
+    def __init__(self, nombre:str, capital:float, cartera: dict[Accion, float]):
         """
         Parámetros
         ---------------
@@ -69,13 +83,40 @@ class Inversor:
 
 
     def comprar(self, accion:Accion, cantidad:int):
-        pass
+        """ Compra acciones si tiene suficiente capital"""
+        costo_total = accion.precio * cantidad
+        if self.capital >= costo_total:
+            self.capital -= costo_total
+            self.cartera[accion.simbolo] -= self.cartera.get(accion.simbolo, 0) + cantidad
+            self.registrar_transaccion("Compra", accion.simbolo, cantidad, accion.precio)
+        else:
+            print ("Fondos insuficientes")
+
 
     def vender(self, accion:Accion, cantidad:int):
-        pass
-
+        """ Vende acciones si las tiene disponibles"""
+        if self.cartera.get(accion.simbolo, 0) >= cantidad:
+            self.capital += accion.precio * cantidad
+            self.cartera[accion.simbolo] -= cantidad
+            self.registrar_transaccion("Venta", accion.simbolo, cantidad, accion.precio)
+        else:
+            print("No tienes suficientes acciones para vender")
+    
     def mostrar_cartera(self):
-        pass
+        """ Devuelve la cartera actual del inversor"""
+        return self.cartera
 
     def __str__(self):
+         return f"Inversor {self.nombre} - Capital: {self.capital} - Cartera: {self.cartera}"
+
+
+    def __add__(self, other):
+        """ Permite sumar el capital entre inversores"""
+        if isinstance(other, Inversor):
+            return Inversor(self.nombre + " & " + other.nombre, self.capital + other.capital)
         pass
+        
+
+class InversorAgresivo(Inversor):
+    pass
+
