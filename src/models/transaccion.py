@@ -1,30 +1,110 @@
-from sqlmodel import SQLModel, Field, Relationship
-from typing import Optional
-from datetime import datetime
-from inversor import Inversor
-from accion import Accion
+from .accion import Accion
+from .inversor import Inversor
 
-class Transaccion(SQLModel, table=True):
+
+class Transaccion:
+     """
+    Clase Transaccion que representa una operación bursátil realizada por un inversor.
+
+    Atributos
+    -----------------
+    inversor : Inversor
+        El inversor que realiza la operación.
+    accion : Accion
+        La acción que se compra o vende.
+    cantidad : int
+        Número de acciones que se compran o venden.
+    precio : float
+        Precio por acción en el momento de la transacción.
+    fecha_hora : datetime
+        Fecha y hora en la que se realiza la operación.
+
+    Métodos
+    -----------------
+    calcular_total()
+        Calcula el total de la operación (precio * cantidad).
+    validar_transaccion()
+        Verifica si el inversor tiene suficiente capital.
+    ejecutar_transaccion()
+        Ejecuta la operación si es válida, actualizando la cartera y el capital.
+    __str__()
+        Devuelve una descripción legible de la transacción.
+    
     """
-    Modelo de datos para registrar una transacción.
-    
-    Campos:
-      - id: Identificador único autogenerado.
-      - cantidad: Número de acciones involucradas en la operación.
-      - precio: Precio de la acción en el momento de la transacción.
-      - timestamp: Fecha y hora en que se realizó la transacción.
-      - inversor_id: Clave foránea que enlaza con el Inversor.
-      - accion_id: Clave foránea que enlaza con la Accion.
-      - inversor: Relación inversa para acceder al inversor.
-      - accion: Relación inversa para acceder a la acción.
-    """
-    id: Optional[int] = Field(default=None, primary_key=True)
-    cantidad: float
-    precio: float
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
-    
-    inversor_id: int = Field(foreign_key="inversor.id")
-    accion_id: int = Field(foreign_key="accion.id")
-    
-    inversor: Optional["Inversor"] = Relationship(back_populates="transacciones")
-    accion: Optional["Accion"] = Relationship(back_populates="transacciones")
+     def __init__(self, inversor: Inversor, accion: Accion, cantidad: int, precio: float):
+        """
+        Constructor de la clase Transaccion.
+
+    Parámetros
+    ----------------
+
+     inversor : Inversor
+            Objeto de la clase Inversor que realiza la transacción.
+        accion : Accion
+            Objeto de la clase Accion que se compra o vende.
+        cantidad : int
+            Número de acciones involucradas en la transacción.
+        precio : float
+            Precio por acción en el momento de la transacción.
+        
+        """
+
+        self.inversor = inversor
+        self.accion = accion
+        self.cantidad = cantidad
+        self.precio = precio
+        self.fecha_hora = datetime.now() # fecha y hora de la transacción
+
+
+     def calcular_total(self) -> float:
+        """
+        Calcula el costo total de la transaccion.
+
+        Returns
+        -----------
+        float
+            Total en euros(precio * cantidad)
+        """
+        return self.cantidad * self.precio
+
+     def validar_transaccion(self):
+         """
+        Verifica si el inversor tiene suficiente capital para realizar la compra.
+
+        Returns
+        -----------------
+        bool
+            True si el capital es suficiente, False si no.
+        """
+         return self.inversor.capital >= self.calcular_total()
+
+     def ejecutar_transaccion(self):
+         """
+        Ejecuta la transacción en caso de ser válida, actualizando el capital del inversor
+        y su cartera de acciones.
+
+        Si no es válida, informa que no hay fondos suficientes.
+        """
+         if self.validar_transaccion():
+            self.inversor.capital -= self.calcular_total()
+            if self.accion.simbolo in self.inversor.cartera:
+                self.inversor.cartera[self.accion.simbolo][1] += self.cantidad
+            else:
+                self.inversor.cartera[self.accion.simbolo] = [self.accion, self.cantidad]
+
+            print(f"Transaccion realizada correctamente: {self}")
+
+         else:
+            print("Fondos insuficientes para realizar la operación")
+
+     def __str__(self):
+         """
+        Devuelve una representación en cadena de la transacción.
+
+        Returns
+        -----------------
+        str
+            Descripción legible con fecha, nombre, acción, cantidad y precio.
+        """
+         return (f"{self.inversor.nombre} compró {self.cantidad} acciones de {self.accion.nombre} "
+                f"a {self.precio}$ cada una, el {self.fecha_hora.strftime('%Y-%m-%d %H:%M:%S')}.")
