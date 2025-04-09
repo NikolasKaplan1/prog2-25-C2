@@ -1,4 +1,3 @@
-from datetime import datetime
 from .accion import Accion
 from .inversor import Inversor
 

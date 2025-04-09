@@ -203,5 +203,3 @@ class InversorPasivo(Inversor): # prefiere seguridad y estabilidad
             recomendaciones.append(accion.nombre + " a " + str(round(accion.precio_actual, 2)) + "€")
 
         return recomendaciones
-    
-
