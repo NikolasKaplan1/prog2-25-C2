@@ -1,6 +1,8 @@
 from models.__init__ import Accion, AccionReal, Inversor, Mercado, Transaccion
 from estrategias.inversor_agresivo import InversorAgresivo
 from estrategias.inversor_conservador import InversorPasivo
+from typing import Union
+import random
 import yfinance as yf
 
 #Clases Accion y AccionReal
@@ -11,7 +13,7 @@ def crear_accion(simbolo: str, nombre: str, precio_actual: float, historial_prec
     return {"mensaje": "Acción añadida correctamente"}
 
 
-def crear_accion_real(simbolo: str)
+def crear_accion_real(simbolo: str):
     repr = yf.Ticker(simbolo) #esto da una representación de la acción real con su símbolo
     data = repr.history(period="365d") #nos da los datos del último año
     if data.empty:
@@ -27,7 +29,7 @@ def actualizar_precio(simbolo: str,nuevo_precio: float):
     Accion.acciones_registradas[simbolo].actualizar_precio(nuevo_precio)
     return {"mensaje": "Precio actualizado correctamente"}
 
-def actualizar_precio_real(simbolo: str)
+def actualizar_precio_real(simbolo: str):
     if simbolo not in Accion.acciones_registradas:
         return {"error": f"No existe una acción con el símbolo {simbolo}"}
     accion = Accion.acciones_registradas[simbolo]
@@ -40,7 +42,7 @@ def datos_accion(simbolo:str):
     if simbolo not in Accion.acciones_registradas:
         return {"error": f"No existe una acción con el símbolo {simbolo}"}
     accion = Accion.acciones_registradas[simbolo]
-    return accion.__str__()
+    return str(accion)
 
 #Clase Inversor
 
@@ -74,7 +76,7 @@ def crear_mercado(nombre: str, lista_acciones: list[Accion]):
         return {"error": f"Ya existe un mercado con el nombre {nombre}"}
     for i in range(len(lista_acciones)):
         accion = lista_acciones[i]
-        if accion in lista[:i]:
+        if accion in lista_acciones[:i]:
             return {"error": f"No puede haber acciones repetidas"}
         if not isinstance(accion,Accion):
             return {"error": f"El objeto {accion}, que es el término {i}, no pertenece a la clase Accion"}
@@ -104,7 +106,7 @@ def bancarrota(self,simbolo: str):
         if accion.simbolo == simbolo:
             mercado.bancarrota(simbolo)
             return {"error": f"La empresa con símbolo {simbolo} se ha declarado en bancarrota exitosamente"}
-            break
+    return {"error": f"No se encontró la acción con símbolo {simbolo} en el mercado {nombre}"}
         
 def simular_movimientos(self):
     if nombre not in Mercado.mercados_registrados:

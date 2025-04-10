@@ -1,5 +1,5 @@
 import random
-from accion import Accion
+from .accion import Accion
 from typing import Union
 
 class Mercado:
@@ -7,6 +7,8 @@ class Mercado:
 
     Atributos
     -------------
+    nombre: str
+        Nombre del mercado
     lista_acciones: list[Accion]
         Una lista de las acciones que hay en el mercado
     
@@ -22,7 +24,7 @@ class Mercado:
         Simula movimientos de un mercado (cambia precios aleatoriamente)
 
     """
-    mercados_registrado = {}
+    mercados_registrados: dict[str,Mercado] = {}
     def __init__(self, nombre: str, lista_acciones: list[Accion]):
         """
         Parámetros
