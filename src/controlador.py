@@ -107,7 +107,7 @@ def comprar_accion(nombre: str, accion: Accion, cantidad: int):
     inversor = inversores_registrados[nombre]
     try:
         inversor.comprar(accion, cantidad)
-        return {"mensaje": f"{nombre} ha comprado {cantidad} acciones de {accion.nombre}} exitosamente"
+        return {"mensaje": f"{nombre} ha comprado {cantidad} acciones de {accion.nombre} exitosamente"}
     except ValueError as e:
         return {"error": str(e)}
     
@@ -139,7 +139,7 @@ def mostrar_transaccion_registrada(nombre: str):
     resumen_transacciones = f"Historial de transacciones de {nombre}:\n"
     for transaccion in inversor.transacciones:
         resumen_transacciones += str(transaccion) + "\n"
-    return resumen_transacciones
+    return {"mensaje": resumen_transacciones}
 
 # Utiliza la sobrecarga del operador + para comprar acciones
 def comprar_acciones_con_operador(nombre: str, accion: Accion, cantidad: int):
@@ -219,14 +219,41 @@ def simular_movimientos(nombre: str):
     return {"mensaje": "Movimiento simulado exitosamente"}
 
 # Clase Transaccion
+def crear_transaccion(nombre: str, accion: Accion, cantidad: int, precio: float):
+    if nombre not in inversores_registrados:
+        return {"error": f"El inversor '{nombre}' no está registrado"}
+    
+    inversor = inversores_registrados[nombre]
+    transaccion = Transaccion(inversor, accion, cantidad, precio)
+    if transaccion.validar_transaccion():
+        transaccion.ejecutar_transaccion()
+        inversor.transacciones.append(transaccion)
+        return {"mensaje": f"Transaccion realizada: {transaccion}"}
+    else: 
+        return {"error": "Fondos insuficientes para realizar la operación"}
+
+def calcula_total_transacciones(nombre: str):
+    if nombre not in inversores_registrados:
+        return {"error": f"El inversor '{nombre}' no está registrado"}
+
+    transacciones = inversores_registrados[nombre].transacciones
+    if not transacciones:
+        return {"mensaje": "Este inversor no tiene transacciones registradas."}
+
+    realizadas = 0
+    for t in transacciones:
+        realizadas += t.calcular_total()
+
+    return {"mensaje": f"Total invertido por {nombre}: {round(realizadas, 2)}€"}
+
 
 
 
 #Clase IA
 def recomendacion(nombre: str):
-    if nombre not in inversor_registrados:
+    if nombre not in inversores_registrados:
         return {"error": f"No hay ningún inversor cuyo nombre es {nombre}"}
-    inversor = inversor_registrados[nombre]
+    inversor = inversores_registrados[nombre]
     try:
         return {"mensaje": f"Las recomendaciones son {IA(inversor).recomendacion()}"}
     except:
