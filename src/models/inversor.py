@@ -1,28 +1,132 @@
-from sqlmodel import SQLModel, Field, Relationship
-from typing import Optional, List
-from transaccion import Transaccion
+from .accion import Accion
+from .transaccion import Transaccion
+from typing import List
+from database.db_manager import guardar_transaccion
 
-# Usamos una cadena para evitar problemas de import circular
-class Inversor(SQLModel, table=True):
+
+class Inversor:
     """
-    Modelo de datos para un inversor.
-    
-    Campos:
-      - id: Identificador único autogenerado.
-      - nombre: Nombre del inversor.
-      - apellidos: Apellidos del inversor.
-      - email: Correo electrónico único (indexado).
-      - password: Contraseña hasheada.
-      - tarjeta_credito: Número de tarjeta de crédito (almacenado de forma segura, idealmente enmascarado o tokenizado).
-      - capital: Saldo de la cuenta (inicialmente 0 o el valor asignado).
-      - transacciones: Relación con las transacciones realizadas.
+    La clase Inversor representa a una persona que invierte en el mercado financiero.
+    Permite gestionar su capital y su cartera de acciones.
     """
-    id: Optional[int] = Field(default=None, primary_key=True)
-    nombre: str = Field(max_length=100)
-    apellidos: str = Field(max_length=150)
-    email: str = Field(max_length=255, unique=True, index=True)
-    password: str = Field(max_length=255)
-    tarjeta_credito: str = Field(max_length=20)
-    capital: float = Field(default=0.0, ge=0)
-    
-    transacciones: List["Transaccion"] = Relationship(back_populates="inversor")
+
+    def __init__(self, nombre: str, capital: float):
+        """
+        Inicializa un inversor con nombre y capital inicial.
+        
+        Parámetros:
+        - nombre: Nombre del inversor
+        - capital: Capital inicial del inversor
+        """
+        self.nombre = nombre
+        self.capital = capital
+        self.cartera = {}  # Diccionario donde las claves son los símbolos de las acciones y los valores son instancias de Accion
+        self.transacciones = []  # Lista para almacenar transacciones realizadas
+
+    def comprar(self, accion: Accion, cantidad: int):
+        """
+        Permite al inversor comprar acciones. Verifica si tiene suficiente capital.
+        
+        Parámetros:
+        - accion: La acción que desea comprar
+        - cantidad: La cantidad de acciones que desea comprar
+        """
+        if cantidad <= 0:
+            raise ValueError("La cantidad de acciones a comprar debe ser mayor que 0")
+        
+        costo_total = accion.precio_actual * cantidad
+        
+        if self.capital >= costo_total:
+            self.capital -= costo_total  # Restamos el dinero del capital
+            if accion.simbolo in self.cartera:
+                self.cartera[accion.simbolo][1] += cantidad
+            else:
+                self.cartera[accion.simbolo] = [accion, cantidad]
+            
+            # Registrar la transacción en la base de datos
+            self.registrar_transaccion("Compra", accion, cantidad)
+            print(f"{self.nombre} ha comprado {cantidad} acciones de {accion.nombre}.")
+        else:
+            raise ValueError(f"No tienes suficiente dinero para comprar {cantidad} acciones de {accion.nombre}.")
+
+    def vender(self, accion: Accion, cantidad: int):
+        """
+        Permite al inversor vender acciones. Verifica si tiene suficientes acciones.
+        
+        Parámetros:
+        - accion: La acción que desea vender
+        - cantidad: La cantidad de acciones que desea vender
+        """
+        if cantidad <= 0:
+            raise ValueError("La cantidad de acciones a vender debe ser mayor que 0")
+
+        if accion.simbolo in self.cartera and self.cartera[accion.simbolo][1] >= cantidad:
+            self.capital += accion.precio_actual * cantidad
+            self.cartera[accion.simbolo][1] -= cantidad  # Restamos las acciones de la cartera
+            
+            # Si la cantidad es 0, eliminamos la acción de la cartera
+            if self.cartera[accion.simbolo][1] == 0:
+                del self.cartera[accion.simbolo]  # Eliminamos la acción si ya no quedan acciones
+            
+            # Registrar la transacción en la base de datos
+            self.registrar_transaccion("Venta", accion, cantidad)
+            print(f"{self.nombre} ha vendido {cantidad} acciones de {accion.nombre}.")
+        else:
+            print(f"{self.nombre} no tiene suficientes acciones de {accion.nombre} para vender.")
+
+    def mostrar_cartera(self):
+        """
+        Devuelve un resumen del contenido de la cartera del inversor.
+        """
+        contenido = f"Cartera de {self.nombre}:\n"
+        for accion, (instancia_accion, cantidad) in self.cartera.items():
+            contenido += f"- {instancia_accion.nombre} ({accion}): {cantidad} acciones\n"
+        contenido += f"Capital disponible: {self.capital:.2f}€"
+        return contenido
+
+    def registrar_transaccion(self, tipo: str, accion: Accion, cantidad: int):
+        """
+        Registra la transacción en el historial del inversor y en la base de datos.
+        
+        Parámetros:
+        - tipo: Tipo de transacción ("Compra" o "Venta")
+        - accion: Acción relacionada con la transacción
+        - cantidad: Cantidad de acciones involucradas
+        """
+        # Crear la transacción
+        transaccion = Transaccion(self, accion, cantidad, accion.precio_actual)
+        
+        # Guardar la transacción en la base de datos
+        guardar_transaccion(transaccion)
+        
+        # Registra la transacción en memoria
+        self.transacciones.append(transaccion)
+
+    def __str__(self):
+        return f"Inversor {self.nombre} - Capital: {self.capital:.2f}€ - Cartera: {self.cartera}"
+
+    def __add__(self, other):
+        """
+        Sobrecarga para el operador +. Permite comprar acciones usando la sintaxis: inversor + (accion, cantidad)
+        
+        Parámetros:
+        - other: Tupla que contiene la acción y la cantidad a comprar
+        """
+        if isinstance(other, tuple) and len(other) == 2:
+            accion, cantidad = other
+            self.comprar(accion, cantidad)
+        else:
+            raise TypeError("Se debe usar la sintaxis: inversor + (accion, cantidad)")
+
+    def __sub__(self, other):
+        """
+        Sobrecarga para el operador -. Permite vender acciones usando la sintaxis: inversor - (accion, cantidad)
+        
+        Parámetros:
+        - other: Tupla que contiene la acción y la cantidad a vender
+        """
+        if isinstance(other, tuple) and len(other) == 2:
+            accion, cantidad = other
+            self.vender(accion, cantidad)
+        else:
+            raise TypeError("Se debe usar la sintaxis: inversor - (accion, cantidad)")
