@@ -3,7 +3,7 @@ from flask_jwt_extended import JWTManager, create_access_token, jwt_required, ge
 import hashlib
 from database import get_session, create_db_and_tables, drop_db_and_tables, seed_users
 from flask_sqlalchemy import SQLAlchemy
-from database import Accion
+from models import Accion
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///acciones.db"
