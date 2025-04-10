@@ -1,4 +1,6 @@
-from models import Accion, AccionReal, Inversor, Mercado, Transaccion
+from models.__init__ import Accion, AccionReal, Inversor, Mercado, Transaccion
+from estrategias.inversor_agresivo import InversorAgresivo
+from estrategias.inversor_conservador import InversorPasivo
 from typing import Union
 import random
 import yfinance as yf
@@ -43,6 +45,31 @@ def datos_accion(simbolo:str):
     return str(accion)
 
 #Clase Inversor
+
+inversores_registrados = {}
+def crea_inversor(nombre: str, capital: float, tipo: str):
+    """
+    Crea un inversor nuevo y lo guarda en el diccionario de inversores.
+
+    Tipo: puede ser de tipo agresivo o conservador(pasivo)
+    """
+    if nombre in inversores_registrados:
+        return {"Error": f"Ya existe un inversor bajo el nombre: {nombre}"}
+    if tipo == "Agresivo":
+        inversores_registrados[nombre] = InversorAgresivo(nombre, capital)
+    elif tipo == "Pasivo":
+        inversores_registrados[nombre] = InversorPasivo(nombre, capital)
+    else:
+        return "Error: Tipo de inversor no válido."
+    return f"Inversor {nombre} creado exitosamente como {tipo}"
+
+
+
+
+
+
+
+
 #Clase Mercado
 def crear_mercado(nombre: str, lista_acciones: list[Accion]):
     if nombre in mercados_registrados:
@@ -90,7 +117,7 @@ def simular_movimientos(self):
         accion.actualizar_precio(nuevo_precio)
 
 
-        
+      
 
 
 
