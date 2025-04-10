@@ -8,13 +8,41 @@ class Inversor:
     """
     La clase Inversor representa a una persona que invierte en el mercado financiero.
     Permite gestionar su capital y su cartera de acciones.
+
+    Atributos
+    ------------
+    nombre: str
+        Nombre del inversor
+    capital: float
+        Capital del inversor
+    cartera: dict[str, Accion]
+        Diccionario donde las claves son los símbolos de las acciones y los valores son instancias de Accion
+    transacciones: list
+        Lista de las transacciones realizadas
+    
+    Métodos
+    ------------
+    comprar(accion: Accion, cantidad: int)
+        compras una cantidad de acciones
+    vender(accion: Accion, cantidad: int)
+        vendes una cantidad de acciones
+    mostrar_cartera():
+        te enseña la cartera del inversor
+    registrar_transaccion(tipo, accion, cantidad)
+        registrar una transaccion efectuada
+    __add__(other: tuple[Accion,int])
+        otro método para comprar una cantidad de acciones
+    __sub__(other: tuple[Accion, int])
+        otro método para vender una cantidad de acciones
     """
+
 
     def __init__(self, nombre: str, capital: float):
         """
         Inicializa un inversor con nombre y capital inicial.
         
         Parámetros:
+        ------------
         - nombre: Nombre del inversor
         - capital: Capital inicial del inversor
         """

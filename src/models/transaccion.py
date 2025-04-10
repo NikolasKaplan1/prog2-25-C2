@@ -31,7 +31,7 @@ class Transaccion:
         Devuelve una descripción legible de la transacción.
     """
 
-    def __init__(self, inversor: Inversor, accion: Accion, cantidad: int, precio: float):
+    def __init__(self, inversor: Inversor, accion: Accion, cantidad: int):
         """
         Constructor de la clase Transaccion.
 
@@ -49,7 +49,7 @@ class Transaccion:
         self.inversor = inversor
         self.accion = accion
         self.cantidad = cantidad
-        self.precio = precio
+        self.precio = accion.precio_actual
         self.fecha_hora = datetime.now()  # Fecha y hora de la transacción
 
     def calcular_total(self) -> float:
