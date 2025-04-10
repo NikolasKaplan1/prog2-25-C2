@@ -62,7 +62,7 @@ def crea_inversor(nombre: str, capital: float, tipo: str):
         inversores_registrados[nombre] = InversorPasivo(nombre, capital)
     else:
         return "Error: Tipo de inversor no válido."
-    return f"Inversor {nombre} creado exitosamente como {tipo}"
+    return {"mensaje": f"Inversor {nombre} creado exitosamente como {tipo}"}
 
 
 def listar_inversores(nombre: str):
@@ -89,7 +89,7 @@ def mostrar_cartera(nombre: str):
     if nombre not in inversores_registrados:
         return {"Error": f"El inversor '{nombre}' no está registrado"}
     inversor = inversores_registrados[nombre]
-    return inversor.mostrar_cartera()
+    return {"mensaje": inversor.mostrar_cartera()}
 
 
 def comprar_accion(nombre: str, accion: Accion, cantidad: int):
@@ -107,7 +107,7 @@ def comprar_accion(nombre: str, accion: Accion, cantidad: int):
     inversor = inversores_registrados[nombre]
     try:
         inversor.comprar(accion, cantidad)
-        return f"{nombre} ha comprado {cantidad} acciones de {accion.nombre} exitosamente"
+        return {"mensaje": f"{nombre} ha comprado {cantidad} acciones de {accion.nombre}} exitosamente"
     except ValueError as e:
         return {"error": str(e)}
     
@@ -126,7 +126,7 @@ def vender_accion(nombre: str, accion: Accion, cantidad: int):
     inversor = inversores_registrados[nombre]
     try:
         inversor.vender(accion, cantidad)
-        return f"{nombre} ha vendido {cantidad} acciones de {accion.nombre} exitosamente"
+        return {"mensaje": f"{nombre} ha vendido {cantidad} acciones de {accion.nombre} exitosamente"}
     except ValueError as e:
         return {"error": str(e)}
 
@@ -135,7 +135,7 @@ def mostrar_transaccion_registrada(nombre: str):
         return {"Error": f"El inversor '{nombre}' no está registrado"}
     inversor = inversores_registrados[nombre]
     if not inversor.transacciones:
-        return "Este inversor no ha realizado ninguna transacción."
+        return {"mensaje": "Este inversor no ha realizado ninguna transacción."}
     resumen_transacciones = f"Historial de transacciones de {nombre}:\n"
     for transaccion in inversor.transacciones:
         resumen_transacciones += str(transaccion) + "\n"
@@ -149,7 +149,7 @@ def comprar_acciones_con_operador(nombre: str, accion: Accion, cantidad: int):
     inversor = inversores_registrados[nombre]
     try:
         inversor + (accion, cantidad)
-        return f"{nombre} ha comprado {cantidad} acciones de {accion.nombre} usando el operador '+'."
+        return {"mensaje": f"{nombre} ha comprado {cantidad} acciones de {accion.nombre} usando el operador '+'."}
     except Exception as e:
         return {"error": str(e)}
 
@@ -161,7 +161,7 @@ def vender_acciones_con_operador(nombre: str, accion: Accion, cantidad: int):
     inversor = inversores_registrados[nombre]
     try:
         inversor - (accion, cantidad)
-        return f"{nombre} ha vendido {cantidad} acciones de {accion.nombre} usando el operador '-'."
+        return {"mensaje" : f"{nombre} ha vendido {cantidad} acciones de {accion.nombre} usando el operador '-'."}
     except Exception as e:
         return {"error": str(e)}
 
@@ -218,6 +218,10 @@ def simular_movimientos(nombre: str):
     mercado.simular_movimientos()
     return {"mensaje": "Movimiento simulado exitosamente"}
 
+# Clase Transaccion
+
+
+
 #Clase IA
 def recomendacion(nombre: str):
     if nombre not in inversor_registrados:
@@ -227,7 +231,6 @@ def recomendacion(nombre: str):
         return {"mensaje": f"Las recomendaciones son {IA(inversor).recomendacion()}"}
     except:
         return {"error": "No tienes suficiente capital para no comprar ninguna acción"}
-
 
 
 
