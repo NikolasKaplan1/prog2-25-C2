@@ -16,7 +16,7 @@ class IA():
     recomendacion()
         Devuelve dos diccionarios con recomendaciones:
         - Uno con las mejores opciones según el tipo de inversor.
-        - Otro que filtra posibles acciones nuevas (no tiene previamente).
+        - Otro que filtra posibles acciones nuevas que no tiene previamente.
     """
     def __init__(self,inversor: Inversor):
         """
@@ -43,6 +43,10 @@ class IA():
             - Primer diccionario: Recomendaciones generales para cada tipo (hasta 5).
             - Segundo diccionario: Solo nuevas acciones que no tiene el inversor.
 
+        Raises:
+        ---------------
+        ValueError 
+            Si no tienes suficiente dinero para comprar ninguna acción
         """
         
         # Datos necesarios

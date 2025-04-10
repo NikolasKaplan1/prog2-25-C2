@@ -8,7 +8,8 @@ class Accion:
 
     Atributos
     ---------------
-    acciones
+    acciones_registradas: dict[str, Accion]
+        Un atributo de clase que sirve para almacenar las acciones registradas
     simbolo: str
         El símbolo de la acción (e.g., "AAPL" para Apple).
     
@@ -33,7 +34,7 @@ class Accion:
         Devuelve una representación en texto de la acción con su nombre, símbolo y precio actual.
     """
 
-    acciones_registradas: dict[str, Accion] = {}
+    acciones_registradas: dict[str, 'Accion'] = {}
     def __init__(self, simbolo: str, nombre: str, precio_actual: float, historial_precios: dict[str, float]): #el str sería la fecha y el float el valor de la acción en esa fecha
         """
         Inicializa una nueva acción.
@@ -45,9 +46,6 @@ class Accion:
         precio_actual (float): El precio actual de la acción.
         historial_precios (dict): Un diccionario con el historial de precios de la acción.
         
-        Raises:
-        ---------------
-        ValueError: Si ya existe una acción con el mismo símbolo (esto no aplica si usas base de datos).
         """
         self.simbolo = simbolo
         self.nombre = nombre
@@ -111,7 +109,8 @@ class AccionReal(Accion):
 
         Raises:
         ---------------
-        ValueError: Si no se encuentran datos de la acción en el último año en Yahoo Finance.
+        ValueError 
+            Si no se encuentran datos de la acción en el último año en Yahoo Finance.
         """
         # Obtenemos la representación de la acción con su símbolo.
         repr = yf.Ticker(simbolo) 

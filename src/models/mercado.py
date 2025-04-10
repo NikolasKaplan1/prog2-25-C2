@@ -43,11 +43,11 @@ class Mercado:
         TypeError
             En el caso de que algún objeto de lista_acciones no sea una acción, salta error.
         """
-        if nombre in mercados_registrados:
+        if nombre in Mercado.mercados_registrados:
             raise ValueError(f"Ya existe un mercado con el nombre {nombre}")
         for i in range(len(lista_acciones)):
             accion = lista_acciones[i]
-            if accion in lista[:i]:
+            if accion in lista_acciones[:i]:
                 raise ValueError(f"No puede haber acciones repetidas")
             if not isinstance(accion,Accion):
                 raise TypeError(f"El objeto {accion}, que es el término {i}, no pertenece a la clase Accion")
@@ -66,9 +66,14 @@ class Mercado:
 
         Raises
         -------------
+        ValueError
+            Nos da error si queremos añadir una acción que ya esté
         TypeError
             En el caso de que acción no sea de Acción, salta error.
         """
+        for a in self.lista_acciones:
+            if a.simbolo == accion.simbolo:
+                raise ValueError(f"La acción con símbolo {accion.simbolo} ya está registrada en el mercado.")
 
         if not isinstance(accion,Accion):
             raise TypeError(f'El objeto {accion} no pertenece a la clase Accion')
@@ -96,9 +101,9 @@ class Mercado:
         simbolo: str
             El símbolo de la acción que queremos declarar en bancarrota.
         """
-        for accion in lista_acciones:
+        for accion in self.lista_acciones:
             if accion.simbolo == simbolo:
-                lista_acciones.remove(accion)
+                self.lista_acciones.remove(accion)
                 accion.actualizar_precio(0)
                 break
         
@@ -107,7 +112,7 @@ class Mercado:
         aleatoriamente todas las acciones.)
         """
         for accion in self.lista_acciones:
-            variacion = random.uniform(-0.3, 0.3)
+            variacion = random.uniform(-0.05, 0.05)
             nuevo_precio = round(accion.precio_actual * (1 + variacion), 3)
             accion.actualizar_precio(nuevo_precio)
 
