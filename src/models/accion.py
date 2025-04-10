@@ -8,6 +8,7 @@ class Accion:
 
     Atributos
     ---------------
+    acciones
     simbolo: str
         El símbolo de la acción (e.g., "AAPL" para Apple).
     
@@ -52,6 +53,7 @@ class Accion:
         self.nombre = nombre
         self.precio_actual = precio_actual
         self.historial_precios = historial_precios
+        Accion.acciones_registradas[simbolo] = self
 
     def actualizar_precio(self, nuevo_precio: float):
         """

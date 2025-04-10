@@ -7,6 +7,8 @@ class Mercado:
 
     Atributos
     -------------
+    nombre: str
+        Nombre del mercado
     lista_acciones: list[Accion]
         Una lista de las acciones que hay en el mercado
     
