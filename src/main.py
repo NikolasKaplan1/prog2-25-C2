@@ -6,7 +6,6 @@ import logging
 from models import InversorDB, AccionDB, TransaccionDB  # Importar tus modelos
 from routers.inversor_router import inversor_bp
 from routers.accion_router import accion_bp
-from routers.mercado_routers import mercado_bp
 from routers.transaccion_router import transaccion_bp
 
 # from routers.accion_router import accion_bp
@@ -40,7 +39,6 @@ def root():
 # Registrar blueprints (equivalente a include_router en FastAPI)
 app.register_blueprint(inversor_bp, url_prefix="/inversores")
 app.register_blueprint(accion_bp, url_prefix="/acciones")
-app.register_blueprint(mercado_bp, url_prefix="/mercado")
 app.register_blueprint(transaccion_bp, url_prefix="/transacciones")
 
 
