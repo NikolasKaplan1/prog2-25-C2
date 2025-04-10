@@ -22,23 +22,37 @@ class Mercado:
         Simula movimientos de un mercado (cambia precios aleatoriamente)
 
     """
-    def __init__(self, lista_acciones: list[Accion]):
+    mercados_registrado = {}
+    def __init__(self, nombre: str, lista_acciones: list[Accion]):
         """
         Parámetros
         -------------
+        nombre: str
+            Nombre del mercado
         lista_acciones: list[Accion]
             Es una lista en la que se encuentran todas las acciones disponibles en el mercado
         
         Raises
         -------------
+        ValueError
+            En el caso de que ya existe un mercado con el nombre que pasamos
+        ValueError
+            No puede haber acciones repetidas en lista_acciones
         TypeError
             En el caso de que algún objeto de lista_acciones no sea una acción, salta error.
         """
+        if nombre in mercados_registrados:
+            raise ValueError(f"Ya existe un mercado con el nombre {nombre}")
+        for i in range(len(lista_acciones)):
+            accion = lista_acciones[i]
+            if accion in lista[:i]:
+                raise ValueError(f"No puede haber acciones repetidas")
+            if not isinstance(accion,Accion):
+                raise TypeError(f"El objeto {accion}, que es el término {i}, no pertenece a la clase Accion")
         
-        for accion in lista_acciones:
-            if type(accion) is not Accion:
-                raise TypeError(f"El objeto {accion} no pertenece a la clase Accion")
+        self.nombre = nombre
         self.lista_acciones = lista_acciones
+        Mercado.mercados_registrados[nombre] = self
 
     def registrar_accion(self, accion: Accion):
         """Este método sirve para registrar una nueva acción en el mercado
@@ -54,7 +68,7 @@ class Mercado:
             En el caso de que acción no sea de Acción, salta error.
         """
 
-        if type(accion) is not Accion:
+        if not isinstance(accion,Accion):
             raise TypeError(f'El objeto {accion} no pertenece a la clase Accion')
         self.lista_acciones.append(accion)
         
