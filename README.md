@@ -37,58 +37,84 @@ Por último, Adrián se ocupa de todo lo relacionado con la persistencia de dato
 
 ```mermaid
 classDiagram
-    class Inversor {
-        +string nombre
-        +float capital
-        +List~Accion~ cartera
-        +comprar(accion: Accion, cantidad: int)
-        +vender(accion: Accion, cantidad: int)
-        +mostrar_cartera() str
-        +_str_() str
-    }
-    
-    class Accion {
-        +string simbolo
-        +string nombre
-        +float precio_actual
-        +float historial_precios[]
-        +actualizar_precio(nuevo_precio: float)
-        +_str_() str
-    }
-    
-    class Mercado {
-        +List~Accion~ lista_acciones
-        +registrar_accion(accion: Accion)
-        +obtener_precio(simbolo: str) float
-        +simular_movimientos()
-    }
-    
-    class Transaccion {
-        +Inversor inversor
-        +Accion accion
-        +int cantidad
-        +float precio
-        +_str_() str
-    }
-    
-    class IA {
-        +recomendar_inversion(inversor: Inversor) List~Accion~
-    }
-    
-    class InversorConservador {
-        +recomendar_compra() List~Accion~
-    }
-    
-    class InversorAgresivo {
-        +recomendar_compra() List~Accion~
-    }
-    
-    Inversor <|-- InversorConservador
-    Inversor <|-- InversorAgresivo
-    Inversor "1" -- "*" Accion : "posee"
-    Inversor "1" -- "*" Transaccion : "realiza"
-    Mercado "1" -- "*" Accion : "gestiona"
-    IA "1" -- "*" Accion : "recomienda"
+
+%% Módulo: models
+class Accion {
+  -nombre: str
+  -precio_actual: float
+  +actualizar_precio(): void
+}
+
+class Mercado {
+  -acciones: List<Accion>
+  +simular(): void
+  +registrar_accion(accion: Accion): void
+}
+
+class Inversor {
+  -nombre: str
+  -capital: float
+  +comprar(): void
+  +vender(): void
+}
+
+class Transaccion {
+  -fecha: datetime
+  -accion: Accion
+  -inversor: Inversor
+  -cantidad: int
+  -precio: float
+}
+
+%% Módulo: estrategias
+class InversorConservador {
+  +estrategia(): str
+}
+
+class InversorAgresivo {
+  +estrategia(): str
+}
+
+class IA {
+  +predecir(): float
+}
+
+%% Relaciones de herencia
+InversorConservador --|> Inversor
+InversorAgresivo --|> Inversor
+
+%% Relaciones de asociación
+Transaccion --> Accion
+Transaccion --> Inversor
+Mercado --> Accion
+Inversor --> Accion
+
+%% Módulo: database
+class db_manager {
+  +conectar(): Connection
+  +insertar_transaccion(): void
+  +leer_transacciones(): List<Transaccion>
+}
+
+%% Módulo: auth
+class JWT {
+  +crear_token(): str
+  +verificar_token(): bool
+}
+
+%% Módulo: routers
+class accion_router
+class inversor_router
+class transaccion_router
+
+%% Controladores y enrutadores
+main --> accion_router
+main --> inversor_router
+main --> transaccion_router
+accion_router --> Accion
+inversor_router --> Inversor
+transaccion_router --> Transaccion
+
 ```
 # Colaboradores
 
