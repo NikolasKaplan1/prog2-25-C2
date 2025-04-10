@@ -3,19 +3,17 @@ from sqlmodel import SQLModel, create_engine, Session
 import os
 import logging
 
-from models import InversorDB, AccionDB, TransaccionDB  # Importar tus modelos
 from routers.inversor_router import inversor_bp
 from routers.accion_router import accion_bp
 from routers.transaccion_router import transaccion_bp
 
-# from routers.accion_router import accion_bp
 
 app = Flask(__name__)
 
 DATABASE_URL = "sqlite:///simulador.db"
 engine = create_engine(DATABASE_URL, echo=True)
 
-# Configurar logs
+# Configuración de los logs
 os.makedirs('logs', exist_ok=True)
 logging.basicConfig(
     level=logging.INFO,
@@ -36,7 +34,7 @@ def init_db():
 def root():
     return jsonify({"message": "Simulador de Bolsa activo y base de datos inicializada"})
 
-# Registrar blueprints (equivalente a include_router en FastAPI)
+# Registrar blueprints 
 app.register_blueprint(inversor_bp, url_prefix="/inversores")
 app.register_blueprint(accion_bp, url_prefix="/acciones")
 app.register_blueprint(transaccion_bp, url_prefix="/transacciones")
