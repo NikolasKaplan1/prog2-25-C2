@@ -1,4 +1,4 @@
-from models.__init__ import Accion, AccionReal, Inversor, Mercado, Transaccion
+from models import Accion, AccionReal, Inversor, Mercado, Transaccion
 from typing import Union
 import random
 import yfinance as yf
