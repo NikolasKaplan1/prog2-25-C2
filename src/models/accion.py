@@ -1,4 +1,5 @@
 import yfinance as yf
+#Esta librería es para añadir una librería novedosa. Sirve para crear acciones con datos reales
 from datetime import date
 
 class Accion:
@@ -31,7 +32,8 @@ class Accion:
         Devuelve una representación en texto de la acción con su nombre, símbolo y precio actual.
     """
 
-    def __init__(self, simbolo: str, nombre: str, precio_actual: float, historial_precios: dict[str, float]):
+    acciones_registradas: dict[str, Accion] = {}
+    def __init__(self, simbolo: str, nombre: str, precio_actual: float, historial_precios: dict[str, float]): #el str sería la fecha y el float el valor de la acción en esa fecha
         """
         Inicializa una nueva acción.
 
