@@ -1,4 +1,4 @@
-from models.__init__ import Accion, AccionReal, Inversor, Mercado, Transaccion
+from models import Accion, AccionReal, Inversor, Mercado, Transaccion
 from estrategias.inversor_agresivo import InversorAgresivo
 from estrategias.inversor_conservador import InversorPasivo
 from typing import Union
