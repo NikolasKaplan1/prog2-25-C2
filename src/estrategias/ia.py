@@ -1,4 +1,4 @@
-from models.__init__ import Inversor, Accion
+from models import Inversor, Accion
 from inversor_agresivo import InversorAgresivo
 import pandas as pd
 

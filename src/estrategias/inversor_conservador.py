@@ -1,4 +1,4 @@
-from models.inversor import Inversor
+from models import Inversor
 
 class InversorPasivo(Inversor): # prefiere seguridad y estabilidad
     def recomendar_compra(self):

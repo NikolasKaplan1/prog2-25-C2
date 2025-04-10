@@ -1,5 +1,5 @@
 import random
-from accion import Accion
+from .accion import Accion
 from typing import Union
 
 class Mercado:
