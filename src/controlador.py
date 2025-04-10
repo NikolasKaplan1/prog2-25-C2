@@ -1,6 +1,7 @@
-from models.__init__ import Accion, AccionReal, Inversor, Mercado, Transaccion
+from models import Accion, AccionReal, Inversor, Mercado, Transaccion
 from estrategias.inversor_agresivo import InversorAgresivo
 from estrategias.inversor_conservador import InversorPasivo
+from estrategias.ia import IA
 from typing import Union
 import random
 import yfinance as yf
@@ -165,10 +166,6 @@ def vender_acciones_con_operador(nombre: str, accion: Accion, cantidad: int):
         return {"error": str(e)}
 
 
-
-
-
-
 #Clase Mercado
 def crear_mercado(nombre: str, lista_acciones: list[Accion]):
     if nombre in mercados_registrados:
@@ -183,7 +180,7 @@ def crear_mercado(nombre: str, lista_acciones: list[Accion]):
     Mercado(nombre,lista_acciones)
     return {"mensaje": "Mercado creado correctamente"}
     
-def registrar_accion(nombre, accion: Accion):
+def registrar_accion(nombre: str, accion: Accion):
     if not isinstance(accion,Accion):
         return {"error": f"El objeto {accion} no pertenece a la clase Accion"}
     
@@ -194,13 +191,17 @@ def registrar_accion(nombre, accion: Accion):
         return {"error": f"La acción {accion} ya está en el mercado {nombre}"}
     Mercado.mercados_registrados[nombre].registrar_accion(accion)
         
-def obtener_precio(nombre,simbolo: str) -> Union[float,str]:
+def obtener_precio(nombre: str,simbolo: str) -> Union[float,str]:
     if nombre not in Mercado.mercados_registrados:
         return {"error": f"No existe un mercado con el nombre {nombre}"}
     mercado = Mercado.mercados_registrados[nombre]
-    
+    resultado = mercado.obtener_precio(simbolo)
+    if type(resultado) == float:
+        return {"mensaje": f"El precio de la acción {simbolo} es {resultado}"}
+    else:
+        return {"error": resultado}
 
-def bancarrota(self,simbolo: str):
+def bancarrota(nombre: str,simbolo: str):
     if nombre not in Mercado.mercados_registrados:
         return {"error": f"No existe un mercado con el nombre {nombre}"}
     mercado = Mercado.mercados_registrados[nombre]
@@ -210,17 +211,25 @@ def bancarrota(self,simbolo: str):
             return {"error": f"La empresa con símbolo {simbolo} se ha declarado en bancarrota exitosamente"}
     return {"error": f"No se encontró la acción con símbolo {simbolo} en el mercado {nombre}"}
         
-def simular_movimientos(self):
+def simular_movimientos(nombre: str):
     if nombre not in Mercado.mercados_registrados:
         return {"error": f"No existe un mercado con el nombre {nombre}"}
-    
-    for accion in self.lista_acciones:
-        variacion = random.uniform(-0.3, 0.3)
-        nuevo_precio = round(accion.precio_actual * (1 + variacion), 3)
-        accion.actualizar_precio(nuevo_precio)
+    mercado = Mercado.mercados_registrados[nombre]
+    mercado.simular_movimientos()
+    return {"mensaje": "Movimiento simulado exitosamente"}
+
+#Clase IA
+def recomendacion(nombre: str):
+    if nombre not in inversor_registrados:
+        return {"error": f"No hay ningún inversor cuyo nombre es {nombre}"}
+    inversor = inversor_registrados[nombre]
+    try:
+        return {"mensaje": f"Las recomendaciones son {IA(inversor).recomendacion()}"}
+    except:
+        return {"error": "No tienes suficiente capital para no comprar ninguna acción"}
 
 
-      
+
 
 
 
