@@ -42,7 +42,7 @@ def get_accion_id(accion_id):
 def post_nueva_accion():
     data = request.get_json()
     if not all(key in data for key in ("simbolo", "nombre", "precio")):
-        abort(400, description="faltan campos obligatorios por completar")
+        abort(400, description="Faltan campos obligatorios por completar")
     
     nuevo = Accion(simbolo=data["simbolo"], nombre=data["nombre"],precio=data["precio"] )
     db.session.add(nuevo)
@@ -53,4 +53,4 @@ def post_nueva_accion():
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=8000)
 
-#cambios
+
