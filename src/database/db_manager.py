@@ -1,6 +1,6 @@
 from sqlmodel import SQLModel, create_engine, Session
 from datetime import datetime
-from .models import InversorDB, TransaccionDB, AccionDB  # Asegúrate de tener estos modelos importados correctamente
+from models import InversorDB, TransaccionDB, AccionDB  # Asegúrate de tener estos modelos importados correctamente
 from typing import List
 
 

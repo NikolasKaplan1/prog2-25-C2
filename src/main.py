@@ -1,19 +1,20 @@
 from flask import Flask, jsonify
-from flask_sqlalchemy import SQLAlchemy
+from sqlmodel import SQLModel, create_engine, Session
 import os
 import logging
 
-from database import drop_db_and_tables, create_db_and_tables, seed_users
+from models import InversorDB, AccionDB, TransaccionDB  # Importar tus modelos
 from routers.inversor_router import inversor_bp
+from routers.accion_router import accion_bp
+from routers.mercado_routers import mercado_bp
+from routers.transaccion_router import transaccion_bp
+
 # from routers.accion_router import accion_bp
 
 app = Flask(__name__)
 
-# Configurar base de datos
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///simulador.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-db = SQLAlchemy(app)
+DATABASE_URL = "sqlite:///simulador.db"
+engine = create_engine(DATABASE_URL, echo=True)
 
 # Configurar logs
 os.makedirs('logs', exist_ok=True)
@@ -26,11 +27,9 @@ logging.basicConfig(
 
 # Inicialización de la app
 @app.before_first_request
-def init_app():
-    logging.info("Inicializando aplicación Flask")
-    drop_db_and_tables(db)
-    create_db_and_tables(db)
-    seed_users(db)
+def init_db():
+    logging.info("creando tablas de la base de dato...")
+    SQLModel.metadata.create_all(engine)
     logging.info("Base de datos creada y poblada con datos iniciales")
 
 # Ruta raíz
@@ -40,9 +39,11 @@ def root():
 
 # Registrar blueprints (equivalente a include_router en FastAPI)
 app.register_blueprint(inversor_bp, url_prefix="/inversores")
-# app.register_blueprint(accion_bp, url_prefix="/acciones")
+app.register_blueprint(accion_bp, url_prefix="/acciones")
+app.register_blueprint(mercado_bp, url_prefix="/mercado")
+app.register_blueprint(transaccion_bp, url_prefix="/transacciones")
+
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000, debug=True)
-
-    # cambios
