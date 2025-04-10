@@ -1,49 +1,52 @@
-from flask import Flask, request, jsonify, abort
-from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
-import hashlib
-from database import get_session, create_db_and_tables, drop_db_and_tables, seed_users
-from flask_sqlalchemy import SQLAlchemy
-from models import Transaccion
+from flask import Blueprint, request, jsonify, abort
+from sqlmodel import Session, select
+from models import TransaccionDB, InversorDB, AccionDB
+from main import engine
+from datetime import datetime
 
+transaccion_bp = Blueprint('transaccion', __name__)
 
-app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///mercado.db"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
-db = SQLAlchemy(app)
-
-@app.route("/transacciones", methods=["GET"])
+@transaccion_bp.route("/transacciones", methods=["GET"])
 def get_transacciones():
-    session = get_session()
-    query = session.exec(Transaccion)
-
+    session = Session(engine)
+    
     inversor_id = request.args.get("inversor_id")
     accion_id = request.args.get("accion_id")
 
+    query = select(TransaccionDB)
+
     if inversor_id:
-        query = query.filter(Transaccion.inversor_id == inversor_id)
+        query = query.filter(TransaccionDB.inversor_id == inversor_id)
 
     if accion_id:
-        query = query.filter(Transaccion.accion_id == accion_id)
+        query = query.filter(TransaccionDB.accion_id == accion_id)
 
-    transacciones = query.all()
+    transacciones = session.exec(query).all()
+    return jsonify([transaccion.model_dump() for transaccion in transacciones])
 
-    res = [{"id": transaccion.id, "inversor_id": transaccion.inversor_id, "accion_id": transaccion.accion_id, "cantidad": transaccion.cantidad, "precio": transaccion.precio, "frecha": transaccion.fecha.isoformat()} for transaccion in transacciones]
-
-    return jsonify(res), 200
-
-@app.route("/transacciones/<int:transaccion_id>", methods=["GET"])
+@transaccion_bp.route("/transacciones/<int:transaccion_id>", methods=["GET"])
 def get_transaccion(transaccion_id: int):
-    session = get_session()
-    transaccion = session.exec(Transaccion).filter_by(id=transaccion_id).first()
+    session = Session(engine)
+    transaccion = session.get(TransaccionDB, transaccion_id)
 
     if transaccion is None:
         abort(404, description="Transaccion no encontrada")
 
-    res = {"id": transaccion.id, "inversor_id": transaccion.inversor_id, "accion_id": transaccion.accion_id, "cantidad": transaccion.cantidad, "precio": transaccion.precio, "frecha": transaccion.fecha.isoformat()}
+    return jsonify(transaccion.model_dump())
 
-    return jsonify(res), 200
+@transaccion_bp.route("/transacciones", methods=["POST"])
+def post_nueva_transaccion():
+    session = Session(engine)
+    data = request.get_json()
 
+    if not all(key in data for key in ("inversor_id", "accion_id", "cantidad", "precio")):
+        abort(400, description="Faltan campos obligatorios")
 
-if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=8000)
+    nueva = TransaccionDB(inversor_id=data["inversor_id"], accion_id=data["accion_id"], cantidad=data["cantidad"], precio=data["precio"], fecha_hora=datetime.now(datetime.timezone.utc))
+
+    session.add(post_nueva_transaccion)
+    session.commit()
+    session.refresh(nueva)
+    
+    return jsonify(nueva.model_dump()), 201
+
