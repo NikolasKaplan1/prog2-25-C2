@@ -44,6 +44,7 @@ class IA():
             - Segundo diccionario: Solo nuevas acciones que no tiene el inversor.
 
         """
+        
         # Datos necesarios
         capital = self.inversor.capital
         cartera = self.inversor.cartera
