@@ -8,7 +8,7 @@
 ![Static Badge](https://img.shields.io/badge/Colaboradores-4-pink)
 
 
-# DESCRIPCIÓN
+# Descripción
 Este simulador permitirá a los usuarios:
 
 · Comprar y vender acciones en base a datos reales del mercado.
@@ -19,7 +19,7 @@ Este simulador permitirá a los usuarios:
 
 # Qué necesitas saber antes de probar nuestro código
 Para que no haya errores a la hora de probar nuestro código, te recomendamos ejecutar todo el interior de requirements.txt
-En este archivo se incluye la instalación de todas las librerías necesarias para la ejecución del *SIMULADOR DE BOLSA DE VALORES*.
+En este archivo se incluye la instalación de todas las librerías necesarias para la ejecución del *SIMULADOR DE BOLSA*.
 
 # Distribución de tareas
 Patricia tiene como función principal desarrollar la API REST, para ello utiliza Flask para crear los distintos puntos finales requeridos: gestión de inversores, acciones y transacciones. Su trabajo también incluye el manejo de excepciones en las rutas con `abort` para asegurar que las respuestas sean claras y controladas en caso de errores. También se encarga de el desarrollo y la actualización de todas las pruebas automáticas, tanto unitarias como de integración.
@@ -30,91 +30,50 @@ Niko se encarga de la creación del módulo de inversión y operaciones financie
 
 Por último, Adrián se ocupa de todo lo relacionado con la persistencia de datos, implementando una base de datos relacional en SQLite. ha diseñado las tablas necesarias para inversores, acciones y transacciones, y desarrolla funciones CRUD para operar sobre ellas desde el código. También maneja las excepciones específicas de la base de datos, asegurando la integridad de los datos.
 
-# Estructura
-- ![#00ff00](https://placehold.co/15x15/00ff00/00ff00.png) `Done`
-- ![#ffff00](https://placehold.co/15x15/ffff00/ffff00.png) `In process`
-- ![#ff0000](https://placehold.co/15x15/ff0000/ff0000.png) `Not started`
+
+# Diagrama UML del Sistema
 
 ```mermaid
-classDiagram
+flowchart TD
+    subgraph src["Paquete Principal: src"]
+        subgraph auth["auth"]
+            A[jwt.py]
+        end
 
-%% Módulo: models
-class Accion {
-  -nombre: str
-  -precio_actual: float
-  +actualizar_precio(): void
-}
+        subgraph database["database"]
+            B[db_manager.py]
+        end
 
-class Mercado {
-  -acciones: List<Accion>
-  +simular(): void
-  +registrar_accion(accion: Accion): void
-}
+        subgraph estrategias["estrategias"]
+            C[ia.py]
+            D[inversor_agresivo.py]
+            E[inversor_conservador.py]
+        end
 
-class Inversor {
-  -nombre: str
-  -capital: float
-  +comprar(): void
-  +vender(): void
-}
+        subgraph models["models"]
+            F[accion.py]
+            G[inversor.py]
+            H[mercado.py]
+            I[transaction.py]
+            J[models.py]
+        end
 
-class Transaccion {
-  -fecha: datetime
-  -accion: Accion
-  -inversor: Inversor
-  -cantidad: int
-  -precio: float
-}
+        subgraph routers["routers"]
+            K[accion_router.py]
+            L[inversor_router.py]
+            M[transaction_router.py]
+        end
 
-%% Módulo: estrategias
-class InversorConservador {
-  +estrategia(): str
-}
+        N[main.py]
+    end
 
-class InversorAgresivo {
-  +estrategia(): str
-}
-
-class IA {
-  +predecir(): float
-}
-
-%% Relaciones de herencia
-InversorConservador --|> Inversor
-InversorAgresivo --|> Inversor
-
-%% Relaciones de asociación
-Transaccion --> Accion
-Transaccion --> Inversor
-Mercado --> Accion
-Inversor --> Accion
-
-%% Módulo: database
-class db_manager {
-  +conectar(): Connection
-  +insertar_transaccion(): void
-  +leer_transacciones(): List<Transaccion>
-}
-
-%% Módulo: auth
-class JWT {
-  +crear_token(): str
-  +verificar_token(): bool
-}
-
-%% Módulo: routers
-class accion_router
-class inversor_router
-class transaccion_router
-
-%% Controladores y enrutadores
-main --> accion_router
-main --> inversor_router
-main --> transaccion_router
-accion_router --> Accion
-inversor_router --> Inversor
-transaccion_router --> Transaccion
-
+    %% Relaciones entre paquetes
+    routers --> models
+    routers --> auth
+    models --> database
+    estrategias --> models
+    main.py --> routers
+    main.py --> models
 ```
 # Colaboradores
 
@@ -129,7 +88,7 @@ transaccion_router --> Transaccion
         </a>
     </td>
     <td align="center">
-        <a href="https://https://github.com/ppf30">
+        <a href="https://github.com/ppf30">
             <img src="https://avatars.githubusercontent.com/u/198932016?v=4" width="100;" alt="ppf30"/>
             <br />
             <sub><b>Patricia</b></sub>

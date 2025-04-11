@@ -141,8 +141,10 @@ def recomendacion():
     resultado = control.recomendacion(nombre)
     print(resultado.get("error") or resultado.get("mensaje"))
 
+
 def guardar_y_salir():
     print("Saliendo del sistema...")
+
 
 def menu():
     opciones = {
