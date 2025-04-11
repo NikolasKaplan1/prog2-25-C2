@@ -112,7 +112,7 @@ def post_nueva_transaccion():
 
     nueva = TransaccionDB(inversor_id=data["inversor_id"], accion_id=data["accion_id"], cantidad=data["cantidad"], precio=data["precio"], fecha_hora=datetime.now(datetime.timezone.utc))
 
-    session.add(post_nueva_transaccion)
+    session.add(nueva)
     session.commit()
     session.refresh(nueva)
     
