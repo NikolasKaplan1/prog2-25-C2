@@ -34,27 +34,31 @@ Por último, Adrián se ocupa de todo lo relacionado con la persistencia de dato
 
 ```mermaid
 classDiagram
-    %% Definición de clases
+    %% Clases del paquete models
     class Accion {
+        <<models>>
         -nombre: str
         -precio_actual: float
-        +actualizar_precio(): void
+        +actualizar_precio() void
     }
 
     class Mercado {
-        -acciones: List<Accion>
-        +simular(): void
-        +registrar_accion(accion: Accion): void
+        <<models>>
+        -acciones: List~Accion~
+        +simular() void
+        +registrar_accion(accion: Accion) void
     }
 
     class Inversor {
+        <<models>>
         -nombre: str
         -capital: float
-        +comprar(): void
-        +vender(): void
+        +comprar() void
+        +vender() void
     }
 
     class Transaccion {
+        <<models>>
         -fecha: datetime
         -accion: Accion
         -inversor: Inversor
@@ -62,59 +66,48 @@ classDiagram
         -precio: float
     }
 
+    %% Clases del paquete estrategias
     class InversorConservador {
-        +estrategia(): str
+        <<estrategias>>
+        +estrategia() str
     }
 
     class InversorAgresivo {
-        +estrategia(): str
+        <<estrategias>>
+        +estrategia() str
     }
 
     class IA {
-        +predecir(): float
+        <<estrategias>>
+        +predecir() float
     }
 
+    %% Clases del paquete database
     class db_manager {
-        +conectar(): Connection
-        +insertar_transaccion(): void
-        +leer_transacciones(): List~Transaccion~
+        <<database>>
+        +conectar() Connection
+        +insertar_transaccion() void
+        +leer_transacciones() List~Transaccion~
     }
 
+    %% Clases del paquete auth
     class JWT {
-        +crear_token(): str
-        +verificar_token(): bool
+        <<auth>>
+        +crear_token() str
+        +verificar_token() bool
     }
 
-    class accion_router
-    class inversor_router
-    class transaccion_router
-
-    %% Agrupación por paquetes usando namespaces
-    namespace models {
-        Accion
-        Mercado
-        Inversor
-        Transaccion
+    %% Clases del paquete routers
+    class accion_router {
+        <<routers>>
     }
 
-    namespace estrategias {
-        InversorConservador
-        InversorAgresivo
-        IA
+    class inversor_router {
+        <<routers>>
     }
 
-    namespace database {
-        db_manager
-    }
-
-    namespace auth {
-        JWT
-    }
-
-    namespace routers {
-        accion_router
-        inversor_router
-        transaccion_router
+    class transaccion_router {
+        <<routers>>
     }
 
     %% Relaciones
@@ -124,9 +117,6 @@ classDiagram
     Transaccion --> Inversor
     Mercado --> Accion
     Inversor --> Accion
-    main --> accion_router
-    main --> inversor_router
-    main --> transaccion_router
     accion_router --> Accion
     inversor_router --> Inversor
     transaccion_router --> Transaccion
