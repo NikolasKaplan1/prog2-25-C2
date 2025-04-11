@@ -141,7 +141,7 @@ def recomendacion():
     resultado = control.recomendacion(nombre)
     print(resultado.get("error") or resultado.get("mensaje"))
 
-    def menu():
+def menu():
     opciones = {
         '1': crear_accion,
         '2': crear_accion_real,
