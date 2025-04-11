@@ -43,7 +43,7 @@ def datos_accion(simbolo:str):
     if simbolo not in Accion.acciones_registradas:
         return {"error": f"No existe una acción con el símbolo {simbolo}"}
     accion = Accion.acciones_registradas[simbolo]
-    return str(accion)
+    return {"mensaje": str(accion)}
 
 #Clase Inversor
 
@@ -55,20 +55,20 @@ def crea_inversor(nombre: str, capital: float, tipo: str):
     Tipo: puede ser de tipo agresivo o conservador(pasivo)
     """
     if nombre in inversores_registrados:
-        return {"Error": f"Ya existe un inversor bajo el nombre: {nombre}"}
+        return {"error": f"Ya existe un inversor bajo el nombre: {nombre}"}
     if tipo == "Agresivo":
         inversores_registrados[nombre] = InversorAgresivo(nombre, capital)
     elif tipo == "Pasivo":
         inversores_registrados[nombre] = InversorPasivo(nombre, capital)
     else:
-        return "Error: Tipo de inversor no válido."
+        return {"error": "Tipo de inversor no válido."}
+
     return {"mensaje": f"Inversor {nombre} creado exitosamente como {tipo}"}
 
 
-def listar_inversores(nombre: str):
+def datos_inversor(nombre: str):
     """
-    Devuelve la lista de todos los inversores registrados con su capital y tipo.
-
+    Devuelve el capital del inversor y el tipo que es
     """
     if nombre not in inversores_registrados:
         return {"Error": f"El inversor '{nombre}' no está registrado"}
@@ -80,50 +80,56 @@ def listar_inversores(nombre: str):
         tipo = "Pasivo"
     return {
         nombre: {
-            "Capital": round(inversor.capital, 2), 
+            "capital": round(inversor.capital, 2), 
             "tipo": tipo
         }
     }
 
 def mostrar_cartera(nombre: str):
     if nombre not in inversores_registrados:
-        return {"Error": f"El inversor '{nombre}' no está registrado"}
+        return {"error": f"El inversor '{nombre}' no está registrado"}
     inversor = inversores_registrados[nombre]
     return {"mensaje": inversor.mostrar_cartera()}
 
 
-def comprar_accion(nombre: str, accion: Accion, cantidad: int):
+def comprar_accion(nombre: str, simbolo: str, cantidad: int):
     """
     Permite a un inversor comprar una cantidad determinada de acciones.
 
     Parametros
     -----------
     - nombre(str) : nombre del inversor
-    - accion(Accion) : Objeto de la clase accion
+    - simbolo(str) : simbolo de la accion
     - cantidad(int) : numero de acciones a comprar
     """
     if nombre not in inversores_registrados:
-        return {"Error": f"El inversor '{nombre}' no está registrado"}
+        return {"error": f"El inversor '{nombre}' no está registrado"}
     inversor = inversores_registrados[nombre]
+    if simbolo not in Accion.acciones_registradas:
+        return {"error": f"La acción con el símbolo {simbolo} no existe"}
+    accion = Accion.acciones_registradas[simbolo]
     try:
         inversor.comprar(accion, cantidad)
         return {"mensaje": f"{nombre} ha comprado {cantidad} acciones de {accion.nombre} exitosamente"}
     except ValueError as e:
         return {"error": str(e)}
     
-def vender_accion(nombre: str, accion: Accion, cantidad: int):
+def vender_accion(nombre: str, simbolo: str, cantidad: int):
     """
     Permite a un inversor vender una cantidad determinada de acciones.
 
     Parametros
     -----------
     - nombre(str) : nombre del inversor
-    - accion(Accion) : Objeto de la clase accion
+    - simbolo(str) : simbolo de la accion
     - cantidad(int) : numero de acciones a comprar
     """
     if nombre not in inversores_registrados:
-        return {"Error": f"El inversor '{nombre}' no está registrado"}
+        return {"error": f"El inversor '{nombre}' no está registrado"}
     inversor = inversores_registrados[nombre]
+    if simbolo not in Accion.acciones_registradas:
+        return {"error": f"La acción con el símbolo {simbolo} no existe"}
+    accion = Accion.acciones_registradas[simbolo]
     try:
         inversor.vender(accion, cantidad)
         return {"mensaje": f"{nombre} ha vendido {cantidad} acciones de {accion.nombre} exitosamente"}
@@ -132,7 +138,7 @@ def vender_accion(nombre: str, accion: Accion, cantidad: int):
 
 def mostrar_transaccion_registrada(nombre: str):
     if nombre not in inversores_registrados:
-        return {"Error": f"El inversor '{nombre}' no está registrado"}
+        return {"error": f"El inversor '{nombre}' no está registrado"}
     inversor = inversores_registrados[nombre]
     if not inversor.transacciones:
         return {"mensaje": "Este inversor no ha realizado ninguna transacción."}
@@ -142,11 +148,14 @@ def mostrar_transaccion_registrada(nombre: str):
     return {"mensaje": resumen_transacciones}
 
 # Utiliza la sobrecarga del operador + para comprar acciones
-def comprar_acciones_con_operador(nombre: str, accion: Accion, cantidad: int):
+def comprar_acciones_con_operador(nombre: str, simbolo: str, cantidad: int):
     if nombre not in inversores_registrados:
-        return {"Error": f"El inversor '{nombre}' no está registrado"}
+        return {"error": f"El inversor '{nombre}' no está registrado"}
     
     inversor = inversores_registrados[nombre]
+    if simbolo not in Accion.acciones_registradas:
+        return {"error": f"La acción con el símbolo {simbolo} no existe"}
+    accion = Accion.acciones_registradas[simbolo]
     try:
         inversor + (accion, cantidad)
         return {"mensaje": f"{nombre} ha comprado {cantidad} acciones de {accion.nombre} usando el operador '+'."}
@@ -154,11 +163,14 @@ def comprar_acciones_con_operador(nombre: str, accion: Accion, cantidad: int):
         return {"error": str(e)}
 
 
-def vender_acciones_con_operador(nombre: str, accion: Accion, cantidad: int):
+def vender_acciones_con_operador(nombre: str, simbolo: str, cantidad: int):
     if nombre not in inversores_registrados:
-        return {"Error": f"El inversor '{nombre}' no está registrado"}
+        return {"error": f"El inversor '{nombre}' no está registrado"}
     
     inversor = inversores_registrados[nombre]
+    if simbolo not in Accion.acciones_registradas:
+        return {"error": f"La acción con el símbolo {simbolo} no existe"}
+    accion = Accion.acciones_registradas[simbolo]
     try:
         inversor - (accion, cantidad)
         return {"mensaje" : f"{nombre} ha vendido {cantidad} acciones de {accion.nombre} usando el operador '-'."}
@@ -166,11 +178,11 @@ def vender_acciones_con_operador(nombre: str, accion: Accion, cantidad: int):
         return {"error": str(e)}
 
 
+
 #Clase Mercado
 def crear_mercado(nombre: str, lista_acciones: list[Accion]):
-    if nombre in mercados_registrados:
+    if nombre in Mercado.mercados_registrados:
         return {"error": f"Ya existe un mercado con el nombre {nombre}"}
-    
     for i in range(len(lista_acciones)):
         accion = lista_acciones[i]
         if accion in lista_acciones[:i]:
@@ -180,16 +192,17 @@ def crear_mercado(nombre: str, lista_acciones: list[Accion]):
     Mercado(nombre,lista_acciones)
     return {"mensaje": "Mercado creado correctamente"}
     
-def registrar_accion(nombre: str, accion: Accion):
-    if not isinstance(accion,Accion):
-        return {"error": f"El objeto {accion} no pertenece a la clase Accion"}
-    
+def registrar_accion(nombre: str, simbolo: str):
+    if simbolo not in Accion.acciones_registradas:
+        return {"error": f"No existe ninguna acción con el símbolo {simbolo}"}
     if nombre not in Mercado.mercados_registrados:
         return {"error": f"No existe un mercado con el nombre {nombre}"}
-    
+    accion = Accion.acciones_registradas[simbolo]
     if accion in Mercado.mercados_registrados[nombre].lista_acciones:
-        return {"error": f"La acción {accion} ya está en el mercado {nombre}"}
+        return {"error": f"La acción con el símbolo {simbolo} ya está en el mercado {nombre}"}
     Mercado.mercados_registrados[nombre].registrar_accion(accion)
+    return {"mensaje": "Acción registrada correctamente"}
+
         
 def obtener_precio(nombre: str,simbolo: str) -> Union[float,str]:
     if nombre not in Mercado.mercados_registrados:
@@ -197,7 +210,7 @@ def obtener_precio(nombre: str,simbolo: str) -> Union[float,str]:
     mercado = Mercado.mercados_registrados[nombre]
     resultado = mercado.obtener_precio(simbolo)
     if type(resultado) == float:
-        return {"mensaje": f"El precio de la acción {simbolo} es {resultado}"}
+        return {"precio": resultado}
     else:
         return {"error": resultado}
 
@@ -208,7 +221,7 @@ def bancarrota(nombre: str,simbolo: str):
     for accion in mercado.lista_acciones:
         if accion.simbolo == simbolo:
             mercado.bancarrota(simbolo)
-            return {"error": f"La empresa con símbolo {simbolo} se ha declarado en bancarrota exitosamente"}
+            return {"mensaje": f"La empresa con símbolo {simbolo} se ha declarado en bancarrota exitosamente"}
     return {"error": f"No se encontró la acción con símbolo {simbolo} en el mercado {nombre}"}
         
 def simular_movimientos(nombre: str):
@@ -219,12 +232,16 @@ def simular_movimientos(nombre: str):
     return {"mensaje": "Movimiento simulado exitosamente"}
 
 # Clase Transaccion
-def crear_transaccion(nombre: str, accion: Accion, cantidad: int, precio: float):
+
+def crear_transaccion(nombre: str, simbolo: str, cantidad: int):
     if nombre not in inversores_registrados:
         return {"error": f"El inversor '{nombre}' no está registrado"}
-    
+    if simbolo not in Accion.acciones_registradas:
+        return {"error": f"La acción con el símbolo {simbolo} no existe"}
+    accion = Accion.acciones_registradas[simbolo]
     inversor = inversores_registrados[nombre]
-    transaccion = Transaccion(inversor, accion, cantidad, precio)
+    transaccion = Transaccion(inversor, accion, cantidad)
+
     if transaccion.validar_transaccion():
         transaccion.ejecutar_transaccion()
         inversor.transacciones.append(transaccion)
@@ -245,8 +262,6 @@ def calcula_total_transacciones(nombre: str):
         realizadas += t.calcular_total()
 
     return {"mensaje": f"Total invertido por {nombre}: {round(realizadas, 2)}€"}
-
-
 
 
 #Clase IA
