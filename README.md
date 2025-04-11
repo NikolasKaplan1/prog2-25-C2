@@ -33,24 +33,51 @@ Por último, Adrián se ocupa de todo lo relacionado con la persistencia de dato
 # Estructura
 
 ```mermaid
+flowchart TD
+    subgraph models["Package: models"]
+        A[Accion] --> B[Mercado]
+        A --> C[Inversor]
+        A --> D[Transaccion]
+    end
+
+    subgraph estrategias["Package: estrategias"]
+        E[InversorConservador]
+        F[InversorAgresivo]
+        G[IA]
+    end
+
+    subgraph database["Package: database"]
+        H[db_manager]
+    end
+
+    subgraph auth["Package: auth"]
+        I[JWT]
+    end
+
+    subgraph routers["Package: routers"]
+        J[accion_router]
+        K[inversor_router]
+        L[transaccion_router]
+    end
+
+    models --> estrategias
+    models --> database
+    models --> auth
+    models --> routers
 classDiagram
-    %% Clases del paquete models
     class Accion {
-        <<models>>
         -nombre: str
         -precio_actual: float
         +actualizar_precio() void
     }
 
     class Mercado {
-        <<models>>
         -acciones: List~Accion~
         +simular() void
         +registrar_accion(accion: Accion) void
     }
 
     class Inversor {
-        <<models>>
         -nombre: str
         -capital: float
         +comprar() void
@@ -58,7 +85,6 @@ classDiagram
     }
 
     class Transaccion {
-        <<models>>
         -fecha: datetime
         -accion: Accion
         -inversor: Inversor
@@ -66,60 +92,9 @@ classDiagram
         -precio: float
     }
 
-    %% Clases del paquete estrategias
-    class InversorConservador {
-        <<estrategias>>
-        +estrategia() str
-    }
-
-    class InversorAgresivo {
-        <<estrategias>>
-        +estrategia() str
-    }
-
-    class IA {
-        <<estrategias>>
-        +predecir() float
-    }
-
-    %% Clases del paquete database
-    class db_manager {
-        <<database>>
-        +conectar() Connection
-        +insertar_transaccion() void
-        +leer_transacciones() List~Transaccion~
-    }
-
-    %% Clases del paquete auth
-    class JWT {
-        <<auth>>
-        +crear_token() str
-        +verificar_token() bool
-    }
-
-    %% Clases del paquete routers
-    class accion_router {
-        <<routers>>
-    }
-
-    class inversor_router {
-        <<routers>>
-    }
-
-    class transaccion_router {
-        <<routers>>
-    }
-
-    %% Relaciones
-    InversorConservador --|> Inversor
-    InversorAgresivo --|> Inversor
+    Mercado --> Accion
     Transaccion --> Accion
     Transaccion --> Inversor
-    Mercado --> Accion
-    Inversor --> Accion
-    accion_router --> Accion
-    inversor_router --> Inversor
-    transaccion_router --> Transaccion
 ```
 # Colaboradores
 
