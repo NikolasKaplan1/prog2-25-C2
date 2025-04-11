@@ -31,30 +31,34 @@ Niko se encarga de la creación del módulo de inversión y operaciones financie
 Por último, Adrián se ocupa de todo lo relacionado con la persistencia de datos, implementando una base de datos relacional en SQLite. ha diseñado las tablas necesarias para inversores, acciones y transacciones, y desarrolla funciones CRUD para operar sobre ellas desde el código. También maneja las excepciones específicas de la base de datos, asegurando la integridad de los datos.
 
 # Estructura
+# Diagrama UML del Sistema
+
+## Diagrama de Paquetes Principal
 
 ```mermaid
 flowchart TD
-    subgraph models["Package: models"]
+    subgraph models["Paquete: models"]
+        direction TB
         A[Accion] --> B[Mercado]
         A --> C[Inversor]
         A --> D[Transaccion]
     end
 
-    subgraph estrategias["Package: estrategias"]
+    subgraph estrategias["Paquete: estrategias"]
         E[InversorConservador]
         F[InversorAgresivo]
         G[IA]
     end
 
-    subgraph database["Package: database"]
+    subgraph database["Paquete: database"]
         H[db_manager]
     end
 
-    subgraph auth["Package: auth"]
+    subgraph auth["Paquete: auth"]
         I[JWT]
     end
 
-    subgraph routers["Package: routers"]
+    subgraph routers["Paquete: routers"]
         J[accion_router]
         K[inversor_router]
         L[transaccion_router]
@@ -64,38 +68,93 @@ flowchart TD
     models --> database
     models --> auth
     models --> routers
+```
+
+## Detalle por Paquetes
+
+### 1. Paquete Models (Modelos principales)
+
+```mermaid
 classDiagram
     class Accion {
-        -nombre: str
-        -precio_actual: float
-        +actualizar_precio() void
+        <<Entity>>
+        -nombre: String
+        -precio_actual: Float
+        +actualizar_precio()
     }
 
     class Mercado {
-        -acciones: List~Accion~
-        +simular() void
-        +registrar_accion(accion: Accion) void
+        <<Service>>
+        -acciones: Accion[]
+        +simular()
+        +registrar_accion(accion: Accion)
     }
 
     class Inversor {
-        -nombre: str
-        -capital: float
-        +comprar() void
-        +vender() void
+        <<Entity>>
+        -nombre: String
+        -capital: Float
+        +comprar()
+        +vender()
     }
 
     class Transaccion {
-        -fecha: datetime
+        <<Entity>>
+        -fecha: DateTime
         -accion: Accion
         -inversor: Inversor
-        -cantidad: int
-        -precio: float
+        -cantidad: Int
+        -precio: Float
     }
 
-    Mercado --> Accion
-    Transaccion --> Accion
-    Transaccion --> Inversor
+    Mercado --> Accion: contiene
+    Transaccion --> Accion: referencia
+    Transaccion --> Inversor: referencia
 ```
+
+### 2. Paquete Estrategias
+
+```mermaid
+classDiagram
+    class InversorConservador {
+        <<Strategy>>
+        +estrategia() String
+    }
+
+    class InversorAgresivo {
+        <<Strategy>>
+        +estrategia() String
+    }
+
+    class IA {
+        <<Service>>
+        +predecir() Float
+    }
+
+    InversorConservador --|> Inversor: Hereda
+    InversorAgresivo --|> Inversor: Hereda
+```
+
+### 3. Relaciones entre Paquetes
+
+```mermaid
+flowchart LR
+    models --> database[(Database)]
+    models --> auth
+    models --> routers
+    estrategias --> models
+    routers --> models
+```
+
+## Notas importantes:
+
+1. GitHub soporta una versión limitada de Mermaid
+2. Los diagramas complejos pueden requerir simplificación
+3. Para diagramas más detallados, considera:
+   - Usar imágenes estáticas (exportadas desde herramientas como Draw.io)
+   - Dividir en más diagramas pequeños
+   - Usar la sintaxis más básica de Mermaid
+
 # Colaboradores
 
 <!-- readme: collaborators -start -->
