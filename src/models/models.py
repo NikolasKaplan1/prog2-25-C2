@@ -1,11 +1,12 @@
-from sqlmodel import SQLModel, Field
-from typing import List
+from sqlmodel import SQLModel, Field, Relationship
+from typing import List, Optional
 from datetime import datetime
 
-class InversorDB(SQLModel, table=True):
-    __tablename__ = "inversores"  # Nombre de la tabla en la base de datos
 
-    id: int = Field(default=None, primary_key=True)  # El ID único del inversor
+class InversorDB(SQLModel, table=True):
+    __tablename__ = "inversores"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
     nombre: str
     apellidos: str
     email: str
@@ -13,30 +14,33 @@ class InversorDB(SQLModel, table=True):
     tarjeta_credito: str
     capital: float
 
-    # Relación con las transacciones
-    transacciones: List["TransaccionDB"] = []
+    # Relación con TransaccionDB (uno a muchos)
+    transacciones: List["TransaccionDB"] = Relationship(back_populates="inversor")
 
 
 class AccionDB(SQLModel, table=True):
-    __tablename__ = "acciones"  # Nombre de la tabla para las acciones
+    __tablename__ = "acciones"
 
-    id: int = Field(default=None, primary_key=True)  # ID único de la acción
+    id: Optional[int] = Field(default=None, primary_key=True)
     simbolo: str
     nombre: str
     precio_actual: float
-    historial_precios: dict[str, float]  # Este campo puede necesitar una conversión para almacenarse correctamente en la base de datos
+    historial_precios: Optional[str]  # Puedes serializar el dict a JSON si quieres
+
+    # Relación con TransaccionDB (uno a muchos)
+    transacciones: List["TransaccionDB"] = Relationship(back_populates="accion")
 
 
 class TransaccionDB(SQLModel, table=True):
-    __tablename__ = "transacciones"  # Nombre de la tabla para las transacciones
+    __tablename__ = "transacciones"
 
-    id: int = Field(default=None, primary_key=True)  # ID único de la transacción
-    inversor_id: int = Field(foreign_key="inversores.id")  # Relación con el inversor
-    accion_id: int = Field(foreign_key="acciones.id")  # Relación con la acción
+    id: Optional[int] = Field(default=None, primary_key=True)
+    inversor_id: int = Field(foreign_key="inversores.id")
+    accion_id: int = Field(foreign_key="acciones.id")
     cantidad: int
     precio: float
-    fecha_hora: datetime = Field(default=datetime.utcnow())  # Fecha y hora de la transacción
+    fecha_hora: datetime = Field(default_factory=datetime.utcnow)
 
-    # Relación con los inversores y las acciones
-    inversor: InversorDB  # Relación con Inversor
-    accion: AccionDB  # Relación con Accion
+    # Relaciones inversas
+    inversor: Optional[InversorDB] = Relationship(back_populates="transacciones")
+    accion: Optional[AccionDB] = Relationship(back_populates="transacciones")

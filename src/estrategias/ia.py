@@ -1,5 +1,5 @@
 from models import Inversor, Accion
-from inversor_agresivo import InversorAgresivo
+from .inversor_agresivo import InversorAgresivo
 import pandas as pd
 
 class IA():

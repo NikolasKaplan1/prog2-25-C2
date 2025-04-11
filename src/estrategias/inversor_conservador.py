@@ -1,6 +1,6 @@
-from models import Inversor
+from models.inversor import Inversor
 
-class InversorPasivo(Inversor): # prefiere seguridad y estabilidad
+class InversorConservador(Inversor): # prefiere seguridad y estabilidad
     def recomendar_compra(self):
         """
         Recomienda las dos acciones más baratas de la cartera.

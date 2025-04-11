@@ -45,13 +45,13 @@ def crea_inversor():
     resultado = control.crea_inversor(nombre, capital, tipo)
     print(resultado.get("error") or resultado.get("mensaje"))
 
-def datos_inversor(nombre: str):
+def datos_inversor():
     nombre = input("Ingrese el nombre del inversor: ")
     resultado = control.datos_inversor(nombre)
     if "error" in resultado:
         print(resultado.get("error"))
     else:
-        print(f"Capital: {resultado[capital]}, tipo: {resultado[tipo]}")
+        print(f"Nombre: {resultado["nombre"]}, capital: {resultado["capital"]}, tipo: {resultado["tipo"]}")
 
 def mostrar_cartera():
     nombre = input("Ingrese el nombre del inversor: ")
@@ -141,6 +141,9 @@ def recomendacion():
     resultado = control.recomendacion(nombre)
     print(resultado.get("error") or resultado.get("mensaje"))
 
+def guardar_y_salir():
+    print("Saliendo del sistema...")
+
 def menu():
     opciones = {
         '1': crear_accion,
@@ -160,7 +163,7 @@ def menu():
         '15': registrar_accion,
         '16': obtener_precio,
         '17': bancarrota,
-        '18': simular_movimiento,
+        '18': simular_movimientos,
         '19': crear_transaccion,
         '20': calcula_total_transacciones,
         '21': recomendacion,
@@ -192,7 +195,7 @@ def menu():
         print("21. Recomienda unas acciones para un inversor")
         print("0. Guardar y salir")
 
-        opcion = nput("Seleccione una opción: ")
+        opcion = input("Seleccione una opción: ")
 
         if opcion in opciones:
             opciones[opcion]()

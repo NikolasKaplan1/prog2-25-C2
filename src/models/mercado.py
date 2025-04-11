@@ -24,7 +24,7 @@ class Mercado:
         Simula movimientos de un mercado (cambia precios aleatoriamente)
 
     """
-    mercados_registrados: dict[str,Mercado] = {}
+    mercados_registrados: dict[str,"Mercado"] = {}
     def __init__(self, nombre: str, lista_acciones: list[Accion]):
         """
         Parámetros
