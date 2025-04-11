@@ -57,13 +57,13 @@ flowchart TD
             G[inversor.py]
             H[mercado.py]
             I[transaction.py]
+            J[models.py]
         end
 
         subgraph routers["routers"]
-            J[accion_router.py]
-            K[inversor_router.py]
-            L[transaction_router.py]
-            M[controlador.py]
+            K[accion_router.py]
+            L[inversor_router.py]
+            M[transaction_router.py]
         end
 
         N[main.py]
@@ -77,92 +77,6 @@ flowchart TD
     main.py --> routers
     main.py --> models
 ```
-
-## Detalle por Paquetes
-
-### 1. Paquete Models (Modelos principales)
-
-```mermaid
-classDiagram
-    class Accion {
-        <<Entity>>
-        -nombre: String
-        -precio_actual: Float
-        +actualizar_precio()
-    }
-
-    class Mercado {
-        <<Service>>
-        -acciones: Accion[]
-        +simular()
-        +registrar_accion(accion: Accion)
-    }
-
-    class Inversor {
-        <<Entity>>
-        -nombre: String
-        -capital: Float
-        +comprar()
-        +vender()
-    }
-
-    class Transaccion {
-        <<Entity>>
-        -fecha: DateTime
-        -accion: Accion
-        -inversor: Inversor
-        -cantidad: Int
-        -precio: Float
-    }
-
-    Mercado --> Accion: contiene
-    Transaccion --> Accion: referencia
-    Transaccion --> Inversor: referencia
-```
-
-### 2. Paquete Estrategias
-
-```mermaid
-classDiagram
-    class InversorConservador {
-        <<Strategy>>
-        +estrategia() String
-    }
-
-    class InversorAgresivo {
-        <<Strategy>>
-        +estrategia() String
-    }
-
-    class IA {
-        <<Service>>
-        +predecir() Float
-    }
-
-    InversorConservador --|> Inversor: Hereda
-    InversorAgresivo --|> Inversor: Hereda
-```
-
-### 3. Relaciones entre Paquetes
-
-```mermaid
-flowchart LR
-    models --> database[(Database)]
-    models --> auth
-    models --> routers
-    estrategias --> models
-    routers --> models
-```
-
-## Notas importantes:
-
-1. GitHub soporta una versión limitada de Mermaid
-2. Los diagramas complejos pueden requerir simplificación
-3. Para diagramas más detallados, considera:
-   - Usar imágenes estáticas (exportadas desde herramientas como Draw.io)
-   - Dividir en más diagramas pequeños
-   - Usar la sintaxis más básica de Mermaid
-
 # Colaboradores
 
 <!-- readme: collaborators -start -->
