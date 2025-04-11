@@ -88,7 +88,7 @@ flowchart TD
         </a>
     </td>
     <td align="center">
-        <a href="https://https://github.com/ppf30">
+        <a href="https://github.com/ppf30">
             <img src="https://avatars.githubusercontent.com/u/198932016?v=4" width="100;" alt="ppf30"/>
             <br />
             <sub><b>Patricia</b></sub>
