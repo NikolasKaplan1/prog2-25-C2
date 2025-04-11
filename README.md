@@ -8,7 +8,7 @@
 ![Static Badge](https://img.shields.io/badge/Colaboradores-4-pink)
 
 
-# DESCRIPCIÓN
+# Descripción
 Este simulador permitirá a los usuarios:
 
 · Comprar y vender acciones en base a datos reales del mercado.
@@ -31,52 +31,73 @@ Niko se encarga de la creación del módulo de inversión y operaciones financie
 Por último, Adrián se ocupa de todo lo relacionado con la persistencia de datos, implementando una base de datos relacional en SQLite. ha diseñado las tablas necesarias para inversores, acciones y transacciones, y desarrolla funciones CRUD para operar sobre ellas desde el código. También maneja las excepciones específicas de la base de datos, asegurando la integridad de los datos.
 
 # Estructura
-- ![#00ff00](https://placehold.co/15x15/00ff00/00ff00.png) `Done`
-- ![#ffff00](https://placehold.co/15x15/ffff00/ffff00.png) `In process`
-- ![#ff0000](https://placehold.co/15x15/ff0000/ff0000.png) `Not started`
 
 ```mermaid
 classDiagram
 
-%% Módulo: models
-class Accion {
-  -nombre: str
-  -precio_actual: float
-  +actualizar_precio(): void
+%% Definición de paquetes
+package "models" {
+    class Accion {
+        -nombre: str
+        -precio_actual: float
+        +actualizar_precio(): void
+    }
+
+    class Mercado {
+        -acciones: List<Accion>
+        +simular(): void
+        +registrar_accion(accion: Accion): void
+    }
+
+    class Inversor {
+        -nombre: str
+        -capital: float
+        +comprar(): void
+        +vender(): void
+    }
+
+    class Transaccion {
+        -fecha: datetime
+        -accion: Accion
+        -inversor: Inversor
+        -cantidad: int
+        -precio: float
+    }
 }
 
-class Mercado {
-  -acciones: List<Accion>
-  +simular(): void
-  +registrar_accion(accion: Accion): void
+package "estrategias" {
+    class InversorConservador {
+        +estrategia(): str
+    }
+
+    class InversorAgresivo {
+        +estrategia(): str
+    }
+
+    class IA {
+        +predecir(): float
+    }
 }
 
-class Inversor {
-  -nombre: str
-  -capital: float
-  +comprar(): void
-  +vender(): void
+package "database" {
+    class db_manager {
+        +conectar(): Connection
+        +insertar_transaccion(): void
+        +leer_transacciones(): List~Transaccion~
+    }
 }
 
-class Transaccion {
-  -fecha: datetime
-  -accion: Accion
-  -inversor: Inversor
-  -cantidad: int
-  -precio: float
+package "auth" {
+    class JWT {
+        +crear_token(): str
+        +verificar_token(): bool
+    }
 }
 
-%% Módulo: estrategias
-class InversorConservador {
-  +estrategia(): str
-}
-
-class InversorAgresivo {
-  +estrategia(): str
-}
-
-class IA {
-  +predecir(): float
+package "routers" {
+    class accion_router
+    class inversor_router
+    class transaccion_router
 }
 
 %% Relaciones de herencia
@@ -89,24 +110,6 @@ Transaccion --> Inversor
 Mercado --> Accion
 Inversor --> Accion
 
-%% Módulo: database
-class db_manager {
-  +conectar(): Connection
-  +insertar_transaccion(): void
-  +leer_transacciones(): List<Transaccion>
-}
-
-%% Módulo: auth
-class JWT {
-  +crear_token(): str
-  +verificar_token(): bool
-}
-
-%% Módulo: routers
-class accion_router
-class inversor_router
-class transaccion_router
-
 %% Controladores y enrutadores
 main --> accion_router
 main --> inversor_router
@@ -114,7 +117,6 @@ main --> transaccion_router
 accion_router --> Accion
 inversor_router --> Inversor
 transaccion_router --> Transaccion
-
 ```
 # Colaboradores
 
