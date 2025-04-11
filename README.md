@@ -37,37 +37,45 @@ Por último, Adrián se ocupa de todo lo relacionado con la persistencia de dato
 
 ```mermaid
 flowchart TD
-    subgraph models["Paquete: models"]
-        direction TB
-        A[Accion] --> B[Mercado]
-        A --> C[Inversor]
-        A --> D[Transaccion]
+    subgraph src["Paquete Principal: src"]
+        subgraph auth["auth"]
+            A[jwt.py]
+        end
+
+        subgraph database["database"]
+            B[db_manager.py]
+        end
+
+        subgraph estrategias["estrategias"]
+            C[ia.py]
+            D[inversor_agresivo.py]
+            E[inversor_conservador.py]
+        end
+
+        subgraph models["models"]
+            F[accion.py]
+            G[inversor.py]
+            H[mercado.py]
+            I[transaction.py]
+        end
+
+        subgraph routers["routers"]
+            J[accion_router.py]
+            K[inversor_router.py]
+            L[transaction_router.py]
+            M[controlador.py]
+        end
+
+        N[main.py]
     end
 
-    subgraph estrategias["Paquete: estrategias"]
-        E[InversorConservador]
-        F[InversorAgresivo]
-        G[IA]
-    end
-
-    subgraph database["Paquete: database"]
-        H[db_manager]
-    end
-
-    subgraph auth["Paquete: auth"]
-        I[JWT]
-    end
-
-    subgraph routers["Paquete: routers"]
-        J[accion_router]
-        K[inversor_router]
-        L[transaccion_router]
-    end
-
-    models --> estrategias
+    %% Relaciones entre paquetes
+    routers --> models
+    routers --> auth
     models --> database
-    models --> auth
-    models --> routers
+    estrategias --> models
+    main.py --> routers
+    main.py --> models
 ```
 
 ## Detalle por Paquetes
