@@ -34,9 +34,7 @@ Por último, Adrián se ocupa de todo lo relacionado con la persistencia de dato
 
 ```mermaid
 classDiagram
-
-%% Definición de paquetes
-package "models" {
+    %% Definición de clases
     class Accion {
         -nombre: str
         -precio_actual: float
@@ -63,9 +61,7 @@ package "models" {
         -cantidad: int
         -precio: float
     }
-}
 
-package "estrategias" {
     class InversorConservador {
         +estrategia(): str
     }
@@ -77,46 +73,63 @@ package "estrategias" {
     class IA {
         +predecir(): float
     }
-}
 
-package "database" {
     class db_manager {
         +conectar(): Connection
         +insertar_transaccion(): void
         +leer_transacciones(): List~Transaccion~
     }
-}
 
-package "auth" {
     class JWT {
         +crear_token(): str
         +verificar_token(): bool
     }
-}
 
-package "routers" {
     class accion_router
     class inversor_router
     class transaccion_router
-}
 
-%% Relaciones de herencia
-InversorConservador --|> Inversor
-InversorAgresivo --|> Inversor
+    %% Agrupación por paquetes usando namespaces
+    namespace models {
+        Accion
+        Mercado
+        Inversor
+        Transaccion
+    }
 
-%% Relaciones de asociación
-Transaccion --> Accion
-Transaccion --> Inversor
-Mercado --> Accion
-Inversor --> Accion
+    namespace estrategias {
+        InversorConservador
+        InversorAgresivo
+        IA
+    }
 
-%% Controladores y enrutadores
-main --> accion_router
-main --> inversor_router
-main --> transaccion_router
-accion_router --> Accion
-inversor_router --> Inversor
-transaccion_router --> Transaccion
+    namespace database {
+        db_manager
+    }
+
+    namespace auth {
+        JWT
+    }
+
+    namespace routers {
+        accion_router
+        inversor_router
+        transaccion_router
+    }
+
+    %% Relaciones
+    InversorConservador --|> Inversor
+    InversorAgresivo --|> Inversor
+    Transaccion --> Accion
+    Transaccion --> Inversor
+    Mercado --> Accion
+    Inversor --> Accion
+    main --> accion_router
+    main --> inversor_router
+    main --> transaccion_router
+    accion_router --> Accion
+    inversor_router --> Inversor
+    transaccion_router --> Transaccion
 ```
 # Colaboradores
 
