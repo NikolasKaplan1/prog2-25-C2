@@ -62,6 +62,7 @@ def crea_inversor(nombre: str, capital: float, tipo: str):
         inversores_registrados[nombre] = InversorPasivo(nombre, capital)
     else:
         return {"error": "Tipo de inversor no válido."}
+
     return {"mensaje": f"Inversor {nombre} creado exitosamente como {tipo}"}
 
 
@@ -231,6 +232,7 @@ def simular_movimientos(nombre: str):
     return {"mensaje": "Movimiento simulado exitosamente"}
 
 # Clase Transaccion
+
 def crear_transaccion(nombre: str, simbolo: str, cantidad: int):
     if nombre not in inversores_registrados:
         return {"error": f"El inversor '{nombre}' no está registrado"}
@@ -239,6 +241,7 @@ def crear_transaccion(nombre: str, simbolo: str, cantidad: int):
     accion = Accion.acciones_registradas[simbolo]
     inversor = inversores_registrados[nombre]
     transaccion = Transaccion(inversor, accion, cantidad)
+
     if transaccion.validar_transaccion():
         transaccion.ejecutar_transaccion()
         inversor.transacciones.append(transaccion)
@@ -260,6 +263,7 @@ def calcula_total_transacciones(nombre: str):
 
     return {"mensaje": f"Total invertido por {nombre}: {round(realizadas, 2)}€"}
 
+
 #Clase IA
 def recomendacion(nombre: str):
     if nombre not in inversores_registrados:
@@ -269,7 +273,6 @@ def recomendacion(nombre: str):
         return {"mensaje": f"Las recomendaciones son {IA(inversor).recomendacion()}"}
     except:
         return {"error": "No tienes suficiente capital para no comprar ninguna acción"}
-
 
 
 
