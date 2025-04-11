@@ -30,10 +30,8 @@ Niko se encarga de la creación del módulo de inversión y operaciones financie
 
 Por último, Adrián se ocupa de todo lo relacionado con la persistencia de datos, implementando una base de datos relacional en SQLite. ha diseñado las tablas necesarias para inversores, acciones y transacciones, y desarrolla funciones CRUD para operar sobre ellas desde el código. También maneja las excepciones específicas de la base de datos, asegurando la integridad de los datos.
 
-# Estructura
-# Diagrama UML del Sistema
 
-## Diagrama de Paquetes Principal
+# Diagrama UML del Sistema
 
 ```mermaid
 flowchart TD
