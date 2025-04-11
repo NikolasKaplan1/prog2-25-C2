@@ -1,4 +1,4 @@
-from models import Inversor
+from models.inversor import Inversor
 
 class InversorAgresivo(Inversor): # Busca ganancias rápidas y grandes
     """

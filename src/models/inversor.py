@@ -1,7 +1,5 @@
 from .accion import Accion
-from .transaccion import Transaccion
 from typing import List
-from database.db_manager import guardar_transaccion
 
 
 class Inversor:
@@ -113,6 +111,9 @@ class Inversor:
         return contenido
 
     def registrar_transaccion(self, tipo: str, accion: Accion, cantidad: int):
+        from .transaccion import Transaccion 
+        from database.db_manager import guardar_transaccion
+        #los ponemos aquí para que no haya circular import
         """
         Registra la transacción en el historial del inversor y en la base de datos.
         

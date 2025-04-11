@@ -1,7 +1,8 @@
-from models import Accion, AccionReal, Inversor, Mercado, Transaccion
-from estrategias.inversor_agresivo import InversorAgresivo
-from estrategias.inversor_conservador import InversorPasivo
-from estrategias.ia import IA
+from models.accion import Accion, AccionReal
+from models.mercado import Mercado
+from models.transaccion import Transaccion
+from models.inversor import Inversor
+from estrategias import InversorAgresivo, InversorConservador, IA
 from typing import Union
 import random
 import yfinance as yf
@@ -59,7 +60,7 @@ def crea_inversor(nombre: str, capital: float, tipo: str):
     if tipo == "Agresivo":
         inversores_registrados[nombre] = InversorAgresivo(nombre, capital)
     elif tipo == "Pasivo":
-        inversores_registrados[nombre] = InversorPasivo(nombre, capital)
+        inversores_registrados[nombre] = InversorConservador(nombre, capital)
     else:
         return {"error": "Tipo de inversor no válido."}
 
@@ -71,19 +72,17 @@ def datos_inversor(nombre: str):
     Devuelve el capital del inversor y el tipo que es
     """
     if nombre not in inversores_registrados:
-        return {"Error": f"El inversor '{nombre}' no está registrado"}
+        return {"error": f"El inversor '{nombre}' no está registrado"}
     
     inversor = inversores_registrados[nombre]
     if isinstance(inversor, InversorAgresivo):
         tipo = "Agresivo"
     else:
         tipo = "Pasivo"
-    return {
-        nombre: {
+    return {"nombre": nombre,
             "capital": round(inversor.capital, 2), 
             "tipo": tipo
         }
-    }
 
 def mostrar_cartera(nombre: str):
     if nombre not in inversores_registrados:
