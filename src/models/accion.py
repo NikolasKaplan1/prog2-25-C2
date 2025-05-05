@@ -8,29 +8,29 @@ class Accion:
 
     Atributos
     ---------------
-    acciones_registradas: dict[str, Accion]
+    acciones_registradas : dict[str, Accion]
         Un atributo de clase que sirve para almacenar las acciones registradas
-    simbolo: str
+    simbolo : str
         El símbolo de la acción (e.g., "AAPL" para Apple).
     
-    nombre: str
+    nombre : str
         El nombre de la acción (e.g., "Apple Inc.").
 
-    precio_actual: float
+    precio_actual : float
         El precio actual de la acción.
     
-    historial_precios: dict[str, float]
+    historial_precios : dict[str, float]
         Un diccionario donde las claves son las fechas y los valores son los precios de la acción en esas fechas.
     
     Métodos
     ---------------
-    actualizar_precio(nuevo_precio: float):
+    actualizar_precio(nuevo_precio: float)
         Actualiza el precio de la acción y agrega la fecha de la actualización al historial.
 
-    obtener_precio():
+    obtener_precio()
         Devuelve el precio actual de la acción.
 
-    __str__():
+    __str__()
         Devuelve una representación en texto de la acción con su nombre, símbolo y precio actual.
     """
 
@@ -39,12 +39,16 @@ class Accion:
         """
         Inicializa una nueva acción.
 
-        Parámetros:
+        Parámetros
         ---------------
-        simbolo (str): El símbolo de la acción.
-        nombre (str): El nombre de la acción.
-        precio_actual (float): El precio actual de la acción.
-        historial_precios (dict): Un diccionario con el historial de precios de la acción.
+        simbolo : str
+            El símbolo de la acción.
+        nombre : str
+            El nombre de la acción.
+        precio_actual : float
+            El precio actual de la acción.
+        historial_precios : dict
+            Un diccionario con el historial de precios de la acción.
         
         """
         self.simbolo = simbolo
@@ -53,34 +57,41 @@ class Accion:
         self.historial_precios = historial_precios
         Accion.acciones_registradas[simbolo] = self
 
-    def actualizar_precio(self, nuevo_precio: float):
+    def actualizar_precio(self, nuevo_precio: float) -> None:
         """
         Actualiza el precio actual de la acción y agrega la fecha de la actualización al historial.
 
-        Parámetros:
+        Parámetros
         ---------------
-        nuevo_precio (float): El nuevo precio de la acción.
+        nuevo_precio : float
+            El nuevo precio de la acción.
+
+        Returns
+        ---------------
+        None
         """
         self.historial_precios[str(date.today())] = nuevo_precio
         self.precio_actual = nuevo_precio
 
-    def obtener_precio(self):
+    def obtener_precio(self) -> float:
         """
         Devuelve el precio actual de la acción.
 
-        Retorna:
+        Returns
         ---------------
-        float: El precio actual de la acción.
+        float
+            El precio actual de la acción.
         """
         return self.precio_actual
 
-    def __str__(self):
+    def __str__(self) -> str:
         """
         Devuelve una representación en texto de la acción con su nombre, símbolo y precio actual.
 
-        Retorna:
+        Returns
         ---------------
-        str: Una cadena con la representación de la acción.
+        str
+            Una cadena con la representación de la acción.
         """
         cadena = f"El símbolo de la acción de la empresa {self.nombre} es {self.simbolo} y el precio actual de dicha acción es {self.precio_actual}. "
         cadena += "El historial de precios es: "
@@ -105,7 +116,8 @@ class AccionReal(Accion):
 
         Parámetros:
         ---------------
-        simbolo (str): El símbolo de la acción.
+        simbolo : str
+            El símbolo de la acción.
 
         Raises:
         ---------------
@@ -130,13 +142,18 @@ class AccionReal(Accion):
 
         super().__init__(simbolo, nombre, precio_actual, historial)
 
-    def actualizar_precio(self):
+    def actualizar_precio(self) -> None:
         """
         Actualiza el precio de la acción obteniéndolo desde Yahoo Finance.
 
-        Raises:
+        Returns
         ---------------
-        ValueError: Si no se pueden obtener datos de la acción en el último día desde Yahoo Finance.
+        None
+
+        Raises
+        ---------------
+        ValueError
+            Si no se pueden obtener datos de la acción en el último día desde Yahoo Finance.
         """
         ticker = yf.Ticker(self.simbolo)
         data = ticker.history(period="1d")

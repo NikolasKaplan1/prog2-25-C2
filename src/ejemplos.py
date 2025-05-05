@@ -1,6 +1,22 @@
 import controlador as control
 
-def crear_accion():
+def crear_accion() -> None:
+    """
+    Esta función crea una nueva acción.
+
+    Parámetros
+    ---------------
+    None
+
+    Returns
+    ---------------
+    None
+
+    Raises
+    ---------------
+    ValueError
+        Nos dará error si el formato del historial es incorrecto.
+    """
     simbolo = input("Ingrese símbolo de la acción: ")
     nombre = input("Ingrese nombre de la acción: ")
     precio_actual = float(input("Ingrese el precio actual de la acción: "))
@@ -13,39 +29,104 @@ def crear_accion():
             historial_precios[fecha.strip()] = float(precio.strip())
     except ValueError:
         print("Error en el formato del historial. Asegúrate de escribirlo como fecha:precio, separados por comas.")
-        return
     resultado = control.crear_accion(simbolo, nombre, precio_actual, historial_precios)
     print(resultado.get("error") or resultado.get("mensaje"))
 
-def crear_accion_real():
+def crear_accion_real() -> None:
+    """
+    Esta función crea una nueva acción real.
+
+    Parámetros
+    ---------------
+    None
+
+    Returns
+    ---------------
+    None
+    """
     simbolo = input("Ingrese símbolo de la acción real: ")
     resultado = control.crear_accion_real(simbolo)
     print(resultado.get("error") or resultado.get("mensaje"))
 
-def actualizar_precio():
+def actualizar_precio() -> None:
+    """
+    Esta función actualiza el precio de una acción.
+
+    Parámetros
+    ---------------
+    None
+
+    Returns
+    ---------------
+    None
+    """
     simbolo = input("Ingrese el símbolo de la acción: ")
     nuevo_precio = float(input("Ingrese el precio nuevo de la acción: "))
     resultado = control.actualizar_precio(simbolo,nuevo_precio)
     print(resultado.get("error") or resultado.get("mensaje"))
 
-def actualizar_precio_real():
+def actualizar_precio_real() -> None:
+    """
+    Esta función actualiza el precio de una acción con sus valores reales.
+
+    Parámetros
+    ---------------
+    None
+
+    Returns
+    ---------------
+    None
+    """
     simbolo = input("Ingrese el símbolo de la acción real: ")
     resultado = control.actualizar_precio_real(simbolo)
     print(resultado.get("error") or resultado.get("mensaje"))
 
-def datos_accion():
+def datos_accion() -> None:
+    """
+    Esta función nos muestra los datos de una acción.
+
+    Parámetros
+    ---------------
+    None
+
+    Returns
+    ---------------
+    None
+    """
     simbolo = input("Ingrese el símbolo de la acción: ")
     resultado = control.datos_accion(simbolo)
     print(resultado.get("error") or resultado.get("mensaje"))
 
-def crea_inversor():
+def crea_inversor() -> None:
+    """
+    Esta función crea un inversor.
+
+    Parámetros
+    ---------------
+    None
+
+    Returns
+    ---------------
+    None
+    """
     nombre = input("Ingrese el nombre del inversor: ")
     capital = float(input("Ingrese el capital del inversor: "))
     tipo = input("Ingrese el tipo de inversor que es: ")
     resultado = control.crea_inversor(nombre, capital, tipo)
     print(resultado.get("error") or resultado.get("mensaje"))
 
-def datos_inversor():
+def datos_inversor() -> None:
+    """
+    Esta función devuelve los datos de un inversor.
+
+    Parámetros
+    ---------------
+    None
+
+    Returns
+    ---------------
+    None
+    """
     nombre = input("Ingrese el nombre del inversor: ")
     resultado = control.datos_inversor(nombre)
     if "error" in resultado:
@@ -53,13 +134,35 @@ def datos_inversor():
     else:
         print(f"Nombre: {resultado["nombre"]}, capital: {resultado["capital"]}, tipo: {resultado["tipo"]}")
 
-def mostrar_cartera():
+def mostrar_cartera() -> None:
+    """
+    Esta función muestra la cartera de un inversor.
+
+    Parámetros
+    ---------------
+    None
+
+    Returns
+    ---------------
+    None
+    """
     nombre = input("Ingrese el nombre del inversor: ")
     resultado = control.mostrar_cartera(nombre)
     print(resultado.get("error") or resultado.get("mensaje"))
 
 
-def comprar_accion():
+def comprar_accion() -> None:
+    """
+    Esta función sirve para que un inversor compre una acción.
+
+    Parámetros
+    ---------------
+    None
+
+    Returns
+    ---------------
+    None
+    """
     nombre = input("Ingrese el nombre del inversor: ")
     simbolo = input("Ingrese el simbolo de la acción que quiere comprar: ")
     cantidad = int(input("Ingrese la cantidad de acciones que quiere comprar: "))
@@ -67,20 +170,53 @@ def comprar_accion():
     print(resultado.get("error") or resultado.get("mensaje"))
 
     
-def vender_accion():
+def vender_accion() -> None:
+    """
+    Esta función sirve para que un inversor venda una acción.
+
+    Parámetros
+    ---------------
+    None
+
+    Returns
+    ---------------
+    None
+    """
     nombre = input("Ingrese el nombre del inversor: ")
     simbolo = input("Ingrese el simbolo de la acción que quiere vender: ")
     cantidad = int(input("Ingrese la cantidad de acciones que quiere vender: "))
     resultado = control.vender_accion(nombre, simbolo, cantidad)
     print(resultado.get("error") or resultado.get("mensaje"))
 
-def mostrar_transaccion_registrada():
+def mostrar_transaccion_registrada() -> None:
+    """
+    Esta función sirve para mostrar una transaccion registrada.
+
+    Parámetros
+    ---------------
+    None
+
+    Returns
+    ---------------
+    None
+    """
     nombre = input("Ingrese el nombre del inversor: ")
     resultado = control.mostrar_transaccion_registrada(nombre)
     print(resultado.get("error") or resultado.get("mensaje"))
 
 
-def comprar_acciones_con_operador():
+def comprar_acciones_con_operador() -> None:
+    """
+    Esta función sirve para que un inversor compre acciones con el operador.
+
+    Parámetros
+    ---------------
+    None
+
+    Returns
+    ---------------
+    None
+    """
     nombre = input("Ingrese el nombre del inversor: ")
     simbolo = input("Ingrese el simbolo de la acción que quiere comprar: ")
     cantidad = int(input("Ingrese la cantidad de acciones que quiere comprar: "))
@@ -88,65 +224,142 @@ def comprar_acciones_con_operador():
     print(resultado.get("error") or resultado.get("mensaje"))
 
 
-def vender_acciones_con_operador():
+def vender_acciones_con_operador() -> None:
+    """
+    Esta función sirve para que un inversor venda acciones con el operador.
+
+    Parámetros
+    ---------------
+    None
+
+    Returns
+    ---------------
+    None
+    """
     nombre = input("Ingrese el nombre del inversor: ")
     simbolo = input("Ingrese el simbolo de la acción que quiere comprar: ")
     cantidad = int(input("Ingrese la cantidad de acciones que quiere comprar: "))
     resultado = control.vender_accion_con_operador(nombre, simbolo, cantidad)
     print(resultado.get("error") or resultado.get("mensaje"))
 
-def crear_mercado():
+def crear_mercado() -> None:
+    """
+    Esta función sirve para crear un mercado financiero.
+
+    Parámetros
+    ---------------
+    None
+
+    Returns
+    ---------------
+    None
+    """
     nombre = input("Ingrese el nombre del mercado: ")
     lista_acciones = input("Ingrese las acciones con sus símbolos (simbolo1, simbolo2, ...): ").split(", ")
     resultado = control.crear_mercado(nombre, lista_acciones)
     print(resultado.get("error") or resultado.get("mensaje"))
 
-def registrar_accion():
+def registrar_accion() -> None:
+    """
+    Esta función sirve para registrar una acción en un mercado.
+
+    Parámetros
+    ---------------
+    None
+
+    Returns
+    ---------------
+    None
+    """
     nombre = input("Ingrese el nombre del mercado: ")
     simbolo = input("Ingrese el símbolo de la acción a registrar: ")
     resultado = control.registrar_accion(nombre, simbolo)
     print(resultado.get("error") or resultado.get("mensaje"))
 
-def obtener_precio():
+def obtener_precio() -> None:
+    """
+    Esta función sirve para obtener el precio de una acción que está en un mercado.
+
+    Parámetros
+    ---------------
+    None
+
+    Returns
+    ---------------
+    None
+    """
     nombre = input("Ingrese el nombre del mercado: ")
     simbolo = input("Ingrese el símbolo de la acción de la que quiere obtener el precio: ")
     resultado = control.obtener_precio(nombre, simbolo)
     print(resultado.get("error") or resultado.get("precio"))
 
-def bancarrota():
+def bancarrota() -> None:
+    """
+    Esta función sirve para declarar en bancarrota una acción de un mercado.
+
+    Parámetros
+    ---------------
+    None
+
+    Returns
+    ---------------
+    None
+    """
     nombre = input("Ingrese el nombre del mercado: ")
     simbolo = input("Ingrese el símbolo de la acción a declarar en bancarrota: ")
     resultado = control.bancarrota(nombre, simbolo)
     print(resultado.get("error") or resultado.get("mensaje"))
 
-def simular_movimientos():
+def simular_movimientos() -> None:
+    """
+    Esta función sirve para simular movimientos en un mercado.
+
+    Parámetros
+    ---------------
+    None
+
+    Returns
+    ---------------
+    None
+    """
     nombre = input("Ingrese el nombre del mercado: ")
     resultado = control.simular_movimientos(nombre)
     print(resultado.get("error") or resultado.get("mensaje"))
 
-def crear_transaccion():
+def crear_transaccion() -> None:
     nombre = input("Ingrese el nombre del inversor: ")
     simbolo = input("Ingrese el símbolo de la acción: ")
     cantidad = int(input("Ingrese la cantidad de acciones de la transacción: "))
     resultado = control.crear_transaccion(nombre, simbolo, cantidad)
     print(resultado.get("error") or resultado.get("mensaje"))
 
-def calcula_total_transacciones():
+def calcula_total_transacciones() -> None:
     nombre = input("Ingrese el nombre del inversor: ")
     resultado = control.calcula_total_transacciones(nombre)
     print(resultado.get("error") or resultado.get("mensaje"))
 
-def recomendacion():
+def recomendacion() -> None:
     nombre = input("Ingrese el nombre del inversor al que quiere recomendar: ")
     resultado = control.recomendacion(nombre)
     print(resultado.get("error") or resultado.get("mensaje"))
 
 
-def guardar_y_salir():
+def guardar_y_salir() -> None:
     print("Saliendo del sistema...")
 
 
-def menu():
+def menu() -> None:
+    """
+    Esta función es el menú del programa.
+
+    Parámetros
+    ---------------
+    None
+
+    Returns
+    ---------------
+    None
+    """
     opciones = {
         '1': crear_accion,
         '2': crear_accion_real,
