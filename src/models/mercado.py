@@ -7,9 +7,9 @@ class Mercado:
 
     Atributos
     -------------
-    nombre: str
+    nombre : str
         Nombre del mercado
-    lista_acciones: list[Accion]
+    lista_acciones : list[Accion]
         Una lista de las acciones que hay en el mercado
     
     Métodos
@@ -29,9 +29,9 @@ class Mercado:
         """
         Parámetros
         -------------
-        nombre: str
+        nombre : str
             Nombre del mercado
-        lista_acciones: list[Accion]
+        lista_acciones : list[Accion]
             Es una lista en la que se encuentran todas las acciones disponibles en el mercado
         
         Raises
@@ -56,13 +56,17 @@ class Mercado:
         self.lista_acciones = lista_acciones
         Mercado.mercados_registrados[nombre] = self
 
-    def registrar_accion(self, accion: Accion):
+    def registrar_accion(self, accion: Accion) -> None:
         """Este método sirve para registrar una nueva acción en el mercado
         
         Parámetros
         -------------
-        accion: Accion
+        accion : Accion
             La acción que queremos registrar
+
+        Returns
+        ---------------
+        None
 
         Raises
         -------------
@@ -84,32 +88,47 @@ class Mercado:
 
         Parámetros
         -------------
-        simbolo: str
+        simbolo : str
             El símbolo de la acción de la que queremos obtener su precio
+
+        Returns
+        -------------
+        Union[float,str]
+            Nos devolverá el precio de la acción (el float) o un mensaje diciendo que no
+            existen acciones en el mercado con ese símbolo (el str)
         """
         for accion in self.lista_acciones:
             if accion.simbolo == simbolo:
                 return accion.precio_actual
         return "No existen acciones con este símbolo"
 
-    def bancarrota(self,simbolo: str):
-        """Este método sirve para declarar en bancarrota una acción dado su símbolo. Lo que
+    def bancarrota(self,simbolo: str) -> None:
+        """
+        Este método sirve para declarar en bancarrota una acción dado su símbolo. Lo que
         hace es eliminarla de lista_acciones y actualiza su precio a 0.
     
         Parámetros
         -------------
-        simbolo: str
+        simbolo : str
             El símbolo de la acción que queremos declarar en bancarrota.
+
+        Returns
+        ---------------
+        None
         """
         for accion in self.lista_acciones:
             if accion.simbolo == simbolo:
                 self.lista_acciones.remove(accion)
-                accion.actualizar_precio(0)
+                accion.actualizar_precio(0) #al estar en bancarrota, su precio es 0
                 break
         
-    def simular_movimientos(self):
+    def simular_movimientos(self) -> None:
         """Este método sirve para simular movimientos en el mercado (cambia de precio
         aleatoriamente todas las acciones.)
+
+        Returns
+        ---------------
+        None
         """
         for accion in self.lista_acciones:
             variacion = random.uniform(-0.05, 0.05)
