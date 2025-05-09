@@ -1,49 +1,132 @@
 import random
 from .accion import Accion
-from typing import Union
+from typing import Union, Optional
 
-class Mercado:
+
+class BaseMercado(ABC):
+    """
+    Interfaz abstracta que define el comportamiento de un mercado financiero.
+
+    Cualquier clase que herede de BaseMercado deberá implementar los métodos
+    necesarios para registrar acciones, obtener precios, simular movimientos
+    y manejar bancarrotas.
+
+    Methods
+    -------
+    registrar_accion(accion: Accion) -> None
+        Registra una nueva acción en el mercado.
+
+    obtener_precio(simbolo: str) -> Union[float, str]
+        Obtiene el precio de una acción por su símbolo.
+
+    bancarrota(simbolo: str) -> Union[None, str]
+        Elimina una acción del mercado y la declara en bancarrota.
+
+    simular_movimientos() -> None
+        Simula fluctuaciones aleatorias en los precios de las acciones.
+    """
+
+    @abstractmethod
+    def registrar_accion(self, accion: Accion) -> None:
+        """
+        Registra una acción en el mercado.
+
+        Parameters
+        ----------
+        accion : Accion
+            La acción que se desea registrar.
+        """
+        pass
+
+    @abstractmethod
+    def obtener_precio(self, simbolo: str) -> Union[float, str]:
+        """
+        Devuelve el precio actual de una acción por su símbolo.
+
+        Parameters
+        ----------
+        simbolo : str
+            Símbolo de la acción a consultar.
+
+        Returns
+        -------
+        float or str
+            Precio de la acción o un mensaje si no se encuentra.
+        """
+        pass
+
+    @abstractmethod
+    def bancarrota(self, simbolo: str) -> Union[None, str]:
+        """
+        Declara en bancarrota una acción y la elimina del mercado.
+
+        Parameters
+        ----------
+        simbolo : str
+            Símbolo de la acción a declarar en bancarrota.
+
+        Returns
+        -------
+        None or str
+            None si se realiza correctamente o mensaje de error.
+        """
+        pass
+
+    @abstractmethod
+    def simular_movimientos(self) -> None:
+        """
+        Aplica cambios aleatorios a los precios de todas las acciones del mercado.
+
+        Returns
+        -------
+        None
+        """
+        pass
+
+class Mercado(BaseMercado):
     """Esta clase simulará un mercado financiero con un listado de acciones
 
-    Atributos
-    -------------
+    Attributes
+    ----------
     nombre : str
-        Nombre del mercado
-    lista_acciones : list[Accion]
-        Una lista de las acciones que hay en el mercado
+        Nombre del mercado.
+    _lista_acciones : list[Accion]
+        Una lista de las acciones que hay en el mercado.
+    _mercados_registrados : dict[str, Mercado]
+        Un diccionario cuyas claves son los nombres de los mercados y los valores los mercados.
     
-    Métodos
-    -------------
-    registrar_accion(accion: Accion)
+    Methods
+    -------
+    registrar_accion(accion: Accion) -> None
         Sirve para añadir una acción al mercado
-    obtener_precio(simbolo: str) -> float
+    obtener_precio(simbolo: str) -> Union[float,str]
         Te da el precio de una acción dado su símbolo
-    bancarrota(simbolo: str)
+    bancarrota(simbolo: str) -> Optional[str]
         Declara en bancarrota una acción dado su símbolo.
-    simular_movimientos()
+    simular_movimientos() -> None
         Simula movimientos de un mercado (cambia precios aleatoriamente)
 
     """
-    mercados_registrados: dict[str,"Mercado"] = {}
+    _mercados_registrados: dict[str,"Mercado"] = {}
     def __init__(self, nombre: str, lista_acciones: list[Accion]):
         """
-        Parámetros
-        -------------
+        Parameters
+        ----------
         nombre : str
-            Nombre del mercado
+            Nombre del mercado.
         lista_acciones : list[Accion]
-            Es una lista en la que se encuentran todas las acciones disponibles en el mercado
-        
+            Lista inicial de acciones que se registrarán en el mercado.
+
         Raises
-        -------------
+        ------
         ValueError
-            En el caso de que ya existe un mercado con el nombre que pasamos
+            En el caso de que ya existe un mercado con el nombre que pasamos.
         ValueError
-            No puede haber acciones repetidas en lista_acciones
+            No puede haber acciones repetidas en lista_acciones.
         TypeError
             En el caso de que algún objeto de lista_acciones no sea una acción, salta error.
         """
-        if nombre in Mercado.mercados_registrados:
+        if nombre in Mercado._mercados_registrados:
             raise ValueError(f"Ya existe un mercado con el nombre {nombre}")
         for i in range(len(lista_acciones)):
             accion = lista_acciones[i]
@@ -53,25 +136,25 @@ class Mercado:
                 raise TypeError(f"El objeto {accion}, que es el término {i}, no pertenece a la clase Accion")
         
         self.nombre = nombre
-        self.lista_acciones = lista_acciones
-        Mercado.mercados_registrados[nombre] = self
+        self._lista_acciones = lista_acciones
+        Mercado._mercados_registrados[nombre] = self
 
     def registrar_accion(self, accion: Accion) -> None:
         """Este método sirve para registrar una nueva acción en el mercado
         
-        Parámetros
-        -------------
+        Parameters
+        ----------
         accion : Accion
-            La acción que queremos registrar
+            La acción que queremos registrar.
 
         Returns
-        ---------------
+        ----------
         None
 
         Raises
-        -------------
+        ------
         ValueError
-            Nos da error si queremos añadir una acción que ya esté
+            Nos da error si queremos añadir una acción que ya esté.
         TypeError
             En el caso de que acción no sea de Acción, salta error.
         """
@@ -81,57 +164,211 @@ class Mercado:
 
         if not isinstance(accion,Accion):
             raise TypeError(f'El objeto {accion} no pertenece a la clase Accion')
-        self.lista_acciones.append(accion)
+        self._lista_acciones.append(accion)
         
     def obtener_precio(self,simbolo: str) -> Union[float,str]:
         """Este método sirve para obtener el precio de una acción dado su símbolo
 
-        Parámetros
-        -------------
+        Parameters
+        ----------
         simbolo : str
-            El símbolo de la acción de la que queremos obtener su precio
+            El símbolo de la acción de la que queremos obtener su precio.
 
         Returns
-        -------------
+        ----------
         Union[float,str]
             Nos devolverá el precio de la acción (el float) o un mensaje diciendo que no
-            existen acciones en el mercado con ese símbolo (el str)
+            existen acciones en el mercado con ese símbolo (el str).
         """
-        for accion in self.lista_acciones:
+        for accion in self._lista_acciones:
             if accion.simbolo == simbolo:
                 return accion.precio_actual
         return "No existen acciones con este símbolo"
 
-    def bancarrota(self,simbolo: str) -> None:
+    def bancarrota(self,simbolo: str) -> Optional[str]:
         """
         Este método sirve para declarar en bancarrota una acción dado su símbolo. Lo que
         hace es eliminarla de lista_acciones y actualiza su precio a 0.
     
-        Parámetros
-        -------------
+        Parameters
+        ----------
         simbolo : str
             El símbolo de la acción que queremos declarar en bancarrota.
 
         Returns
-        ---------------
-        None
+        ----------
+        Optional[str]
+            Nos devolverá None si todo va bien y un str si la acción que hemos pasado ya estaba
+            en bancarrota.
         """
-        for accion in self.lista_acciones:
-            if accion.simbolo == simbolo:
-                self.lista_acciones.remove(accion)
-                accion.actualizar_precio(0) #al estar en bancarrota, su precio es 0
-                break
-        
+        try:
+            for accion in self._lista_acciones:
+                if accion.simbolo == simbolo:
+                    self._lista_acciones.remove(accion)
+                    accion.actualizar_precio(0) #al estar en bancarrota, su precio es 0
+                    break
+            else: #no hemos hecho break en ningún momento, por lo que la acción no está en el merado
+                return f"No se encontró la acción con símbolo {simbolo} en el mercado {self.nombre}"
+        except ValueError: #si el precio ya es 0 dará error al actualizar el precio
+            return "Esa acción ya está en bancarrota"
+
     def simular_movimientos(self) -> None:
-        """Este método sirve para simular movimientos en el mercado (cambia de precio
+        """
+        Este método sirve para simular movimientos en el mercado (cambia de precio
         aleatoriamente todas las acciones.)
 
         Returns
-        ---------------
+        ----------
         None
         """
-        for accion in self.lista_acciones:
+        for accion in self._lista_acciones:
             variacion = random.uniform(-0.05, 0.05)
             nuevo_precio = round(accion.precio_actual * (1 + variacion), 3)
             accion.actualizar_precio(nuevo_precio)
 
+    def __str__(self) -> str:
+        return f"Mercado {self.nombre} con {len(self._lista_acciones)} acciones registradas."
+
+    def __len__(self) -> int:
+        """
+        Este método sirve para definir la longitud de un mercado. Su longitud será la cantidad de
+        acciones que tenga.
+
+        Returns
+        ----------
+        int
+            La cantidad de acciones que tiene el mercado.
+        """
+        return len(self._lista_acciones)
+
+    def __getitem__(self, item: int) -> Accion:
+        """
+        Este método sirve para definir el get item de un mercado. Al hacer mercado[item] se
+        devolverá la acción que esté en la posición item de la lista de acciones.
+
+        Parameters
+        ----------
+        item : int
+            El índice de la acción que queremos de la lista de acciones.
+
+        Returns
+        ----------
+        Accion
+            Se devuelve la acción que está en la posición item de la lista de acciones.
+        """
+        return self._lista_acciones[item]
+
+    def __contains__(self, simbolo: str) -> bool:
+        """
+        Comprueba si una acción con el símbolo dado está registrada en el mercado. Al hacer
+        simbolo in mercado se verá si la acción cuyo símbolo es simbolo está en el mercado.
+
+        Parameters
+        ----------
+        simbolo : str
+            El símbolo de la acción que queremos ver si está en la lista de acciones.
+
+        Returns
+        ----------
+        bool
+            Se devuelve True si el símbolo de alguna de las acciones de la lista de acciones
+            es simbolo y False si no hay.
+        """
+        for accion in self._lista_acciones:
+            if accion.simbolo == simbolo:
+                return True
+        return False
+
+    def __iter__(self) -> Iterator[Accion]:
+        """
+        Este método sirve para definir cómo se itera sobre un mercado. Al iterar sobre un
+        mercado lo que se hace es iterar sobre la lista de acciones.
+
+        Returns
+        ----------
+        Iterator[Accion]
+            Se devuelve la iteración de la lista de acciones.
+        """
+
+        return iter(self._lista_acciones)
+
+    def __eq__(self, other: Mercado) -> bool:
+        """
+        Este método sirve para definir cuándo dos métodos son iguales. Serán iguales si
+        tienen las mismas acciones.
+
+        Parameters
+        ----------
+        other : Mercado
+            El mercado que compararemos con el self.
+
+        Returns
+        ----------
+        bool
+            Se devuelve True si ambos mercados tienen las mismas acciones y False si no.
+        """
+        return set(self._lista_acciones) == set(other._lista_acciones)
+
+    def __ne__(self, other: Mercado) -> bool:
+        """
+        Este método sirve para definir cuándo dos métodos no son iguales. Serán iguales si
+        tienen las mismas acciones.
+
+        Parameters
+        ----------
+        other : Mercado
+            El mercado que compararemos con el self.
+
+        Returns
+        ----------
+        bool
+            Se devuelve False si ambos mercados tienen las mismas acciones y True si no.
+        """
+        return set(self._lista_acciones) != set(other._lista_acciones)
+
+    def __add__(self, other: Mercado) -> Mercado:
+        """
+        Este método sirve para definir la suma entre dos mercados. Lo que se hace es
+        hacer una combinación de los nombres y juntar en una lista las listas de acciones
+        de ambos mercados.
+
+        Parameters
+        ----------
+        other : Mercado
+            El mercado que sumaremos con el self.
+
+        Returns
+        ----------
+        Mercado
+            El resultado de la suma.
+
+        Raises
+        ------
+        ValueError
+            Ocurre cuando el nombre del mercado resultante ya existe.
+        """
+        nombre = self.nombre + '_' + other.nombre
+        if nombre in Mercado._mercados_registrados:
+            raise ValueError(f"Ya existe un mercado con el nombre combinado {nombre}")
+        distintas = [accion for accion in other._lista_acciones if accion not in self._lista_acciones]
+        lista_acciones = self._lista_acciones + distintas
+        return Mercado(nombre, lista_acciones)
+
+    def __iadd__(self,other: Mercado) -> Mercado:
+        """
+        Este método sirve para definir mercado1 += mercado2. Lo que se hace es que a mercado1
+        se le añaden las acciones de la lista de acciones de mercado2
+
+        Parameters
+        ----------
+        other : Mercado
+            El mercado que sumaremos con el self.
+
+        Returns
+        ----------
+        Mercado
+            El self con su lista de acciones actualizada.
+        """
+        distintas = [accion for accion in other._lista_acciones if accion not in self._lista_acciones]
+        self._lista_acciones += distintas
+        return self
