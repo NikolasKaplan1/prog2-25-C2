@@ -7,13 +7,16 @@ from typing import Union
 import random
 import yfinance as yf
 
+from src.models import mercado
+
+
 #Clases Accion y AccionReal
 def crear_accion(simbolo: str, nombre: str, precio_actual: float, historial_precios: dict[str,float]) -> dict[str,str]:
     """
     Esta función crea una nueva acción.
 
-    Parámetros
-    ---------------
+    Parameters
+    ----------
     simbolo : str
         El símbolo de la acción.
     nombre : str
@@ -24,19 +27,23 @@ def crear_accion(simbolo: str, nombre: str, precio_actual: float, historial_prec
         Un diccionario con el historial de precios de la acción.
 
     Returns
-    ---------------
+    -------
     dict[str,str]
         Nos devuelve un diccionario con una clave str (que será "error" o "mensaje") y un valor
         str que te dirá si ha habido un error o éxito.
 
     Raises
-    ---------------
+    ------
     Error
         Nos dará error si ya existe una acción con el símbolo que le pasamos.
     """
-    if simbolo in Accion.acciones_registradas:
+    if simbolo in Accion._acciones_registradas:
         return {"error": f"Ya existe una acción con el símbolo {simbolo}"}
     Accion(simbolo, nombre, precio_actual, historial_precios)
+    exportar_acciones_csv()
+    exportar_historial_precios_csv()
+    exportar_acciones_pickle()
+    exportar_historial_precios_pickle()
     return {"mensaje": "Acción añadida correctamente"}
 
 
@@ -44,19 +51,19 @@ def crear_accion_real(simbolo: str) -> dict[str,str]:
     """
     Esta función crea una nueva acción con datos de la vida real.
 
-    Parámetros
-    ---------------
+    Parameters
+    ----------
     simbolo : str
         El símbolo de la acción.
 
     Returns
-    ---------------
+    -------
     dict[str,str]
         Nos devuelve un diccionario con una clave str (que será "error" o "mensaje") y un valor
         str que te dirá si ha habido un error o éxito.
 
     Raises
-    ---------------
+    ------
     Error
         Nos dará error si no se han encontrado datos reales para la acción que le hemos pasado.
     Error
@@ -66,92 +73,183 @@ def crear_accion_real(simbolo: str) -> dict[str,str]:
     data = repr.history(period="365d") #nos da los datos del último año
     if data.empty:
         return {"error": f"No se encontraron datos para la acción con el símbolo {simbolo} en este último año"}
-    if simbolo in Accion.acciones_registradas:
+    if simbolo in Accion._acciones_registradas:
         return {"error": f"Ya existe una acción con el símbolo {simbolo}"}
     AccionReal(simbolo)
+    exportar_acciones_csv()
+    exportar_historial_precios_csv()
+    exportar_acciones_pickle()
+    exportar_historial_precios_pickle()
+    exportar_acciones_reales_csv()
     return {"mensaje": "Acción añadida correctamente"}
 
 def actualizar_precio(simbolo: str,nuevo_precio: float) -> dict[str,str]:
     """
     Esta función actualiza el precio de una acción dada.
 
-    Parámetros
-    ---------------
+    Parameters
+    ----------
     simbolo : str
         El símbolo de la acción.
     nuevo_precio : float
         El nuevo precio que le queremos poner a la acción.
 
     Returns
-    ---------------
+    -------
     dict[str,str]
         Nos devuelve un diccionario con una clave str (que será "error" o "mensaje") y un valor
         str que te dirá si ha habido un error o éxito.
 
     Raises
-    ---------------
+    ------
     Error
         Nos dará error si no existe una acción con el símbolo que le pasamos.
+    ValueError
+        Nos dará error si el precio nuevo que hemos puesto es el actual.
     """
-    if simbolo not in Accion.acciones_registradas:
+    if simbolo not in Accion._acciones_registradas:
         return {"error": f"No existe una acción con el símbolo {simbolo}"}
-    Accion.acciones_registradas[simbolo].actualizar_precio(nuevo_precio)
-    return {"mensaje": "Precio actualizado correctamente"}
+    try:
+        Accion._acciones_registradas[simbolo].actualizar_precio(nuevo_precio)
+        exportar_acciones_csv()
+        exportar_historial_precios_csv()
+        exportar_acciones_pickle()
+        exportar_historial_precios_pickle()
+        return {"mensaje": "Precio actualizado correctamente"}
+    except ValueError:
+        return {"error": "El precio que has puesto es el actual"}
 
 def actualizar_precio_real(simbolo: str) -> dict[str,str]:
     """
     Esta función actualiza el precio de una acción dada con su precio en la vida real.
 
-    Parámetros
-    ---------------
+    Parameters
+    ----------
     simbolo : str
         El símbolo de la acción.
 
     Returns
-    ---------------
+    -------
     dict[str,str]
         Nos devuelve un diccionario con una clave str (que será "error" o "mensaje") y un valor
         str que te dirá si ha habido un error o éxito.
 
     Raises
-    ---------------
+    ------
     Error
         Nos dará error si no existe una acción con el símbolo que le pasamos.
     Error
         Nos dará error si no existe una acción en la vida real con el símbolo que pasamos.
     """
-    if simbolo not in Accion.acciones_registradas:
+    if simbolo not in Accion._acciones_registradas:
         return {"error": f"No existe una acción con el símbolo {simbolo}"}
-    accion = Accion.acciones_registradas[simbolo]
+    accion = Accion._acciones_registradas[simbolo]
     if type(accion) is not AccionReal:
         return {"error": f"La acción con el símbolo {simbolo} no es una acción real"}
-    accion.actualizar_precio()
-    return {"mensaje": "Precio actualizado correctamente"}
+    try:
+        accion.actualizar_precio()
+        exportar_acciones_csv()
+        exportar_historial_precios_csv()
+        exportar_acciones_pickle()
+        exportar_historial_precios_pickle()
+        exportar_acciones_reales_csv()
+        return {"mensaje": "Precio actualizado correctamente"}
+    except ValueError:
+        return {"error": f"No se puede actualizar el precio de {simbolo} ya que no hay datos en Yahoo Finance"}
 
-def datos_accion(simbolo:str):
+def datos_accion(simbolo:str) -> dict[str,str]:
     """
     Esta función nos devuelve los datos de la acción que le pasamos.
 
-    Parámetros
-    ---------------
+    Parameters
+    ----------
     simbolo : str
         El símbolo de la acción.
 
     Returns
-    ---------------
+    -------
     dict[str,str]
         Nos devuelve un diccionario con una clave str (que será "error" o "mensaje") y un valor
         str que te dirá si ha habido un error o los datos de la acción que le pasamos.
 
     Raises
-    ---------------
+    ------
     Error
         Nos dará error si no existe una acción con el símbolo que le pasamos.
     """
-    if simbolo not in Accion.acciones_registradas:
+    if simbolo not in Accion._acciones_registradas:
         return {"error": f"No existe una acción con el símbolo {simbolo}"}
-    accion = Accion.acciones_registradas[simbolo]
+    accion = Accion._acciones_registradas[simbolo]
     return {"mensaje": str(accion)}
+
+def menor_que(simbolo1: str, simbolo2: str) -> dict[str,str]:
+    """
+    Esta función sirve para comparar si una acción es menor a otra en base a su precio.
+
+    Parameters
+    ----------
+    simbolo1 : str
+        El símbolo de la primera acción.
+    simbolo2 : str
+        El símbolo de la segunda acción.
+
+    Returns
+    -------
+    dict[str,str]
+        Nos devuelve un diccionario con una clave str (que será "error" o "mensaje") y un valor
+        str que te dirá si ha habido un error o los datos de la acción que le pasamos.
+
+    Raises
+    ------
+    Error
+        Nos dará error si no existe una acción con alguno de los símbolos que le pasamos.
+    """
+    if simbolo1 not in Accion._acciones_registradas:
+        return {"error": f"No existe una acción con el símbolo {simbolo1}"}
+    if simbolo2 not in Accion._acciones_registradas:
+        return {"error": f"No existe una acción con el símbolo {simbolo2}"}
+    accion1 = Accion._acciones_registradas[simbolo1]
+    accion2 = Accion._acciones_registradas[simbolo2]
+    resultado = accion1 < accion2
+    if resultado:
+        return {"mensaje": f"El precio de {simbolo1} es menor que {simbolo2}"}
+    else:
+        return {"mensaje": f"El precio de {simbolo1} no es menor que {simbolo2}"}
+
+def mayor_que(simbolo1: str, simbolo2: str) -> dict[str,str]:
+    """
+    Esta función sirve para comparar si una acción es mayor a otra en base a su precio.
+
+    Parameters
+    ----------
+    simbolo1 : str
+        El símbolo de la primera acción.
+    simbolo2 : str
+        El símbolo de la segunda acción.
+
+    Returns
+    -------
+    dict[str,str]
+        Nos devuelve un diccionario con una clave str (que será "error" o "mensaje") y un valor
+        str que te dirá si ha habido un error o los datos de la acción que le pasamos.
+
+    Raises
+    ------
+    Error
+        Nos dará error si no existe una acción con alguno de los símbolos que le pasamos.
+    """
+    if simbolo1 not in Accion._acciones_registradas:
+        return {"error": f"No existe una acción con el símbolo {simbolo1}"}
+    if simbolo2 not in Accion._acciones_registradas:
+        return {"error": f"No existe una acción con el símbolo {simbolo2}"}
+    accion1 = Accion._acciones_registradas[simbolo1]
+    accion2 = Accion._acciones_registradas[simbolo2]
+    resultado = accion1 > accion2
+    if resultado:
+        return {"mensaje": f"El precio de {simbolo1} es mayor que {simbolo2}"}
+    else:
+        return {"mensaje": f"El precio de {simbolo1} no es mayor que {simbolo2}"}
+
 
 #Clase Inversor
 
@@ -211,9 +309,9 @@ def comprar_accion(nombre: str, simbolo: str, cantidad: int):
     if nombre not in inversores_registrados:
         return {"error": f"El inversor '{nombre}' no está registrado"}
     inversor = inversores_registrados[nombre]
-    if simbolo not in Accion.acciones_registradas:
+    if simbolo not in Accion._acciones_registradas:
         return {"error": f"La acción con el símbolo {simbolo} no existe"}
-    accion = Accion.acciones_registradas[simbolo]
+    accion = Accion._acciones_registradas[simbolo]
     try:
         inversor.comprar(accion, cantidad)
         return {"mensaje": f"{nombre} ha comprado {cantidad} acciones de {accion.nombre} exitosamente"}
@@ -233,9 +331,9 @@ def vender_accion(nombre: str, simbolo: str, cantidad: int):
     if nombre not in inversores_registrados:
         return {"error": f"El inversor '{nombre}' no está registrado"}
     inversor = inversores_registrados[nombre]
-    if simbolo not in Accion.acciones_registradas:
+    if simbolo not in Accion._acciones_registradas:
         return {"error": f"La acción con el símbolo {simbolo} no existe"}
-    accion = Accion.acciones_registradas[simbolo]
+    accion = Accion._acciones_registradas[simbolo]
     try:
         inversor.vender(accion, cantidad)
         return {"mensaje": f"{nombre} ha vendido {cantidad} acciones de {accion.nombre} exitosamente"}
@@ -259,9 +357,9 @@ def comprar_acciones_con_operador(nombre: str, simbolo: str, cantidad: int):
         return {"error": f"El inversor '{nombre}' no está registrado"}
     
     inversor = inversores_registrados[nombre]
-    if simbolo not in Accion.acciones_registradas:
+    if simbolo not in Accion._acciones_registradas:
         return {"error": f"La acción con el símbolo {simbolo} no existe"}
-    accion = Accion.acciones_registradas[simbolo]
+    accion = Accion._acciones_registradas[simbolo]
     try:
         inversor + (accion, cantidad)
         return {"mensaje": f"{nombre} ha comprado {cantidad} acciones de {accion.nombre} usando el operador '+'."}
@@ -274,9 +372,9 @@ def vender_acciones_con_operador(nombre: str, simbolo: str, cantidad: int):
         return {"error": f"El inversor '{nombre}' no está registrado"}
     
     inversor = inversores_registrados[nombre]
-    if simbolo not in Accion.acciones_registradas:
+    if simbolo not in Accion._acciones_registradas:
         return {"error": f"La acción con el símbolo {simbolo} no existe"}
-    accion = Accion.acciones_registradas[simbolo]
+    accion = Accion._acciones_registradas[simbolo]
     try:
         inversor - (accion, cantidad)
         return {"mensaje" : f"{nombre} ha vendido {cantidad} acciones de {accion.nombre} usando el operador '-'."}
@@ -290,8 +388,8 @@ def crear_mercado(nombre: str, lista_acciones: list[str]) -> dict[str,str]:
     """
     Esta función crea un mercado financiero.
 
-    Parámetros
-    -------------
+    Parameters
+    ----------
     nombre : str
         Nombre del mercado
     lista_acciones : list[str]
@@ -299,13 +397,13 @@ def crear_mercado(nombre: str, lista_acciones: list[str]) -> dict[str,str]:
         en el mercado
 
     Returns
-    ---------------
+    -------
     dict[str,str]
         Nos devuelve un diccionario con una clave str (que será "error" o "mensaje") y un valor
         str que te dirá si ha habido un error o éxito.
 
     Raises
-    ---------------
+    ------
     Error
         Da error si ya existe un mercado con el nombre que le pasamos.
     Error
@@ -313,37 +411,41 @@ def crear_mercado(nombre: str, lista_acciones: list[str]) -> dict[str,str]:
     Error
         Da error si hay algún símbolo de los que le pasamos que no está asociado a ninguna acción
     """
-    if nombre in Mercado.mercados_registrados:
+    if nombre in Mercado._mercados_registrados:
         return {"error": f"Ya existe un mercado con el nombre {nombre}"}
     for i in range(len(lista_acciones)):
         simbolo = lista_acciones[i]
         if simbolo in lista_acciones[:i]:
             return {"error": f"No puede haber acciones repetidas. Se repite {simbolo}"}
-        if simbolo not in Accion.acciones_registradas:
-            return {"error": f"El símbolo {simbolo} que es el término {i}, no esta asociado a ninguna acción existente"}
-        lista_acciones[i] = Accion.acciones_registradas[simbolo]
-    Mercado(nombre,lista_acciones)
+        if simbolo not in Accion._acciones_registradas:
+            return {"error": f"El símbolo {simbolo} que es el término {i}, no está asociado a ninguna acción existente"}
+        lista_acciones[i] = Accion._acciones_registradas[simbolo]
+    Mercado(nombre, lista_acciones)
+    exportar_mercados_csv()
+    acciones_por_mercado_csv()
+    exportar_mercados_registrados_pickle()
     return {"mensaje": "Mercado creado correctamente"}
-    
+
+
 def registrar_accion(nombre: str, simbolo: str) -> dict[str,str]:
     """
     Esta función registra una acción en el mercado que queremos
 
-    Parámetros
-    -------------
+    Parameters
+    ----------
     nombre : str
         Nombre del mercado
     simbolo : str
         Símbolo de la acción que queremos registrar al mercado.
 
     Returns
-    ---------------
+    -------
     dict[str,str]
         Nos devuelve un diccionario con una clave str (que será "error" o "mensaje") y un valor
         str que te dirá si ha habido un error o éxito.
 
     Raises
-    ---------------
+    ------
     Error
         Da error si el símbolo que le pasamos no está asociado a ninguna acción
     Error
@@ -351,121 +453,357 @@ def registrar_accion(nombre: str, simbolo: str) -> dict[str,str]:
     Error
         Da error si la acción que le pasamos ya está en el mercado.
     """
-
-    if simbolo not in Accion.acciones_registradas:
+    if simbolo not in Accion._acciones_registradas:
         return {"error": f"No existe ninguna acción con el símbolo {simbolo}"}
-    if nombre not in Mercado.mercados_registrados:
+    if nombre not in Mercado._mercados_registrados:
         return {"error": f"No existe un mercado con el nombre {nombre}"}
-    accion = Accion.acciones_registradas[simbolo]
-    if accion in Mercado.mercados_registrados[nombre].lista_acciones:
+    accion = Accion._acciones_registradas[simbolo]
+    if accion in Mercado._mercados_registrados[nombre].lista_acciones:
         return {"error": f"La acción con el símbolo {simbolo} ya está en el mercado {nombre}"}
-    Mercado.mercados_registrados[nombre].registrar_accion(accion)
+    Mercado._mercados_registrados[nombre].registrar_accion(accion)
+    exportar_mercados_csv()
+    acciones_por_mercado_csv()
+    exportar_mercados_registrados_pickle()
     return {"mensaje": "Acción registrada correctamente"}
 
-        
-def obtener_precio(nombre: str,simbolo: str) -> Union[dict[str,str],dict[str,float]]:
+
+def obtener_precio(nombre: str, simbolo: str) -> Union[dict[str,str], dict[str,float]]:
     """
     Con esta función obtenemos el precio de una acción dado el mercado en el que está y el símbolo de la acción.
 
-    Parámetros
-    -------------
+    Parameters
+    ----------
     nombre : str
         Nombre del mercado
     simbolo : str
         Símbolo de la acción de la que queremos obtener el precio.
 
     Returns
-    ---------------
-    Union[dict[str,str],dict[str,float]]
+    -------
+    Union[dict[str,str], dict[str,float]]
         Nos devolverá el precio de la acción (el dict[str,float]) o un mensaje de error
         (el dict[str,str]).
 
     Raises
-    ---------------
+    ------
     Error
         Da error si no existe un mercado con el nombre que le pasamos.
     Error
         Da error si el símbolo que le pasamos no está asociado a ninguna acción del mercado
         (este error se ve en el propio método de la clase Mercado, no se hace aquí)
     """
-
-    if nombre not in Mercado.mercados_registrados:
+    if nombre not in Mercado._mercados_registrados:
         return {"error": f"No existe un mercado con el nombre {nombre}"}
-    mercado = Mercado.mercados_registrados[nombre]
+    mercado = Mercado._mercados_registrados[nombre]
     resultado = mercado.obtener_precio(simbolo)
-    if type(resultado) == float:
+    if isinstance(resultado, float):
         return {"precio": resultado}
     else:
         return {"error": resultado}
 
-def bancarrota(nombre: str,simbolo: str) -> dict[str,str]:
+
+def bancarrota(nombre: str, simbolo: str) -> dict[str,str]:
     """
     Esta función sirve para declarar en bancarrota una acción dado su símbolo. Lo que
     hace es eliminarla de lista_acciones y actualiza su precio a 0.
 
-    Parámetros
-    -------------
+    Parameters
+    ----------
     nombre : str
         Nombre del mercado
     simbolo : str
         Símbolo de la acción que queremos declarar en bancarrota.
 
     Returns
-    ---------------
+    -------
     dict[str,str]
         Nos devuelve un diccionario con una clave str (que será "error" o "mensaje") y un valor
         str que te dirá si ha habido un error o éxito.
 
     Raises
-    ---------------
+    ------
     Error
         Da error si no existe un mercado con el nombre que le pasamos.
     Error
         Da error si el símbolo que le pasamos no está asociado a ninguna acción del mercado.
+    Error
+        Da error si la acción que queremos declarar en bancarrota ya lo está.
     """
-    if nombre not in Mercado.mercados_registrados:
+    if nombre not in Mercado._mercados_registrados:
         return {"error": f"No existe un mercado con el nombre {nombre}"}
-    mercado = Mercado.mercados_registrados[nombre]
-    for accion in mercado.lista_acciones:
-        if accion.simbolo == simbolo:
-            mercado.bancarrota(simbolo)
-            return {"mensaje": f"La empresa con símbolo {simbolo} se ha declarado en bancarrota exitosamente"}
-    return {"error": f"No se encontró la acción con símbolo {simbolo} en el mercado {nombre}"}
-        
+    mercado = Mercado._mercados_registrados[nombre]
+    resultado = mercado.bancarrota(simbolo)
+    if resultado is None:
+        exportar_mercados_csv()
+        acciones_por_mercado_csv()
+        exportar_mercados_registrados_pickle()
+        exportar_acciones_csv()
+        exportar_historial_precios_csv()
+        exportar_acciones_pickle()
+        exportar_historial_precios_pickle()
+        if simbolo in AccionReal.acciones_reales_registradas:
+            exportar_acciones_reales_csv()
+        return {"mensaje": f"La empresa con símbolo {simbolo} se ha declarado en bancarrota exitosamente"}
+    else:
+        return {"error": resultado}
+
+
 def simular_movimientos(nombre: str) -> dict[str,str]:
     """
     Esta función sirve para simular movimientos en un mercado.
-    Parámetros
-    -------------
+
+    Parameters
+    ----------
     nombre : str
         Nombre del mercado
 
     Returns
-    ---------------
+    -------
     dict[str,str]
         Nos devuelve un diccionario con una clave str (que será "error" o "mensaje") y un valor
         str que te dirá si ha habido un error o éxito.
 
     Raises
-    ---------------
+    ------
     Error
         Da error si no existe un mercado con el nombre que le pasamos.
     """
-
-    if nombre not in Mercado.mercados_registrados:
+    if nombre not in Mercado._mercados_registrados:
         return {"error": f"No existe un mercado con el nombre {nombre}"}
-    mercado = Mercado.mercados_registrados[nombre]
+    mercado = Mercado._mercados_registrados[nombre]
     mercado.simular_movimientos()
     return {"mensaje": "Movimiento simulado exitosamente"}
+
+def tamaño(nombre: str) -> dict[str,str]:
+    """
+    Esta función devuelve el tamaño de un mercado en base al número de acciones que contiene.
+
+    Parameters
+    ----------
+    nombre : str
+        Nombre del mercado
+
+    Returns
+    -------
+    dict[str,str]
+        Nos devuelve un diccionario con una clave str (que será "error" o "mensaje") y un valor
+        str que te dirá si ha habido un error o la longitud del mercado.
+
+    Raises
+    ------
+    Error
+        Da error si no existe un mercado con el nombre que le pasamos.
+    """
+    if nombre not in Mercado._mercados_registrados:
+        return {"error": f"No existe un mercado con el nombre {nombre}"}
+    mercado = Mercado._mercados_registrados[nombre]
+    return {"mensaje": f"El tamaño del mercado es {len(mercado)}"}
+
+def obtener_accion(nombre: str, item: int) -> dict[str,str]:
+    """
+    Esta función sirve para obtener la acción de un mercado dado un item.
+
+    Parameters
+    ----------
+    nombre : str
+        Nombre del mercado.
+    item : int
+        Posición de la acción en la lista de acciones del mercado.
+
+    Returns
+    -------
+    dict[str,str]
+        Nos devuelve un diccionario con una clave str (que será "error" o "mensaje") y un valor
+        str que te dirá si ha habido un error o el símbolo de la acción que estamos buscando.
+
+    Raises
+    ------
+    Error
+        Da error si no existe un mercado con el nombre que le pasamos.
+    Error
+        Da error si item no es un entero.
+    Error
+        Da error si el item no está en el rango posible.
+    """
+    if nombre not in Mercado._mercados_registrados:
+        return {"error": f"No existe un mercado con el nombre {nombre}"}
+    mercado = Mercado._mercados_registrados[nombre]
+    if not isinstance(item, int)::
+        return {"error": f"El parámetro {item} ha de ser un entero"}
+    if not 0 <= item < len(mercado):
+        return {"error": f"El parámetro {item} no está entre 0 y {len(mercado)}"}
+    return {"mensaje": f"La acción que está en la posición {item} es {mercado[item].simbolo}"}
+
+def contener(nombre: str, simbolo: str) -> dict[str,str]:
+    """
+    Esta función sirve para ver si una acción está contenida en un mercado.
+
+    Parameters
+    ----------
+    nombre : str
+        Nombre del mercado.
+    simbolo : str
+        Símbolo de la acción.
+
+    Returns
+    -------
+    dict[str,str]
+        Nos devuelve un diccionario con una clave str (que será "error" o "mensaje") y un valor
+        str que te dirá si ha habido un error o si la acción está o no en el mercado.
+
+    Raises
+    ------
+    Error
+        Da error si no existe un mercado con el nombre que le pasamos.
+    """
+    if nombre not in Mercado._mercados_registrados:
+        return {"error": f"No existe un mercado con el nombre {nombre}"}
+    mercado = Mercado._mercados_registrados[nombre]
+    if simbolo in mercado:
+        return {"mensaje": f"La acción cuyo símbolo es {simbolo} sí que está en el mercado {nombre}"}
+    return {"mensaje": f"La acción cuyo símbolo es {simbolo} no que está en el mercado {nombre}"}
+
+def igual_mercado(nombre1: str, nombre2: str) -> dict[str,str]:
+    """
+    Esta función sirve para ver si dos mercados son iguales en base a sus acciones.
+
+    Parameters
+    ----------
+    nombre1 : str
+        Nombre del primer mercado
+    nombre2 : str
+        Nombre del segundo mercado
+
+    Returns
+    -------
+    dict[str,str]
+        Nos devuelve un diccionario con una clave str (que será "error" o "mensaje") y un valor
+        str que te dirá si ha habido un error o si los mercados son iguales o no.
+
+    Raises
+    ------
+    Error
+        Da error si no existe alguno de los mercados que le pasamos.
+    """
+    if nombre1 not in Mercado._mercados_registrados:
+        return {"error": f"No existe un mercado con el nombre {nombre1}"}
+    if nombre2 not in Mercado._mercados_registrados:
+        return {"error": f"No existe un mercado con el nombre {nombre2}"}
+    mercado1 = Mercado._mercados_registrados[nombre1]
+    mercado2 = Mercado._mercados_registrados[nombre2]
+    if mercado1 == mercado2:
+        return {"mensaje": f"Los mercados {nombre1} y {nombre2} son iguales"}
+    else:
+        return {"mensaje": f"Los mercados {nombre1} y {nombre2} no son iguales"}
+
+def no_igual_mercado(nombre1: str, nombre2: str) -> dict[str,str]:
+    """
+    Esta función sirve para ver si dos mercados no son iguales en base a sus acciones.
+
+    Parameters
+    ----------
+    nombre1 : str
+        Nombre del primer mercado
+    nombre2 : str
+        Nombre del segundo mercado
+
+    Returns
+    -------
+    dict[str,str]
+        Nos devuelve un diccionario con una clave str (que será "error" o "mensaje") y un valor
+        str que te dirá si ha habido un error o si los mercados son iguales o no.
+
+    Raises
+    ------
+    Error
+        Da error si no existe alguno de los mercados que le pasamos.
+    """
+    if nombre1 not in Mercado._mercados_registrados:
+        return {"error": f"No existe un mercado con el nombre {nombre1}"}
+    if nombre2 not in Mercado._mercados_registrados:
+        return {"error": f"No existe un mercado con el nombre {nombre2}"}
+    mercado1 = Mercado._mercados_registrados[nombre1]
+    mercado2 = Mercado._mercados_registrados[nombre2]
+    if mercado1 != mercado2:
+        return {"mensaje": f"Los mercados {nombre1} y {nombre2} no son iguales"}
+    else:
+        return {"mensaje": f"Los mercados {nombre1} y {nombre2} son iguales"}
+
+def suma_mercados(nombre1: str, nombre2: str) -> dict[str,str]:
+    """
+    Esta función sirve para sumar dos mercados.
+
+    Parameters
+    ----------
+    nombre1 : str
+        Nombre del primer mercado
+    nombre2 : str
+        Nombre del segundo mercado
+
+    Returns
+    -------
+    dict[str,str]
+        Nos devuelve un diccionario con una clave str (que será "error" o "mensaje") y un valor
+        str que te dirá si ha habido un error o éxito.
+
+    Raises
+    ------
+    Error
+        Da error si no existe alguno de los mercados que le pasamos.
+    Error
+        Da error si el nombre combinado de ambos mercados ya pertenece a un mercado existente.
+    """
+    if nombre1 not in Mercado._mercados_registrados:
+        return {"error": f"No existe un mercado con el nombre {nombre1}"}
+    if nombre2 not in Mercado._mercados_registrados:
+        return {"error": f"No existe un mercado con el nombre {nombre2}"}
+    mercado1 = Mercado._mercados_registrados[nombre1]
+    mercado2 = Mercado._mercados_registrados[nombre2]
+    try:
+        mercado = mercado1 + mercado2
+        return {"mensaje": f"Los mercados {nombre1} y {nombre2} se han sumado correctamente creando {mercado.nombre}"}
+    except:
+        return {"error": f"Ya existe un mercado con el nombre combinado {nombre1 + '_' + nombre2}"}
+
+def suma_propia(nombre1: str, nombre2: str) -> dict[str,str]:
+    """
+    Esta función sirve para sumar el segundo mercado al primero.
+
+    Parameters
+    ----------
+    nombre1 : str
+        Nombre del primer mercado
+    nombre2 : str
+        Nombre del segundo mercado
+
+    Returns
+    -------
+    dict[str,str]
+        Nos devuelve un diccionario con una clave str (que será "error" o "mensaje") y un valor
+        str que te dirá si ha habido un error o éxito.
+
+    Raises
+    ------
+    Error
+        Da error si no existe alguno de los mercados que le pasamos.
+    """
+    if nombre1 not in Mercado._mercados_registrados:
+        return {"error": f"No existe un mercado con el nombre {nombre1}"}
+    if nombre2 not in Mercado._mercados_registrados:
+        return {"error": f"No existe un mercado con el nombre {nombre2}"}
+    mercado1 = Mercado._mercados_registrados[nombre1]
+    mercado2 = Mercado._mercados_registrados[nombre2]
+    mercado1 += mercado2
+    return {"mensaje": "La suma se ha efectuado correctamente"}
 
 # Clase Transaccion
 
 def crear_transaccion(nombre: str, simbolo: str, cantidad: int):
     if nombre not in inversores_registrados:
         return {"error": f"El inversor '{nombre}' no está registrado"}
-    if simbolo not in Accion.acciones_registradas:
+    if simbolo not in Accion._acciones_registradas:
         return {"error": f"La acción con el símbolo {simbolo} no existe"}
-    accion = Accion.acciones_registradas[simbolo]
+    accion = Accion._acciones_registradas[simbolo]
     inversor = inversores_registrados[nombre]
     transaccion = Transaccion(inversor, accion, cantidad)
 
@@ -496,13 +834,13 @@ def recomendacion(nombre: str) -> dict[str,str]:
     """
     Nos da una recomendación para un inversor en función de sus caracteristicas.
 
-    Parámetros
-    -------------
+    Parameters
+    ----------
     nombre : str
         Nombre del inversor.
 
     Returns
-    ---------------
+    -------
     dict[str,str]
         Nos devuelve un diccionario con una clave str (que será "error" o "mensaje") y un valor
         str que te dirá si ha habido un error o las recomendaciones deseadas.
