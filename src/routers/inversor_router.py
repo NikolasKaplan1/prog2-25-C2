@@ -1,97 +1,76 @@
-
 """
-Módulo de rutas para la gestión de inversores en la API Flask.
+Rutas para gestionar inversores en la API.
 
-Proporciona endpoints RESTful para consultar y registrar inversores en la base de 
-datos, utiliza SQLModel para el manejo de datos relacional y Flask Blueprint para 
-la organización modular del código
-
-Dependencias
-------------
-- Flask
-- SQLModel
-- models (InversorDB)
-- main (engine de conexión a la base de datos)
+✔  Elimina dependencia de `main.engine`
+✔  Usa la conexión centralizada de src.database.db_manager
+✔  Ajusta los campos al nuevo esquema (password_hash, perfil, capital_inicial)
 """
 
+from datetime import datetime
 from flask import Blueprint, request, jsonify, abort
 from sqlmodel import Session, select
-from models import InversorDB  
-from main import engine  
-from datetime import datetime
+
+from src.database.db_manager import get_connection      # ← NUEVO
+from src.models import InversorDB                       # adapta el import a tu paquete
 
 inversor_bp = Blueprint("inversor", __name__)
 
+
+# ---------------------------------------------------------------------------
 @inversor_bp.route("/inversores", methods=["GET"])
-def get_inversor():
-    """
-    Obtener todos los inversores registrados en la base de datos
+def listar_inversores():
+    """Devolver todos los inversores."""
+    with get_connection() as conn:
+        with Session(conn) as session:
+            inversores = session.exec(select(InversorDB)).all()
+            return jsonify([inv.model_dump() for inv in inversores])
 
-    Returns
-    -------
-    Response:
-        Lista de objetos JSON que representan los inversores
-    """
-    session = Session(engine)
-    inversores = session.exec(select(InversorDB)).all()
-    return jsonify([inversor.model_dump() for inversor in inversores])
 
+# ---------------------------------------------------------------------------
 @inversor_bp.route("/inversores/<int:inversor_id>", methods=["GET"])
-def get_inversor_id(inversor_id):
-    """
-    Obtener un inversor específico por su identificador
+def obtener_inversor(inversor_id: int):
+    """Obtener un inversor por su ID."""
+    with get_connection() as conn:
+        with Session(conn) as session:
+            inversor = session.get(InversorDB, inversor_id)
+            if inversor is None:
+                abort(404, "Inversor no encontrado")
+            return jsonify(inversor.model_dump())
 
-    Parameters
-    ----------
-    inversor_id : int
-        ID del inversor a consultar
 
-    Returns
-    -------
-    Response:
-        Objeto JSON que representa el inversor solicitado
-
-    Raises
-    ------
-    404 Not Found:
-        Si no se encuentra un inversor con el ID indicado
-    """
-    session = Session(engine)
-    inversor = session.get(InversorDB, inversor_id)
-    if inversor is None:
-        abort(404, description="Inversor no encontrado")
-    return jsonify(inversor.model_dump())
-
+# ---------------------------------------------------------------------------
 @inversor_bp.route("/inversores", methods=["POST"])
-def post_nuevo_inversor():
+def crear_inversor():
     """
-    Registrar un nuevo inversor en la base de datos
+    Crear un nuevo inversor.
 
-    El cuerpo de la solicitud debe contener los siguientes campos:
-    "nombre", "apellidos", "email", "contrasena", "tarjeta_credito" y "capital"
-
-    Returns
-    -------
-    Tuple[Response, int]:
-        Objeto JSON que representa al inversor creado y código de estado 201
-
-    Raises
-    ------
-    400 Bad Request:
-        Si falta alguno de los campos requeridos en la solicitud
+    Body JSON requerido:
+    {
+        "nombre": "Ana",
+        "email": "ana@mail.com",
+        "password_hash": "<hash bcrypt>",
+        "perfil": "conservador" | "agresivo",
+        "capital_inicial": 10000
+    }
     """
-    session = Session(engine)
-    data = request.get_json()
-    if not all(key in data for key in ("nombre", "apellidos", "email", "contrasena", "tarjeta_credito", "capital")):
-        abort(400, description= "Faltan campos obligatorios por completar")
-    
-    nuevo = InversorDB(nombre=data["nombre"], apellidos=data["apellidos"], email=data["email"], contrasena=data["contrasena"], tarjeta_credito=data["tarjeta_credito"], capital=data["capital"])
-    session.add(nuevo)
-    session.commit()
-    session.refresh(nuevo)
-    return jsonify(nuevo.model_dump()), 201
+    data = request.get_json(force=True)
+    campos = ("nombre", "email", "password_hash", "perfil", "capital_inicial")
+    if not all(k in data for k in campos):
+        abort(400, f"Faltan campos obligatorios: {campos}")
 
+    nuevo = InversorDB(
+        nombre=data["nombre"],
+        email=data["email"],
+        password_hash=data["password_hash"],
+        perfil=data["perfil"],
+        capital_inicial=data["capital_inicial"],
+        capital_disponible=data["capital_inicial"],       # comienza igual
+        fecha_registro=datetime.utcnow(),                 # opcional: explícito
+    )
 
-
-
-
+    with get_connection() as conn:
+        with Session(conn) as session:
+            session.add(nuevo)
+            session.commit()
+            session.refresh(nuevo)
+            return jsonify(nuevo.model_dump()), 201
