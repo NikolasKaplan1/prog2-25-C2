@@ -1,71 +1,39 @@
-from sqlmodel import SQLModel, create_engine, Session
-from datetime import datetime
-from models import InversorDB, TransaccionDB, AccionDB  # Asegúrate de que la ruta es correcta.
-from typing import Generator
+"""
+Gestor de base de datos SQLite para el simulador de bolsa.
+"""
 
-# Configurar la conexión a MySQL
-DATABASE_URL = "mysql+pymysql://user:password@localhost/finanzas"  # Cambia el nombre de la base de datos si es necesario
+import sqlite3
+from pathlib import Path
+from contextlib import contextmanager
+from typing import Iterator
 
-# Crear el motor de conexión
-engine = create_engine(DATABASE_URL, echo=True)
+DB_PATH = Path(__file__).with_name("simulador.db")   # src/database/simulador.db
+SCHEMA   = Path(__file__).with_name("schema.sql")
 
-def get_session() -> Generator[Session, None, None]:
-    """
-    Obtiene una sesión para interactuar con la base de datos.
-    
-    Yield:
-    ------
-    Session: Una sesión activa de la base de datos para realizar consultas y transacciones.
-    """
-    session = Session(engine)
+
+def init_db(seed: bool = True) -> None:
+    """Crea las tablas y carga datos de ejemplo si `seed` es True."""
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.executescript(SCHEMA.read_text(encoding="utf-8"))
+
+        if seed:
+            conn.execute("""INSERT OR IGNORE INTO mercados
+                            (nombre, moneda, ubicacion)
+                            VALUES ('NYSE', 'USD', 'Nueva York')""")
+            conn.execute("""INSERT OR IGNORE INTO acciones
+                            (simbolo, nombre, sector, precio_actual, mercado_id)
+                            VALUES ('AAPL', 'Apple Inc.', 'Tecnología', 180,
+                                   (SELECT id FROM mercados WHERE nombre='NYSE'))""")
+            conn.commit()
+
+
+@contextmanager
+def get_connection() -> Iterator[sqlite3.Connection]:
+    """Context manager que abre y cierra conexión con row_factory tipo dict."""
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA foreign_keys = ON")
     try:
-        yield session
+        yield conn
     finally:
-        session.close()
-
-def create_db_and_tables():
-    """
-    Crea las tablas de la base de datos utilizando los modelos definidos en SQLModel.
-    """
-    SQLModel.metadata.create_all(engine)
-    print("Base de datos y tablas creadas exitosamente.")
-
-def drop_db_and_tables():
-    """
-    Elimina las tablas de la base de datos.
-    """
-    SQLModel.metadata.drop_all(engine)
-    print("Base de datos y tablas eliminadas exitosamente.")
-
-def seed_users():
-    """
-    Agrega usuarios iniciales (inversores) a la base de datos.
-    """
-    with next(get_session()) as session:
-        inversores = [
-            InversorDB(nombre="Alice", apellidos="Smith", email="alice@example.com", capital=100.0, tarjeta_credito="1234567890123456"),
-            InversorDB(nombre="Bob", apellidos="Jones", email="bob@example.com", capital=100.0, tarjeta_credito="9876543210987654"),
-            InversorDB(nombre="Charlie", apellidos="Brown", email="charlie@example.com", capital=100.0, tarjeta_credito="1122334455667788"),
-        ]
-        session.add_all(inversores)
-        session.commit()
-        print("Usuarios iniciales creados.")
-
-def guardar_transaccion(transaccion):
-    """
-    Guarda una transacción en la base de datos.
-    
-    Parámetros:
-    - transaccion: Instancia de la clase Transaccion a guardar en la base de datos.
-    """
-    with next(get_session()) as session:
-        transaccion_db = TransaccionDB(
-            inversor_id=transaccion.inversor.id,
-            accion_id=transaccion.accion.id,
-            cantidad=transaccion.cantidad,
-            precio=transaccion.precio,
-            fecha_hora=transaccion.fecha_hora
-        )
-        session.add(transaccion_db)
-        session.commit()
-        print("Transacción guardada exitosamente.")
+        conn.close()
