@@ -6,6 +6,10 @@ from estrategias import InversorAgresivo, InversorConservador, IA
 from typing import Union
 import random
 import yfinance as yf
+from src.routers import manejo_archivos
+
+
+
 
 from src.models import mercado
 
@@ -344,10 +348,10 @@ def mostrar_transaccion_registrada(nombre: str):
     if nombre not in inversores_registrados:
         return {"error": f"El inversor '{nombre}' no está registrado"}
     inversor = inversores_registrados[nombre]
-    if not inversor.transacciones:
+    if not inversor._Inversor_transacciones:
         return {"mensaje": "Este inversor no ha realizado ninguna transacción."}
     resumen_transacciones = f"Historial de transacciones de {nombre}:\n"
-    for transaccion in inversor.transacciones:
+    for transaccion in inversor._Inversor_transacciones:
         resumen_transacciones += str(transaccion) + "\n"
     return {"mensaje": resumen_transacciones}
 
@@ -628,7 +632,7 @@ def obtener_accion(nombre: str, item: int) -> dict[str,str]:
     if nombre not in Mercado._mercados_registrados:
         return {"error": f"No existe un mercado con el nombre {nombre}"}
     mercado = Mercado._mercados_registrados[nombre]
-    if not isinstance(item, int)::
+    if not isinstance(item, int):
         return {"error": f"El parámetro {item} ha de ser un entero"}
     if not 0 <= item < len(mercado):
         return {"error": f"El parámetro {item} no está entre 0 y {len(mercado)}"}
@@ -798,7 +802,30 @@ def suma_propia(nombre1: str, nombre2: str) -> dict[str,str]:
 
 # Clase Transaccion
 
-def crear_transaccion(nombre: str, simbolo: str, cantidad: int):
+def crear_transaccion(nombre: str, simbolo: str, cantidad: int) -> dict[str, str]:
+    """
+    Crea y ejecuta una transacción de compra para un inversor determinado.
+
+    Parameters
+    ----------
+    nombre : str
+        Nombre del inversor registrado
+    simbolo : str
+        Simbolo de la accion a comprar.
+    cantindad : int 
+        Numero de acciones a adquirir.
+    
+    Returns
+    -------
+    dict[str, str]
+        Un diccionario con un mensaje de éxito.
+    
+    Raises 
+    ------
+    Error
+        Si algo falla al realizar la operación.
+
+    """
     if nombre not in inversores_registrados:
         return {"error": f"El inversor '{nombre}' no está registrado"}
     if simbolo not in Accion._acciones_registradas:
@@ -809,16 +836,36 @@ def crear_transaccion(nombre: str, simbolo: str, cantidad: int):
 
     if transaccion.validar_transaccion():
         transaccion.ejecutar_transaccion()
-        inversor.transacciones.append(transaccion)
-        return {"mensaje": f"Transaccion realizada: {transaccion}"}
-    else: 
+        inversor._Inversor_transacciones.append(transaccion)
+        exportar_transacciones_csv(inversor._Inversor_transacciones)
+        return {"mensaje": f"Transacción realizada: {transaccion}"}
+    else:
         return {"error": "Fondos insuficientes para realizar la operación"}
 
-def calcula_total_transacciones(nombre: str):
+
+def calcula_total_transacciones(nombre: str) -> dict[str, str]:
+    """
+    Calcula el total invertido por un inversor sumando todas sus transacciones.
+
+    Parameters
+    ----------
+    nombre : str
+        Nombre del inversor registrado.
+
+    Returns
+    -------
+    dict[str, str]
+        Un mensaje con el total invertido.
+    
+    Raises 
+    ------
+    Error
+        Si el nombre del inversor no está registrado.
+    """
     if nombre not in inversores_registrados:
         return {"error": f"El inversor '{nombre}' no está registrado"}
 
-    transacciones = inversores_registrados[nombre].transacciones
+    transacciones = inversores_registrados[nombre]._Inversor__transacciones
     if not transacciones:
         return {"mensaje": "Este inversor no tiene transacciones registradas."}
 
