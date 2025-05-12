@@ -484,6 +484,17 @@ def suma_propia() -> None:
 
 
 def crear_transaccion() -> None:
+    """
+    Esta función sirve para crear una transacción.
+
+    Parameters
+    ----------
+    None 
+
+    Returns
+    -------
+    None
+    """
     nombre = input("Ingrese el nombre del inversor: ")
     simbolo = input("Ingrese el símbolo de la acción: ")
     cantidad = int(input("Ingrese la cantidad de acciones de la transacción: "))
@@ -491,18 +502,95 @@ def crear_transaccion() -> None:
     print(resultado.get("error") or resultado.get("mensaje"))
 
 def calcula_total_transacciones() -> None:
+    """
+    Esta función sirve para calcular el total de una transacción.
+
+    Parameters
+    ----------
+    None 
+
+    Returns
+    -------
+    None
+    """
     nombre = input("Ingrese el nombre del inversor: ")
     resultado = control.calcula_total_transacciones(nombre)
     print(resultado.get("error") or resultado.get("mensaje"))
 
 def recomendacion() -> None:
+    """
+    Esta función sirve para obtener recomendación de compra de acciones.
+
+    Parameters
+    ----------
+    None 
+
+    Returns
+    -------
+    None
+    """
     nombre = input("Ingrese el nombre del inversor al que quiere recomendar: ")
     resultado = control.recomendacion(nombre)
+    print(resultado.get("error") or resultado.get("mensaje"))
+
+def contiene_accion_inversor() -> None:
+    """
+    Esta función verifica si un inversor tiene una acción específica en su cartera.
+
+    Parameters
+    ----------
+    None 
+
+    Returns
+    -------
+    None
+    """
+    nombre = input("Nombre del inversor: ")
+    simbolo = input("Simbolo de la accion: ")
+    resultado = control.contiene_accion(nombre, simbolo)
+    print(resultado.get("error") or resultado.get("mensaje"))
+
+def comparar_inversores() -> None:
+    """
+    Esta función compara si dos inversores han invertido en las mismas empresas.
+
+    Parameters
+    ----------
+    None 
+
+    Returns
+    -------
+    None
+    """
+    nombre1 = input("Nombre del inversor: ")
+    nombre2 = input("Nombre del inversor: ")
+    resultado = control.comparar_inversores(nombre1, nombre2)
+    print(resultado.get("error") or resultado.get("mensaje"))
+
+
+def obtener_informacion_transaccion() -> None:
+    """
+    Esta función permite consultar un dato específico de una transacción realizada por un inversor.
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    None
+    """
+    nombre = input("Ingrese el nombre del inversor: ")
+    num_transaccion = int(input("Ingrese el número de transacción (posición en la lista): "))
+    campo = input("Ingrese dato a consultar (inversor, accion,simbolo, cantidad, precio, fecha): ")
+    resultado = control.datos_transaccion(nombre, index, campo)
     print(resultado.get("error") or resultado.get("mensaje"))
 
 
 def guardar_y_salir() -> None:
     print("Saliendo del sistema...")
+
+
 
 
 def menu() -> None:
@@ -548,6 +636,9 @@ def menu() -> None:
         '28': crear_transaccion,
         '29': calcula_total_transacciones,
         '30': recomendacion,
+        '31': contiene_accion_inversor,
+        '32': comparar_inversores,
+        '33': obtener_informacion_transaccion,
         '0': guardar_y_salir
     }
 
@@ -583,6 +674,9 @@ def menu() -> None:
         print("28. Crear una transacción")
         print("29. Calcular el total de transacciones que ha hecho un inversor")
         print("30. Recomienda unas acciones para un inversor")
+        print("31. Verificar si un inversor tiene una acción (operador 'in')")
+        print("32. Comparar si dos inversores tienen las mismas empresas en su cartera")
+        print("33. Consultar un campo específico de una transacción")
         print("0. Guardar y salir")
 
         opcion = input("Seleccione una opción: ")
