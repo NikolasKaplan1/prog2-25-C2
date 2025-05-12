@@ -6,11 +6,18 @@ from estrategias import InversorAgresivo, InversorConservador, IA
 from typing import Union
 import random
 import yfinance as yf
-from src.routers import manejo_archivos
-
-
-
-
+from routers.manejo_archivos import (
+    exportar_transacciones_csv,
+    exportar_inversores_pickle,
+    exportar_acciones_csv,
+    exportar_historial_precios_csv,
+    exportar_acciones_pickle,
+    exportar_historial_precios_pickle,
+    exportar_acciones_reales_csv,
+    exportar_mercados_csv,
+    exportar_mercados_registrados_pickle,
+    acciones_por_mercado_csv
+)
 from src.models import mercado
 
 
@@ -258,11 +265,28 @@ def mayor_que(simbolo1: str, simbolo2: str) -> dict[str,str]:
 #Clase Inversor
 
 inversores_registrados = {}
-def crea_inversor(nombre: str, capital: float, tipo: str):
+def crea_inversor(nombre: str, capital: float, tipo: str) -> dict[str, str]:
     """
     Esta función crea un inversor nuevo y lo guarda en el diccionario de inversores.
 
-    Tipo: puede ser de tipo agresivo o conservador(pasivo)
+    Parameters
+    ----------
+    nombre : str
+        Nombre del inversor.
+    capital : float
+        Capital del inversor
+    tipo : str
+        Tipo de inversor ("Agresivo" ó "Pasivo").
+    
+    Returns
+    -------
+    dict[str, str]
+        Diccionario con un mensaje de éxito.
+    
+    Raises
+    ------
+    Error
+        Si el tipo de inversor no es válido o ya ha sido registrado el inversor.
     """
     if nombre in inversores_registrados:
         return {"error": f"Ya existe un inversor bajo el nombre: {nombre}"}
@@ -272,13 +296,29 @@ def crea_inversor(nombre: str, capital: float, tipo: str):
         inversores_registrados[nombre] = InversorConservador(nombre, capital)
     else:
         return {"error": "Tipo de inversor no válido."}
-
+    exportar_inversores_pickle(list(inversores_registrados.values()))
     return {"mensaje": f"Inversor {nombre} creado exitosamente como {tipo}"}
 
 
-def datos_inversor(nombre: str):
+def datos_inversor(nombre: str) -> dict[str, Union[str, float]]:
     """
-    Devuelve el capital del inversor y el tipo que es
+    Devuelve el capital del inversor y el tipo que es.
+
+    Parameters
+    ----------
+    nombre : str 
+        Nombre del inversor
+    
+    Returns
+    -------
+    dict[str, Union[str, float]]
+        Diccionario con información del inversor.
+    
+    Raises
+    ------
+    Error
+        Si el inversor no ha sido registrado previamente.
+    
     """
     if nombre not in inversores_registrados:
         return {"error": f"El inversor '{nombre}' no está registrado"}
@@ -293,22 +333,55 @@ def datos_inversor(nombre: str):
             "tipo": tipo
         }
 
-def mostrar_cartera(nombre: str):
+def mostrar_cartera(nombre: str) -> dict[str, str]:
+    """
+    Muestra el contenido de la cartera de un inversor.
+
+    Parameters
+    ----------
+    nombre : str 
+        Nombre del inversor.
+    
+    Returns
+    -------
+    dict[str, str]
+        Diccionario con el resumen de la cartera.
+    
+    Raises
+    ------
+    Error
+        Si el inversor no ha sido registrado previamente.
+    """
     if nombre not in inversores_registrados:
         return {"error": f"El inversor '{nombre}' no está registrado"}
     inversor = inversores_registrados[nombre]
     return {"mensaje": inversor.mostrar_cartera()}
 
 
-def comprar_accion(nombre: str, simbolo: str, cantidad: int):
+def comprar_accion(nombre: str, simbolo: str, cantidad: int) -> dict[str, str]:
     """
-    Permite a un inversor comprar una cantidad determinada de acciones.
+    Ejecuta la compra de una accion para un inversor.
 
-    Parametros
-    -----------
-    - nombre(str) : nombre del inversor
-    - simbolo(str) : simbolo de la accion
-    - cantidad(int) : numero de acciones a comprar
+    Parameters
+    ----------
+    nombre : str 
+        nombre del inversor.
+    simbolo : str 
+        simbolo de la accion.
+    cantidad : int
+        numero de acciones a comprar.
+    
+    Returns
+    -------
+    dict[str, str]
+        Resultado de la operación.
+    
+    Raises 
+    ------
+    Error
+        Si el inversor no está registrado.
+    Error
+        Si la acción con el símbolo introducido no existe.
     """
     if nombre not in inversores_registrados:
         return {"error": f"El inversor '{nombre}' no está registrado"}
@@ -322,15 +395,30 @@ def comprar_accion(nombre: str, simbolo: str, cantidad: int):
     except ValueError as e:
         return {"error": str(e)}
     
-def vender_accion(nombre: str, simbolo: str, cantidad: int):
+def vender_accion(nombre: str, simbolo: str, cantidad: int) -> dict[str, str]:
     """
-    Permite a un inversor vender una cantidad determinada de acciones.
+    Ejecuta la venta de una accion para un inversor.
 
-    Parametros
-    -----------
-    - nombre(str) : nombre del inversor
-    - simbolo(str) : simbolo de la accion
-    - cantidad(int) : numero de acciones a comprar
+    Parameters
+    ----------
+    nombre : str 
+        nombre del inversor.
+    simbolo : str 
+        simbolo de la accion.
+    cantidad : int
+        numero de acciones a comprar.
+    
+    Returns
+    -------
+    dict[str, str]
+        Resultado de la operación.
+    
+    Raises 
+    ------
+    Error
+        Si el inversor no está registrado.
+    Error
+        Si la acción con el símbolo introducido no existe.
     """
     if nombre not in inversores_registrados:
         return {"error": f"El inversor '{nombre}' no está registrado"}
@@ -344,7 +432,28 @@ def vender_accion(nombre: str, simbolo: str, cantidad: int):
     except ValueError as e:
         return {"error": str(e)}
 
-def mostrar_transaccion_registrada(nombre: str):
+def mostrar_transaccion_registrada(nombre: str) -> dict[str, str]:
+    """
+    Muestra todas las transacciones realizdas por un inversor.
+
+    Parameters
+    ----------
+    nombre : str 
+        Nombre del inversor registrado.
+    
+    Returns
+    -------
+    dict[str, str]
+        Mensaje con resumen de las transacciones.
+    
+    Raises
+    ------
+    Error
+        Si el inversor no está registrado.
+    Error
+        Si el inversor no ha realizado ninguna operación.
+
+    """
     if nombre not in inversores_registrados:
         return {"error": f"El inversor '{nombre}' no está registrado"}
     inversor = inversores_registrados[nombre]
@@ -356,7 +465,24 @@ def mostrar_transaccion_registrada(nombre: str):
     return {"mensaje": resumen_transacciones}
 
 # Utiliza la sobrecarga del operador + para comprar acciones
-def comprar_acciones_con_operador(nombre: str, simbolo: str, cantidad: int):
+def comprar_acciones_con_operador(nombre: str, simbolo: str, cantidad: int) -> dict[str, str]:
+    """
+    Realiza una compra de acciones usando la sobrecarga del operador `+`.
+
+    Parameters
+    ----------
+    nombre : str
+        Nombre del inversor.
+    simbolo : str
+        Símbolo de la acción.
+    cantidad : int
+        Cantidad de acciones.
+
+    Returns
+    -------
+    dict[str, str]
+        Resultado de la operación.
+    """
     if nombre not in inversores_registrados:
         return {"error": f"El inversor '{nombre}' no está registrado"}
     
@@ -371,7 +497,24 @@ def comprar_acciones_con_operador(nombre: str, simbolo: str, cantidad: int):
         return {"error": str(e)}
 
 
-def vender_acciones_con_operador(nombre: str, simbolo: str, cantidad: int):
+def vender_acciones_con_operador(nombre: str, simbolo: str, cantidad: int) -> dict[str, str]:
+    """
+    Realiza una compra de acciones usando la sobrecarga del operador `-`.
+
+    Parameters
+    ----------
+    nombre : str
+        Nombre del inversor.
+    simbolo : str
+        Símbolo de la acción.
+    cantidad : int
+        Cantidad de acciones.
+
+    Returns
+    -------
+    dict[str, str]
+        Resultado de la operación.
+    """
     if nombre not in inversores_registrados:
         return {"error": f"El inversor '{nombre}' no está registrado"}
     
@@ -384,7 +527,57 @@ def vender_acciones_con_operador(nombre: str, simbolo: str, cantidad: int):
         return {"mensaje" : f"{nombre} ha vendido {cantidad} acciones de {accion.nombre} usando el operador '-'."}
     except Exception as e:
         return {"error": str(e)}
+    
+def inversor_contiene_accion(nombre: str, simbolo: str) -> dict[str, str]:
+    """
+    Verifica si un inversor tiene una accion específica usando la sobrecarga del operador 'in'.
 
+    Parameters
+    ----------
+    nombre : str
+        Nombre del inversor.
+    simbolo : str
+        Simbolo de la acción.
+    
+    Returns
+    -------
+    dict[str, str]
+        Mensaje indicando si el símbolo está o no en la cartera del inversor.
+    
+    Raises
+    ------
+    Error
+        Si el inversor no está registrado
+    """
+    if nombre not in inversores_registrados:
+        return {"error": f"El inversor '{nombre} no está registrado"}
+    if simbolo in inversores_registrados[nombre]:
+        return {"mensaje": f"El inversor {nombre} tiene acciones de {simbolo}."}
+    return {"mensaje": f"El inversor {nombre} NO tiene acciones de {simbolo}."}
+
+def comparar_inversores(nombre1: str, nombre2: str) -> dict[str, str]:
+    """
+    Compara dos inversores por su cartera usando la sobrecarga del operador `==`.
+
+    Parameters
+    ----------
+    nombre1 : str
+        Nombre del primer inversor.
+    nombre2 : str
+        Nombre del segundo inversor.
+
+    Returns
+    -------
+    dict[str, str]
+        Resultado de la comparación.
+    """
+    if nombre1 not in inversores_registrados or nombre2 not in inversores_registrados:
+        return {"error": "Ambos inversores no están registrados. No se puede realizar la comparación."}
+
+    if inversores_registrados[nombre1] == inversores_registrados[nombre2]:
+        return {"mensaje": f"{nombre1} y {nombre2} han invertido en las mismas empresas."}
+    else:
+        return {"mensaje": f"{nombre1} y {nombre2} NO han invertido en las mismas empresas."}
 
 
 #Clase Mercado
@@ -874,7 +1067,6 @@ def calcula_total_transacciones(nombre: str) -> dict[str, str]:
         realizadas += t.calcular_total()
 
     return {"mensaje": f"Total invertido por {nombre}: {round(realizadas, 2)}€"}
-
 
 #Clase IA
 def recomendacion(nombre: str) -> dict[str,str]:
