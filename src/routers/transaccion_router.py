@@ -1,87 +1,118 @@
-"""
-Rutas REST para transacciones (compra / venta).
 
-• Usa la conexión centralizada con SQLite (get_connection)
-• Refleja el nuevo esquema: usuario_id, simbolo, tipo, cantidad, precio_unitario
+"""
+Módulo de rutas para la gestión de transacciones en la API Flask
+
+Define endpoints RESTful para consultar y registrar transacciones de comprao venta 
+de acciones por parte de los inversores
+
+Utiliza SQLModel para la persistencia de datos y Flask Blueprint para la 
+modularización de rutas
+
+Dependencias
+------------
+- Flask
+- SQLModel
+- models (TransaccionDB)
+- main (engine de conexión a la base de datos)
 """
 
-from datetime import datetime, timezone
 from flask import Blueprint, request, jsonify, abort
 from sqlmodel import Session, select
+from models import TransaccionDB
+from main import engine
+from datetime import datetime
 
-from src.database.db_manager import get_connection
-from src.models import TransaccionDB
+transaccion_bp = Blueprint('transaccion', __name__)
 
-transaccion_bp = Blueprint("transaccion", __name__)
-
-
-# ---------------------------------------------------------------------------
 @transaccion_bp.route("/transacciones", methods=["GET"])
-def listar_transacciones():
+def get_transacciones():
     """
-    Filtros por ?usuario_id=…&simbolo=…
+    Obtener una lista de transacciones con filtros
+
+    Parameters:
+    -----------
+    inversor_id: int 
+        Filtra por ID del inversor
+    accion_id: int
+        Filtra por ID de la acción
+
+    Returns
+    -------
+    Response:
+        Lista de objetos JSON que representan las transacciones encontradas
     """
-    usuario_id = request.args.get("usuario_id")
-    simbolo    = request.args.get("simbolo")
+    session = Session(engine)
+    
+    inversor_id = request.args.get("inversor_id")
+    accion_id = request.args.get("accion_id")
 
-    with get_connection() as conn:
-        with Session(conn) as session:
-            query = select(TransaccionDB)
+    query = select(TransaccionDB)
 
-            if usuario_id:
-                query = query.where(TransaccionDB.usuario_id == int(usuario_id))
-            if simbolo:
-                query = query.where(TransaccionDB.simbolo == simbolo.upper())
+    if inversor_id:
+        query = query.filter(TransaccionDB.inversor_id == inversor_id)
 
-            transacciones = session.exec(query).all()
-            return jsonify([t.model_dump() for t in transacciones])
+    if accion_id:
+        query = query.filter(TransaccionDB.accion_id == accion_id)
 
+    transacciones = session.exec(query).all()
+    return jsonify([transaccion.model_dump() for transaccion in transacciones])
 
-# ---------------------------------------------------------------------------
 @transaccion_bp.route("/transacciones/<int:transaccion_id>", methods=["GET"])
-def obtener_transaccion(transaccion_id: int):
-    """Obtener una transacción por ID."""
-    with get_connection() as conn:
-        with Session(conn) as session:
-            trans = session.get(TransaccionDB, transaccion_id)
-            if trans is None:
-                abort(404, "Transacción no encontrada")
-            return jsonify(trans.model_dump())
+def get_transaccion(transaccion_id: int):
+    """
+    Obtener una transacción específica por su ID
 
+    Parameters
+    ----------
+    transaccion_id : int
+        ID de la transacción
 
-# ---------------------------------------------------------------------------
+    Returns
+    -------
+    Response:
+        Objeto JSON con los detalles de la transacción
+
+    Raises
+    ------
+    404 Not Found:
+        Cuando no se encuentre la transacción
+    """
+    session = Session(engine)
+    transaccion = session.get(TransaccionDB, transaccion_id)
+
+    if transaccion is None:
+        abort(404, description="Transaccion no encontrada")
+
+    return jsonify(transaccion.model_dump())
+
 @transaccion_bp.route("/transacciones", methods=["POST"])
-def crear_transaccion():
+def post_nueva_transaccion():
     """
-    Body JSON requerido:
-    {
-        "usuario_id": 1,
-        "simbolo": "AAPL",
-        "tipo": "compra" | "venta",
-        "cantidad": 3,
-        "precio_unitario": 178.5
-    }
+    Registrar una nueva transacción de compra/venta.
+
+    El cuerpo de la solicitud debe contener los campos:
+    "inversor_id", "accion_id", "cantidad" y"precio".
+
+    Returns
+    -------
+    Tuple[Response, int]:
+        Objeto JSON de la transacción creada y código HTTP 201
+
+    Raises
+    ------
+    400 Bad Request:
+        Si faltan campos obligatorios en la solicitud
     """
-    data = request.get_json(force=True)
-    campos = ("usuario_id", "simbolo", "tipo", "cantidad", "precio_unitario")
-    if not all(k in data for k in campos):
-        abort(400, f"Faltan campos obligatorios: {campos}")
+    session = Session(engine)
+    data = request.get_json()
 
-    if data["tipo"] not in ("compra", "venta"):
-        abort(400, "Tipo debe ser 'compra' o 'venta'")
+    if not all(key in data for key in ("inversor_id", "accion_id", "cantidad", "precio")):
+        abort(400, description="Faltan campos obligatorios")
 
-    nueva = TransaccionDB(
-        usuario_id     = data["usuario_id"],
-        simbolo        = data["simbolo"].upper(),
-        tipo           = data["tipo"],
-        cantidad       = data["cantidad"],
-        precio_unitario= data["precio_unitario"],
-        fecha          = datetime.now(timezone.utc),
-    )
+    nueva = TransaccionDB(inversor_id=data["inversor_id"], accion_id=data["accion_id"], cantidad=data["cantidad"], precio=data["precio"], fecha_hora=datetime.now(datetime.timezone.utc))
 
-    with get_connection() as conn:
-        with Session(conn) as session:
-            session.add(nueva)
-            session.commit()
-            session.refresh(nueva)
-            return jsonify(nueva.model_dump()), 201
+    session.add(nueva)
+    session.commit()
+    session.refresh(nueva)
+    
+    return jsonify(nueva.model_dump()), 201
