@@ -1,93 +1,91 @@
+
 """
-Módulo de rutas para la gestión de acciones en la API Flask
+Módulo de rutas para la gestión de inversores en la API Flask.
 
-Este módulo define endpoints RESTful para hacer operaciones sobre
-acciones ccomo obtener la lista completa de acciones, consultar una acción por ID 
-y registrar una nueva acción
+Proporciona endpoints RESTful para consultar y registrar inversores en la base de 
+datos, utiliza SQLModel para el manejo de datos relacional y Flask Blueprint para 
+la organización modular del código
 
-Utiliza SQLModel para la interacción con la base de datos, y Flask Blueprint para 
-modularizar las rutas
-
-Dependencias
+Dependencies
 ------------
 - Flask
 - SQLModel
-- models (AccionDB)
-- main (engine de conexión a base de datos)
+- models (InversorDB)
+- main (engine de conexión a la base de datos)
 """
 
 from flask import Blueprint, request, jsonify, abort
 from sqlmodel import Session, select
-from models import AccionDB  
+from models import InversorDB  
 from main import engine  
+from datetime import datetime
 
-accion_bp = Blueprint("accion", __name__)
+inversor_bp = Blueprint("inversor", __name__)
 
-@accion_bp.route("/acciones", methods=["GET"])
-def get_acciones():
+@inversor_bp.route("/inversores", methods=["GET"])
+def get_inversor():
     """
-    Obtener todas las acciones registradas en la base de datos
+    Obtener todos los inversores registrados en la base de datos
 
     Returns
     -------
     Response:
-        Una lista de objetos JSON que representan las acciones
+        Lista de objetos JSON que representan los inversores
     """
     session = Session(engine)
-    acciones = session.exec(select(AccionDB)).all()
-    return jsonify([accion.model_dump() for accion in acciones])
+    inversores = session.exec(select(InversorDB)).all()
+    return jsonify([inversor.model_dump() for inversor in inversores])
 
-@accion_bp.route("/acciones/<int:accion_id>", methods=["GET"])
-def get_accion_id(accion_id):
+@inversor_bp.route("/inversores/<int:inversor_id>", methods=["GET"])
+def get_inversor_id(inversor_id):
     """
-    Obtener una acción específica por su identificador único
+    Obtener un inversor específico por su identificador
 
     Parameters
     ----------
-    accion_id : int
-        ID de la acción a buscar
+    inversor_id : int
+        ID del inversor a consultar
 
     Returns
     -------
     Response:
-        Objeto JSON que representa la acción solicitada
+        Objeto JSON que representa el inversor solicitado
 
     Raises
     ------
     404 Not Found:
-        Cuando no se encuentra una acción con el ID proporcionado
+        Si no se encuentra un inversor con el ID indicado
     """
     session = Session(engine)
-    accion = session.get(AccionDB, accion_id)
-    if accion is None:
-        abort(404, description="Accion no encontrada")
-    return jsonify(accion.model_dump())
+    inversor = session.get(InversorDB, inversor_id)
+    if inversor is None:
+        abort(404, description="Inversor no encontrado")
+    return jsonify(inversor.model_dump())
 
-@accion_bp.route("/acciones", methods=["POST"])
-def post_nueva_accion():
+@inversor_bp.route("/inversores", methods=["POST"])
+def post_nuevo_inversor():
     """
-    Crear una nueva acción y guardarla en la base de datos
+    Registrar un nuevo inversor en la base de datos
 
-    El cuerpo de la solicitud debe ser un JSON que contenga los campos:
-    "simbolo", "nombre" y "precio_actual"
+    El cuerpo de la solicitud debe contener los siguientes campos:
+    "nombre", "apellidos", "email", "contrasena", "tarjeta_credito" y "capital"
 
     Returns
     -------
     Tuple[Response, int]:
-        El objeto JSON que representa la acción creada y el código de estado 201
+        Objeto JSON que representa al inversor creado y código de estado 201
 
     Raises
     ------
     400 Bad Request:
-        Si faltan campos obligatorios en el body de la solicitud
+        Si falta alguno de los campos requeridos en la solicitud
     """
-    data = request.get_json()
-    if not all(key in data for key in ("simbolo", "nombre", "precio_actual")):
-        abort(400, description="Faltan campos obligatorios por completar")
-    
-    nuevo = AccionDB(simbolo=data["simbolo"], nombre=data["nombre"],precio=data["precio_actual"] )
-    
     session = Session(engine)
+    data = request.get_json()
+    if not all(key in data for key in ("nombre", "apellidos", "email", "contrasena", "tarjeta_credito", "capital")):
+        abort(400, description= "Faltan campos obligatorios por completar")
+    
+    nuevo = InversorDB(nombre=data["nombre"], apellidos=data["apellidos"], email=data["email"], contrasena=data["contrasena"], tarjeta_credito=data["tarjeta_credito"], capital=data["capital"])
     session.add(nuevo)
     session.commit()
     session.refresh(nuevo)
