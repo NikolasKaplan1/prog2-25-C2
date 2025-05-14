@@ -97,15 +97,32 @@ class Mercado(BaseMercado):
     
     Methods
     -------
-    registrar_accion(accion: Accion) -> None
+    registrar_accion(accion: Accion)
         Sirve para añadir una acción al mercado
-    obtener_precio(simbolo: str) -> Union[float,str]
+    obtener_precio(simbolo: str)
         Te da el precio de una acción dado su símbolo
-    bancarrota(simbolo: str) -> Optional[str]
+    bancarrota(simbolo: str)
         Declara en bancarrota una acción dado su símbolo.
-    simular_movimientos() -> None
-        Simula movimientos de un mercado (cambia precios aleatoriamente)
-
+    simular_movimientos()
+        Simula movimientos de un mercado (cambia precios aleatoriamente).
+    __str__()
+        Devuelve un string que da información sobre el mercado.
+    __len__()
+        Devuelve el número de acciones del mercado.
+    __getitem__(item: int)
+        Devuelve el elemento en la posición item de la lista de acciones
+    __contains__(simbolo: str)
+        Devuelve True si la acción con el simbolo pasado está en el mercado.
+    __iter__()
+        El mercado se itera a partir de la lista de acciones.
+    __eq__(other: Mercado)
+        Dos mercados son iguales si tienen las mismas acciones.
+    __ne__(other: Mercado)
+        Dos mercados no son iguales si no tienen las  mismas acciones.
+    __add__(other: Mercado)
+        Sumas dos mercados y el resultado es un mercado con las acciones de ambas.
+    __iadd__(other: Mercado)
+        Le sumas a un mercado las acciones del otro
     """
     _mercados_registrados: dict[str,"Mercado"] = {}
     def __init__(self, nombre: str, lista_acciones: list[Accion]):
@@ -158,7 +175,7 @@ class Mercado(BaseMercado):
         TypeError
             En el caso de que acción no sea de Acción, salta error.
         """
-        for a in self.lista_acciones:
+        for a in self._lista_acciones:
             if a.simbolo == accion.simbolo:
                 raise ValueError(f"La acción con símbolo {accion.simbolo} ya está registrada en el mercado.")
 
