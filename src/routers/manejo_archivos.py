@@ -163,6 +163,36 @@ def exportar_acciones_pickle(ruta: Path = DATA_DIR / 'acciones.pkl') -> None:
     with open(ruta, 'wb') as f:
         pickle.dump(Accion.acciones_registradas, f)
 
+def importar_acciones_pickle(ruta: Path = DATA_DIR / 'acciones.pkl') -> dict[str, Accion]:
+    """
+    Importa los datos de acciones registradas desde un archivo Pickle.
+
+    Parameters
+    ----------
+    ruta : Path, optional
+        Ruta del archivo Pickle. Por defecto es 'data/acciones.pkl'.
+
+    Returns
+    -------
+    dict[str, Accion]
+        Diccionario con los objetos Accion restaurados, indexados por símbolo.
+
+    Raises
+    ------
+    FileNotFoundError
+        Si el archivo no existe.
+    Exception
+        Si ocurre un error durante la deserialización.
+    """
+    try:
+        with ruta.open('rb') as f:
+            return pickle.load(f)
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Archivo no encontrado: {ruta}")
+    except Exception as e:
+        raise Exception(f"No se pudieron importar las acciones desde {ruta}: {e}")
+
+
 def exportar_historiales_pickle(ruta: Path = DATA_DIR / 'historiales.pkl') -> None:
     """
     Exporta a un archivo Pickle el historial de precios de las acciones registradas.
@@ -181,6 +211,34 @@ def exportar_historiales_pickle(ruta: Path = DATA_DIR / 'historiales.pkl') -> No
     with open(ruta, 'wb') as f:
         pickle.dump(historiales, f)
 
+def importar_historiales_pickle(ruta: Path = DATA_DIR / 'historiales.pkl') -> dict[str, list[float]]:
+    """
+    Importa el historial de precios de las acciones desde un archivo Pickle.
+
+    Parameters
+    ----------
+    ruta : Path, optional
+        Ruta del archivo Pickle. Por defecto es 'data/historiales.pkl'.
+
+    Returns
+    -------
+    dict[str, list[float]]
+        Diccionario con los historiales de precios por símbolo.
+
+    Raises
+    ------
+    FileNotFoundError
+        Si el archivo no existe.
+    Exception
+        Si ocurre un error durante la deserialización.
+    """
+    try:
+        with ruta.open('rb') as f:
+            return pickle.load(f)
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Archivo no encontrado: {ruta}")
+    except Exception as e:
+        raise Exception(f"No se pudieron importar los historiales desde {ruta}: {e}")
 
 def exportar_mercados_registrados_pickle(ruta: Path = DATA_DIR / 'mercados_registrados.pkl') -> None:
     """
@@ -199,6 +257,34 @@ def exportar_mercados_registrados_pickle(ruta: Path = DATA_DIR / 'mercados_regis
     with open(ruta, 'wb') as f:
         pickle.dump(Mercado.mercados_registrados, f)
 
+def importar_mercados_registrados_pickle(ruta: Path = DATA_DIR / 'mercados_registrados.pkl') -> dict[str, Mercado]:
+    """
+    Importa los datos de los mercados registrados desde un archivo Pickle.
+
+    Parameters
+    ----------
+    ruta : Path, optional
+        Ruta del archivo Pickle. Por defecto es 'data/mercados_registrados.pkl'.
+
+    Returns
+    -------
+    dict[str, Mercado]
+        Diccionario con los objetos Mercado restaurados, indexados por nombre o clave.
+
+    Raises
+    ------
+    FileNotFoundError
+        Si el archivo no existe.
+    Exception
+        Si ocurre un error durante la deserialización.
+    """
+    try:
+        with ruta.open('rb') as f:
+            return pickle.load(f)
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Archivo no encontrado: {ruta}")
+    except Exception as e:
+        raise Exception(f"No se pudieron importar los mercados desde {ruta}: {e}")
 
 def exportar_inversores_pickle(lista_inversores: list[Inversor], ruta: Path = DATA_DIR / "inversores.pkl") -> None:
     """
@@ -215,7 +301,7 @@ def exportar_inversores_pickle(lista_inversores: list[Inversor], ruta: Path = DA
         pickle.dump(lista_inversores, f)
 
 
-def importar_inversores_pickle(ruta: Path = DATA_DIR / "inversores.pkl") -> list[Inversor] -> None:
+def importar_inversores_pickle(ruta: Path = DATA_DIR / "inversores.pkl") -> list[Inversor]:
     """
     Importa una lista de inversores desde un archivo Pickle.
 
