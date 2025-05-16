@@ -22,9 +22,9 @@ from routers.manejo_archivos import (
 from src.models import mercado
 
 
-
-#Clases Accion y AccionReal
-def crear_accion(simbolo: str, nombre: str, precio_actual: float, historial_precios: dict[str,float]) -> dict[str,str]:
+# Clases Accion y AccionReal
+def crear_accion(simbolo: str, nombre: str, precio_actual: float, historial_precios: dict[str, float]) -> dict[
+    str, str]:
     """
     Esta función crea una nueva acción.
 
@@ -60,7 +60,7 @@ def crear_accion(simbolo: str, nombre: str, precio_actual: float, historial_prec
     return {"mensaje": "Acción añadida correctamente"}
 
 
-def crear_accion_real(simbolo: str) -> dict[str,str]:
+def crear_accion_real(simbolo: str) -> dict[str, str]:
     """
     Esta función crea una nueva acción con datos de la vida real.
 
@@ -82,8 +82,8 @@ def crear_accion_real(simbolo: str) -> dict[str,str]:
     Error
         Nos dará error si ya existe una acción con el símbolo que le pasamos.
     """
-    repr = yf.Ticker(simbolo) #esto da una representación de la acción real con su símbolo
-    data = repr.history(period="365d") #nos da los datos del último año
+    repr = yf.Ticker(simbolo)  # esto da una representación de la acción real con su símbolo
+    data = repr.history(period="365d")  # nos da los datos del último año
     if data.empty:
         return {"error": f"No se encontraron datos para la acción con el símbolo {simbolo} en este último año"}
     if simbolo in Accion._acciones_registradas:
@@ -96,7 +96,8 @@ def crear_accion_real(simbolo: str) -> dict[str,str]:
     exportar_acciones_reales_csv()
     return {"mensaje": "Acción añadida correctamente"}
 
-def actualizar_precio(simbolo: str,nuevo_precio: float) -> dict[str,str]:
+
+def actualizar_precio(simbolo: str, nuevo_precio: float) -> dict[str, str]:
     """
     Esta función actualiza el precio de una acción dada.
 
@@ -134,7 +135,8 @@ def actualizar_precio(simbolo: str,nuevo_precio: float) -> dict[str,str]:
     except ValueError:
         return {"error": "El precio que has puesto es el actual"}
 
-def actualizar_precio_real(simbolo: str) -> dict[str,str]:
+
+def actualizar_precio_real(simbolo: str) -> dict[str, str]:
     """
     Esta función actualiza el precio de una acción dada con su precio en la vida real.
 
@@ -172,7 +174,8 @@ def actualizar_precio_real(simbolo: str) -> dict[str,str]:
     except ValueError:
         return {"error": f"No se puede actualizar el precio de {simbolo} ya que no hay datos en Yahoo Finance"}
 
-def datos_accion(simbolo:str) -> dict[str,str]:
+
+def datos_accion(simbolo: str) -> dict[str, str]:
     """
     Esta función nos devuelve los datos de la acción que le pasamos.
 
@@ -197,7 +200,8 @@ def datos_accion(simbolo:str) -> dict[str,str]:
     accion = Accion._acciones_registradas[simbolo]
     return {"mensaje": str(accion)}
 
-def menor_que(simbolo1: str, simbolo2: str) -> dict[str,str]:
+
+def menor_que(simbolo1: str, simbolo2: str) -> dict[str, str]:
     """
     Esta función sirve para comparar si una acción es menor a otra en base a su precio.
 
@@ -231,7 +235,8 @@ def menor_que(simbolo1: str, simbolo2: str) -> dict[str,str]:
     else:
         return {"mensaje": f"El precio de {simbolo1} no es menor que el de {simbolo2}"}
 
-def mayor_que(simbolo1: str, simbolo2: str) -> dict[str,str]:
+
+def mayor_que(simbolo1: str, simbolo2: str) -> dict[str, str]:
     """
     Esta función sirve para comparar si una acción es mayor a otra en base a su precio.
 
@@ -266,9 +271,11 @@ def mayor_que(simbolo1: str, simbolo2: str) -> dict[str,str]:
         return {"mensaje": f"El precio de {simbolo1} no es mayor que {simbolo2}"}
 
 
-#Clase Inversor
+# Clase Inversor
 
 inversores_registrados = {}
+
+
 def crea_inversor(nombre: str, capital: float, tipo: str) -> dict[str, str]:
     """
     Esta función crea un inversor nuevo y lo guarda en el diccionario de inversores.
@@ -326,7 +333,7 @@ def datos_inversor(nombre: str) -> dict[str, Union[str, float]]:
     """
     if nombre not in inversores_registrados:
         return {"error": f"El inversor '{nombre}' no está registrado"}
-    
+
     inversor = inversores_registrados[nombre]
     if isinstance(inversor, InversorAgresivo):
         tipo = "Agresivo"
@@ -335,7 +342,8 @@ def datos_inversor(nombre: str) -> dict[str, Union[str, float]]:
     return {"nombre": nombre,
             "capital": round(inversor.capital, 2),
             "tipo": tipo
-        }
+            }
+
 
 def mostrar_cartera(nombre: str) -> dict[str, str]:
     """
@@ -398,7 +406,8 @@ def comprar_accion(nombre: str, simbolo: str, cantidad: int) -> dict[str, str]:
         return {"mensaje": f"{nombre} ha comprado {cantidad} acciones de {accion.nombre} exitosamente"}
     except ValueError as e:
         return {"error": str(e)}
-    
+
+
 def vender_accion(nombre: str, simbolo: str, cantidad: int) -> dict[str, str]:
     """
     Ejecuta la venta de una accion para un inversor.
@@ -436,6 +445,7 @@ def vender_accion(nombre: str, simbolo: str, cantidad: int) -> dict[str, str]:
     except ValueError as e:
         return {"error": str(e)}
 
+
 def mostrar_transaccion_registrada(nombre: str) -> dict[str, str]:
     """
     Muestra todas las transacciones realizdas por un inversor.
@@ -468,6 +478,7 @@ def mostrar_transaccion_registrada(nombre: str) -> dict[str, str]:
         resumen_transacciones += str(transaccion) + "\n"
     return {"mensaje": resumen_transacciones}
 
+
 # Utiliza la sobrecarga del operador + para comprar acciones
 def comprar_acciones_con_operador(nombre: str, simbolo: str, cantidad: int) -> dict[str, str]:
     """
@@ -489,7 +500,7 @@ def comprar_acciones_con_operador(nombre: str, simbolo: str, cantidad: int) -> d
     """
     if nombre not in inversores_registrados:
         return {"error": f"El inversor '{nombre}' no está registrado"}
-    
+
     inversor = inversores_registrados[nombre]
     if simbolo not in Accion._acciones_registradas:
         return {"error": f"La acción con el símbolo {simbolo} no existe"}
@@ -521,16 +532,17 @@ def vender_acciones_con_operador(nombre: str, simbolo: str, cantidad: int) -> di
     """
     if nombre not in inversores_registrados:
         return {"error": f"El inversor '{nombre}' no está registrado"}
-    
+
     inversor = inversores_registrados[nombre]
     if simbolo not in Accion._acciones_registradas:
         return {"error": f"La acción con el símbolo {simbolo} no existe"}
     accion = Accion._acciones_registradas[simbolo]
     try:
         inversor - (accion, cantidad)
-        return {"mensaje" : f"{nombre} ha vendido {cantidad} acciones de {accion.nombre} usando el operador '-'."}
+        return {"mensaje": f"{nombre} ha vendido {cantidad} acciones de {accion.nombre} usando el operador '-'."}
     except Exception as e:
         return {"error": str(e)}
+
 
 def inversor_contiene_accion(nombre: str, simbolo: str) -> dict[str, str]:
     """
@@ -559,6 +571,7 @@ def inversor_contiene_accion(nombre: str, simbolo: str) -> dict[str, str]:
         return {"mensaje": f"El inversor {nombre} tiene acciones de {simbolo}."}
     return {"mensaje": f"El inversor {nombre} NO tiene acciones de {simbolo}."}
 
+
 def comparar_inversores(nombre1: str, nombre2: str) -> dict[str, str]:
     """
     Compara dos inversores por su cartera usando la sobrecarga del operador `==`.
@@ -584,8 +597,8 @@ def comparar_inversores(nombre1: str, nombre2: str) -> dict[str, str]:
         return {"mensaje": f"{nombre1} y {nombre2} NO han invertido en las mismas empresas."}
 
 
-#Clase Mercado
-def crear_mercado(nombre: str, lista_acciones: list[str]) -> dict[str,str]:
+# Clase Mercado
+def crear_mercado(nombre: str, lista_acciones: list[str]) -> dict[str, str]:
     """
     Esta función crea un mercado financiero.
 
@@ -653,7 +666,7 @@ def datos_mercado(nombre: str) -> dict[str, str]:
     return {"mensaje": Mercado._mercados_registrados[nombre].__str__()}
 
 
-def registrar_accion(nombre: str, simbolo: str) -> dict[str,str]:
+def registrar_accion(nombre: str, simbolo: str) -> dict[str, str]:
     """
     Esta función registra una acción en el mercado que queremos
 
@@ -693,7 +706,7 @@ def registrar_accion(nombre: str, simbolo: str) -> dict[str,str]:
     return {"mensaje": "Acción registrada correctamente"}
 
 
-def obtener_precio(nombre: str, simbolo: str) -> Union[dict[str,str], dict[str,float]]:
+def obtener_precio(nombre: str, simbolo: str) -> Union[dict[str, str], dict[str, float]]:
     """
     Con esta función obtenemos el precio de una acción dado el mercado en el que está y el símbolo de la acción.
 
@@ -728,7 +741,7 @@ def obtener_precio(nombre: str, simbolo: str) -> Union[dict[str,str], dict[str,f
         return {"error": resultado}
 
 
-def bancarrota(nombre: str, simbolo: str) -> dict[str,str]:
+def bancarrota(nombre: str, simbolo: str) -> dict[str, str]:
     """
     Esta función sirve para declarar en bancarrota una acción dado su símbolo. Lo que
     hace es eliminarla de lista_acciones y actualiza su precio a 0.
@@ -773,7 +786,8 @@ def bancarrota(nombre: str, simbolo: str) -> dict[str,str]:
     else:
         return {"error": resultado}
 
-def simular_movimientos(nombre: str) -> dict[str,str]:
+
+def simular_movimientos(nombre: str) -> dict[str, str]:
     """
     Esta función sirve para simular movimientos en un mercado.
 
@@ -799,7 +813,8 @@ def simular_movimientos(nombre: str) -> dict[str,str]:
     mercado.simular_movimientos()
     return {"mensaje": "Movimiento simulado exitosamente"}
 
-def tamaño(nombre: str) -> dict[str,str]:
+
+def tamaño(nombre: str) -> dict[str, str]:
     """
     Esta función devuelve el tamaño de un mercado en base al número de acciones que contiene.
 
@@ -824,7 +839,8 @@ def tamaño(nombre: str) -> dict[str,str]:
     mercado = Mercado._mercados_registrados[nombre]
     return {"mensaje": f"El tamaño del mercado es {len(mercado)}"}
 
-def obtener_accion(nombre: str, item: int) -> dict[str,str]:
+
+def obtener_accion(nombre: str, item: int) -> dict[str, str]:
     """
     Esta función sirve para obtener la acción de un mercado dado un item.
 
@@ -859,7 +875,8 @@ def obtener_accion(nombre: str, item: int) -> dict[str,str]:
         return {"error": f"El parámetro {item} no está entre 0 y {len(mercado)}"}
     return {"mensaje": f"La acción que está en la posición {item} es {mercado[item].simbolo}"}
 
-def contener(nombre: str, simbolo: str) -> dict[str,str]:
+
+def contener(nombre: str, simbolo: str) -> dict[str, str]:
     """
     Esta función sirve para ver si una acción está contenida en un mercado.
 
@@ -888,7 +905,8 @@ def contener(nombre: str, simbolo: str) -> dict[str,str]:
         return {"mensaje": f"La acción cuyo símbolo es {simbolo} sí que está en el mercado {nombre}"}
     return {"mensaje": f"La acción cuyo símbolo es {simbolo} no que está en el mercado {nombre}"}
 
-def igual_mercado(nombre1: str, nombre2: str) -> dict[str,str]:
+
+def igual_mercado(nombre1: str, nombre2: str) -> dict[str, str]:
     """
     Esta función sirve para ver si dos mercados son iguales en base a sus acciones.
 
@@ -921,7 +939,8 @@ def igual_mercado(nombre1: str, nombre2: str) -> dict[str,str]:
     else:
         return {"mensaje": f"Los mercados {nombre1} y {nombre2} no son iguales"}
 
-def no_igual_mercado(nombre1: str, nombre2: str) -> dict[str,str]:
+
+def no_igual_mercado(nombre1: str, nombre2: str) -> dict[str, str]:
     """
     Esta función sirve para ver si dos mercados no son iguales en base a sus acciones.
 
@@ -954,7 +973,8 @@ def no_igual_mercado(nombre1: str, nombre2: str) -> dict[str,str]:
     else:
         return {"mensaje": f"Los mercados {nombre1} y {nombre2} son iguales"}
 
-def suma_mercados(nombre1: str, nombre2: str) -> dict[str,str]:
+
+def suma_mercados(nombre1: str, nombre2: str) -> dict[str, str]:
     """
     Esta función sirve para sumar dos mercados.
 
@@ -990,7 +1010,8 @@ def suma_mercados(nombre1: str, nombre2: str) -> dict[str,str]:
     except:
         return {"error": f"Ya existe un mercado con el nombre combinado {nombre1 + '_' + nombre2}"}
 
-def suma_propia(nombre1: str, nombre2: str) -> dict[str,str]:
+
+def suma_propia(nombre1: str, nombre2: str) -> dict[str, str]:
     """
     Esta función sirve para sumar el segundo mercado al primero.
 
@@ -1020,6 +1041,7 @@ def suma_propia(nombre1: str, nombre2: str) -> dict[str,str]:
     mercado2 = Mercado._mercados_registrados[nombre2]
     mercado1 += mercado2
     return {"mensaje": "La suma se ha efectuado correctamente"}
+
 
 # Clase Transaccion
 
@@ -1096,8 +1118,9 @@ def calcula_total_transacciones(nombre: str) -> dict[str, str]:
 
     return {"mensaje": f"Total invertido por {nombre}: {round(realizadas, 2)}€"}
 
-#Clase IA
-def recomendacion(nombre: str) -> dict[str,str]:
+
+# Clase IA
+def recomendacion(nombre: str) -> dict[str, str]:
     """
     Nos da una recomendación para un inversor en función de sus caracteristicas.
 
@@ -1126,6 +1149,7 @@ def recomendacion(nombre: str) -> dict[str,str]:
         return {"mensaje": f"Las recomendaciones son {IA(inversor).recomendacion()}"}
     except:
         return {"error": "No tienes suficiente capital para comprar ninguna acción"}
+
 
 
 
