@@ -5,6 +5,7 @@ from datetime import datetime
 
 class InversorDB(SQLModel, table=True):
     __tablename__ = "inversores"
+    __table_args__ = {"extend_existing": True}
 
     id: Optional[int] = Field(default=None, primary_key=True)
     nombre: str
@@ -20,6 +21,7 @@ class InversorDB(SQLModel, table=True):
 
 class AccionDB(SQLModel, table=True):
     __tablename__ = "acciones"
+    __table_args__ = {"extend_existing": True}
 
     id: Optional[int] = Field(default=None, primary_key=True)
     simbolo: str
@@ -33,6 +35,7 @@ class AccionDB(SQLModel, table=True):
 
 class TransaccionDB(SQLModel, table=True):
     __tablename__ = "transacciones"
+    __table_args__ = {"extend_existing": True}
 
     id: Optional[int] = Field(default=None, primary_key=True)
     inversor_id: int = Field(foreign_key="inversores.id")
