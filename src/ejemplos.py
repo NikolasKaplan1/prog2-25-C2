@@ -373,7 +373,8 @@ def eliminar_accion() -> None:
     nombre = input("Ingrese el nombre del mercado: ")
     simbolo = input("Ingrese el símbolo de la acción que quiere eliminar: ")
     resultado = control.eliminar_accion(nombre, simbolo)
-    print(resultado.get("error") or resultado.get("precio"))
+    print(resultado.get("error") or resultado.get("mensaje"))
+
 def bancarrota() -> None:
     """
     Esta función sirve para declarar en bancarrota una acción de un mercado.
