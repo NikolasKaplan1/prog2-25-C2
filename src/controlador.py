@@ -6,19 +6,21 @@ from estrategias import InversorAgresivo, InversorConservador, IA
 from typing import Union
 import random
 import yfinance as yf
+
 from routers.manejo_archivos import (
     exportar_transacciones_csv,
     exportar_inversores_pickle,
     exportar_acciones_csv,
     exportar_historial_precios_csv,
     exportar_acciones_pickle,
-    exportar_historial_precios_pickle,
+    exportar_historiales_pickle,
     exportar_acciones_reales_csv,
     exportar_mercados_csv,
     exportar_mercados_registrados_pickle,
     acciones_por_mercado_csv
 )
 from src.models import mercado
+
 
 
 #Clases Accion y AccionReal
@@ -54,7 +56,7 @@ def crear_accion(simbolo: str, nombre: str, precio_actual: float, historial_prec
     exportar_acciones_csv()
     exportar_historial_precios_csv()
     exportar_acciones_pickle()
-    exportar_historial_precios_pickle()
+    exportar_historiales_pickle()
     return {"mensaje": "Acción añadida correctamente"}
 
 
@@ -90,7 +92,7 @@ def crear_accion_real(simbolo: str) -> dict[str,str]:
     exportar_acciones_csv()
     exportar_historial_precios_csv()
     exportar_acciones_pickle()
-    exportar_historial_precios_pickle()
+    exportar_historiales_pickle()
     exportar_acciones_reales_csv()
     return {"mensaje": "Acción añadida correctamente"}
 
@@ -120,12 +122,14 @@ def actualizar_precio(simbolo: str,nuevo_precio: float) -> dict[str,str]:
     """
     if simbolo not in Accion._acciones_registradas:
         return {"error": f"No existe una acción con el símbolo {simbolo}"}
+    Accion._acciones_registradas[simbolo].actualizar_precio(nuevo_precio)
+    return {"mensaje": "Precio actualizado correctamente"}
     try:
         Accion._acciones_registradas[simbolo].actualizar_precio(nuevo_precio)
         exportar_acciones_csv()
         exportar_historial_precios_csv()
         exportar_acciones_pickle()
-        exportar_historial_precios_pickle()
+        exportar_historiales_pickle()
         return {"mensaje": "Precio actualizado correctamente"}
     except ValueError:
         return {"error": "El precio que has puesto es el actual"}
@@ -158,11 +162,11 @@ def actualizar_precio_real(simbolo: str) -> dict[str,str]:
     if type(accion) is not AccionReal:
         return {"error": f"La acción con el símbolo {simbolo} no es una acción real"}
     try:
-        accion.actualizar_precio()
+        accion.actualizar_precio_real()
         exportar_acciones_csv()
         exportar_historial_precios_csv()
         exportar_acciones_pickle()
-        exportar_historial_precios_pickle()
+        exportar_historiales_pickle()
         exportar_acciones_reales_csv()
         return {"mensaje": "Precio actualizado correctamente"}
     except ValueError:
@@ -223,9 +227,9 @@ def menor_que(simbolo1: str, simbolo2: str) -> dict[str,str]:
     accion2 = Accion._acciones_registradas[simbolo2]
     resultado = accion1 < accion2
     if resultado:
-        return {"mensaje": f"El precio de {simbolo1} es menor que {simbolo2}"}
+        return {"mensaje": f"El precio de {simbolo1} es menor que el de {simbolo2}"}
     else:
-        return {"mensaje": f"El precio de {simbolo1} no es menor que {simbolo2}"}
+        return {"mensaje": f"El precio de {simbolo1} no es menor que el de {simbolo2}"}
 
 def mayor_que(simbolo1: str, simbolo2: str) -> dict[str,str]:
     """
@@ -277,12 +281,12 @@ def crea_inversor(nombre: str, capital: float, tipo: str) -> dict[str, str]:
         Capital del inversor
     tipo : str
         Tipo de inversor ("Agresivo" ó "Pasivo").
-    
+
     Returns
     -------
     dict[str, str]
         Diccionario con un mensaje de éxito.
-    
+
     Raises
     ------
     Error
@@ -306,19 +310,19 @@ def datos_inversor(nombre: str) -> dict[str, Union[str, float]]:
 
     Parameters
     ----------
-    nombre : str 
+    nombre : str
         Nombre del inversor
-    
+
     Returns
     -------
     dict[str, Union[str, float]]
         Diccionario con información del inversor.
-    
+
     Raises
     ------
     Error
         Si el inversor no ha sido registrado previamente.
-    
+
     """
     if nombre not in inversores_registrados:
         return {"error": f"El inversor '{nombre}' no está registrado"}
@@ -329,7 +333,7 @@ def datos_inversor(nombre: str) -> dict[str, Union[str, float]]:
     else:
         tipo = "Pasivo"
     return {"nombre": nombre,
-            "capital": round(inversor.capital, 2), 
+            "capital": round(inversor.capital, 2),
             "tipo": tipo
         }
 
@@ -339,14 +343,14 @@ def mostrar_cartera(nombre: str) -> dict[str, str]:
 
     Parameters
     ----------
-    nombre : str 
+    nombre : str
         Nombre del inversor.
-    
+
     Returns
     -------
     dict[str, str]
         Diccionario con el resumen de la cartera.
-    
+
     Raises
     ------
     Error
@@ -364,19 +368,19 @@ def comprar_accion(nombre: str, simbolo: str, cantidad: int) -> dict[str, str]:
 
     Parameters
     ----------
-    nombre : str 
+    nombre : str
         nombre del inversor.
-    simbolo : str 
+    simbolo : str
         simbolo de la accion.
     cantidad : int
         numero de acciones a comprar.
-    
+
     Returns
     -------
     dict[str, str]
         Resultado de la operación.
-    
-    Raises 
+
+    Raises
     ------
     Error
         Si el inversor no está registrado.
@@ -401,19 +405,19 @@ def vender_accion(nombre: str, simbolo: str, cantidad: int) -> dict[str, str]:
 
     Parameters
     ----------
-    nombre : str 
+    nombre : str
         nombre del inversor.
-    simbolo : str 
+    simbolo : str
         simbolo de la accion.
     cantidad : int
         numero de acciones a comprar.
-    
+
     Returns
     -------
     dict[str, str]
         Resultado de la operación.
-    
-    Raises 
+
+    Raises
     ------
     Error
         Si el inversor no está registrado.
@@ -438,14 +442,14 @@ def mostrar_transaccion_registrada(nombre: str) -> dict[str, str]:
 
     Parameters
     ----------
-    nombre : str 
+    nombre : str
         Nombre del inversor registrado.
-    
+
     Returns
     -------
     dict[str, str]
         Mensaje con resumen de las transacciones.
-    
+
     Raises
     ------
     Error
@@ -527,7 +531,7 @@ def vender_acciones_con_operador(nombre: str, simbolo: str, cantidad: int) -> di
         return {"mensaje" : f"{nombre} ha vendido {cantidad} acciones de {accion.nombre} usando el operador '-'."}
     except Exception as e:
         return {"error": str(e)}
-    
+
 def inversor_contiene_accion(nombre: str, simbolo: str) -> dict[str, str]:
     """
     Verifica si un inversor tiene una accion específica usando la sobrecarga del operador 'in'.
@@ -538,12 +542,12 @@ def inversor_contiene_accion(nombre: str, simbolo: str) -> dict[str, str]:
         Nombre del inversor.
     simbolo : str
         Simbolo de la acción.
-    
+
     Returns
     -------
     dict[str, str]
         Mensaje indicando si el símbolo está o no en la cartera del inversor.
-    
+
     Raises
     ------
     Error
@@ -624,6 +628,31 @@ def crear_mercado(nombre: str, lista_acciones: list[str]) -> dict[str,str]:
     return {"mensaje": "Mercado creado correctamente"}
 
 
+def datos_mercado(nombre: str) -> dict[str, str]:
+    """
+    Esta función sirve para imprimir los datos del mercado con el nombre que le pasamos.
+
+    Parameters
+    ----------
+    nombre : str
+        Nombre del mercado
+
+    Returns
+    -------
+    dict[str,str]
+        Nos devuelve un diccionario con una clave str (que será "error" o "mensaje") y un valor
+        str que te dirá si ha habido un error o la impresión del mercado.
+
+    Raises
+    ------
+    Error
+        Da error si no existe un mercado con el nombre que le pasamos.
+    """
+    if nombre not in Mercado._mercados_registrados:
+        return {"error": f"No existe un mercado con el nombre {nombre}"}
+    return {"mensaje": Mercado._mercados_registrados[nombre].__str__()}
+
+
 def registrar_accion(nombre: str, simbolo: str) -> dict[str,str]:
     """
     Esta función registra una acción en el mercado que queremos
@@ -655,7 +684,7 @@ def registrar_accion(nombre: str, simbolo: str) -> dict[str,str]:
     if nombre not in Mercado._mercados_registrados:
         return {"error": f"No existe un mercado con el nombre {nombre}"}
     accion = Accion._acciones_registradas[simbolo]
-    if accion in Mercado._mercados_registrados[nombre].lista_acciones:
+    if accion in Mercado._mercados_registrados[nombre]._lista_acciones:
         return {"error": f"La acción con el símbolo {simbolo} ya está en el mercado {nombre}"}
     Mercado._mercados_registrados[nombre].registrar_accion(accion)
     exportar_mercados_csv()
@@ -737,13 +766,12 @@ def bancarrota(nombre: str, simbolo: str) -> dict[str,str]:
         exportar_acciones_csv()
         exportar_historial_precios_csv()
         exportar_acciones_pickle()
-        exportar_historial_precios_pickle()
-        if simbolo in AccionReal.acciones_reales_registradas:
+        exportar_historiales_pickle()
+        if simbolo in AccionReal._acciones_reales_registradas:
             exportar_acciones_reales_csv()
         return {"mensaje": f"La empresa con símbolo {simbolo} se ha declarado en bancarrota exitosamente"}
     else:
         return {"error": resultado}
-
 
 def simular_movimientos(nombre: str) -> dict[str,str]:
     """
@@ -1005,15 +1033,15 @@ def crear_transaccion(nombre: str, simbolo: str, cantidad: int) -> dict[str, str
         Nombre del inversor registrado
     simbolo : str
         Simbolo de la accion a comprar.
-    cantindad : int 
+    cantindad : int
         Numero de acciones a adquirir.
-    
+
     Returns
     -------
     dict[str, str]
         Un diccionario con un mensaje de éxito.
-    
-    Raises 
+
+    Raises
     ------
     Error
         Si algo falla al realizar la operación.
@@ -1049,8 +1077,8 @@ def calcula_total_transacciones(nombre: str) -> dict[str, str]:
     -------
     dict[str, str]
         Un mensaje con el total invertido.
-    
-    Raises 
+
+    Raises
     ------
     Error
         Si el nombre del inversor no está registrado.
