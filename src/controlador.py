@@ -741,7 +741,8 @@ def obtener_precio(nombre: str, simbolo: str) -> Union[dict[str, str], dict[str,
         return {"error": resultado}
 
 def eliminar_accion(nombre: str, simbolo: str) -> dict[str, str]:
-    """Este método sirve para eliminar una acción del mercado.
+    """
+    Esta función sirve para eliminar una acción del mercado.
 
     Parameters
     ----------
