@@ -203,6 +203,29 @@ class Mercado(BaseMercado):
                 return accion._precio_actual
         return "No existen acciones con este símbolo"
 
+    def eliminar_accion(self, simbolo: str) -> None:
+        """Este método sirve para eliminar una acción del mercado.
+
+        Parameters
+        ----------
+        simbolo : str
+            El símbolo de la acción que queremos eliminar.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        ValueError
+            Salta error si la acción que le hemos pasado no está en el mercado.
+        """
+        accion = Accion._acciones_registrados[simbolo]
+        if accion not in self._lista_acciones:
+            raise ValueError(f"La acción con el símbolo {simbolo} no está en el mercado {self.nombre}")
+        self._lista_acciones.remove(accion)
+
+
     def bancarrota(self, simbolo: str) -> Optional[str]:
         """
         Este método sirve para declarar en bancarrota una acción dado su símbolo. Lo que
@@ -245,6 +268,17 @@ class Mercado(BaseMercado):
             accion.actualizar_precio(nuevo_precio)
 
     def __str__(self) -> str:
+        """
+        Este método sirve para crear la forma de imprimir un mercado.
+
+        Parameters
+        ----------
+        None
+
+        Returns:
+        str
+            La forma de imprimir un mercado.
+        """
         cantidad = len(self._lista_acciones)
         palabra = "acción registrada" if cantidad == 1 else "acciones registradas"
         return f"El mercado {self.nombre} tiene {cantidad} {palabra}."
@@ -298,7 +332,6 @@ class Mercado(BaseMercado):
             if accion.simbolo == simbolo:
                 return True
         return False
-
 
     def __eq__(self, other: 'Mercado') -> bool:
         """
