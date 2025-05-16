@@ -33,9 +33,9 @@ class IA():
         """
         Genera recomendaciones de acciones que el inversor podría adquirir, siempre dependiendo de que:
 
-        - Su tipo --> (Agresivo: prefiere acciones caras, ganancia rápida / Pasivo: prefiera acciones baratas, ganacia prolongada).
-        - Su capital disponible --> ya que de no tener, no podrá adquirir.
-        - Las acciones que ya posee --> no se le recomendaran acciones repetidas si ya pertenece a su cartera.
+        Tipo --> (Agresivo: prefiere acciones caras, ganancia rápida / Pasivo: prefiera acciones baratas, ganacia prolongada).
+        Capital disponible --> ya que de no tener, no podrá adquirir.
+        Acciones que ya posee --> no se le recomendaran acciones repetidas si ya pertenece a su cartera.
         
         Returns
         -------
