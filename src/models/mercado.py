@@ -299,7 +299,6 @@ class Mercado(BaseMercado):
                 return True
         return False
 
-
     def __eq__(self, other: 'Mercado') -> bool:
         """
         Este método sirve para definir cuándo dos métodos son iguales. Serán iguales si
