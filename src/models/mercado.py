@@ -220,7 +220,7 @@ class Mercado(BaseMercado):
         ValueError
             Salta error si la acción que le hemos pasado no está en el mercado.
         """
-        accion = Accion._acciones_registrados[simbolo]
+        accion = Accion._acciones_registradas[simbolo]
         if accion not in self._lista_acciones:
             raise ValueError(f"La acción con el símbolo {simbolo} no está en el mercado {self.nombre}")
         self._lista_acciones.remove(accion)
