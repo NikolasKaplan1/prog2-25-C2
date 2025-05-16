@@ -358,7 +358,22 @@ def obtener_precio() -> None:
     resultado = control.obtener_precio(nombre, simbolo)
     print(resultado.get("error") or resultado.get("precio"))
 
+def eliminar_accion() -> None:
+    """
+    Esta función sirve para eliminar una acción de un mercado.
 
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    None
+    """
+    nombre = input("Ingrese el nombre del mercado: ")
+    simbolo = input("Ingrese el símbolo de la acción que quiere eliminar: ")
+    resultado = control.eliminar_accion(nombre, simbolo)
+    print(resultado.get("error") or resultado.get("precio"))
 def bancarrota() -> None:
     """
     Esta función sirve para declarar en bancarrota una acción de un mercado.
@@ -718,21 +733,22 @@ def menu() -> None:
         '17': datos_mercado,
         '18': registrar_accion,
         '19': obtener_precio,
-        '20': bancarrota,
-        '21': simular_movimientos,
-        '22': tamaño,
-        '23': obtener_accion,
-        '24': contener,
-        '25': igual_mercado,
-        '26': no_igual_mercado,
-        '27': suma_mercados,
-        '28': suma_propia,
-        '29': crear_transaccion,
-        '30': calcula_total_transacciones,
-        '31': recomendacion,
-        '32': contiene_accion_inversor,
-        '33': comparar_inversores,
-        '34': obtener_informacion_transaccion,
+        '20': eliminar_accion,
+        '21': bancarrota,
+        '22': simular_movimientos,
+        '23': tamaño,
+        '24': obtener_accion,
+        '25': contener,
+        '26': igual_mercado,
+        '27': no_igual_mercado,
+        '28': suma_mercados,
+        '29': suma_propia,
+        '30': crear_transaccion,
+        '31': calcula_total_transacciones,
+        '32': recomendacion,
+        '33': contiene_accion_inversor,
+        '34': comparar_inversores,
+        '35': obtener_informacion_transaccion,
         '0': guardar_y_salir
     }
 
@@ -757,21 +773,22 @@ def menu() -> None:
         print("17. Ver los datos de un mercado")
         print("18. Registrar una acción en un mercado")
         print("19. Obtener el precio de una acción en un mercado")
-        print("20. Declarar en bancarrota una acción que está en un mercado")
-        print("21. Simular un movimiento de bolsa en un mercado")
-        print("22. Ver el tamaño de un mercado (la cantidad de acciones que tiene)")
-        print("23. Ver una acción que está en una posición determinada del mercado")
-        print("24. Comprobar si una acción está en un mercado")
-        print("25. Comprobar si dos mercados son iguales en base a sus acciones")
-        print("26. Comprobar si dos mercados no son iguales en base a sus acciones")
-        print("27. Sumar dos mercados")
-        print("28. Sumar al primer mercado el segundo mercado")
-        print("29. Crear una transacción")
-        print("30. Calcular el total de transacciones que ha hecho un inversor")
-        print("31. Recomienda unas acciones para un inversor")
-        print("32. Verificar si un inversor tiene una acción (operador 'in')")
-        print("33. Comparar si dos inversores tienen las mismas empresas en su cartera")
-        print("34. Consultar un campo específico de una transacción")
+        print("20. Eliminar una acción de un mercado")
+        print("21. Declarar en bancarrota una acción que está en un mercado")
+        print("22. Simular un movimiento de bolsa en un mercado")
+        print("23. Ver el tamaño de un mercado (la cantidad de acciones que tiene)")
+        print("24. Ver una acción que está en una posición determinada del mercado")
+        print("25. Comprobar si una acción está en un mercado")
+        print("26. Comprobar si dos mercados son iguales en base a sus acciones")
+        print("27. Comprobar si dos mercados no son iguales en base a sus acciones")
+        print("28. Sumar dos mercados")
+        print("29. Sumar al primer mercado el segundo mercado")
+        print("30. Crear una transacción")
+        print("31. Calcular el total de transacciones que ha hecho un inversor")
+        print("32. Recomienda unas acciones para un inversor")
+        print("33. Verificar si un inversor tiene una acción (operador 'in')")
+        print("34. Comparar si dos inversores tienen las mismas empresas en su cartera")
+        print("35. Consultar un campo específico de una transacción")
         print("0. Guardar y salir")
 
         opcion = input("Seleccione una opción: ")
