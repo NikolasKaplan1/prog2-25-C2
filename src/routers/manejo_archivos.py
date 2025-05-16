@@ -10,7 +10,7 @@ from datetime import date
 from src.database.db_manager import get_connection
 from src.models.inversor import Inversor
 from src.models.transaccion import Transaccion
-from models.accion import Accion
+from models.accion import Accion, AccionReal
 from models.mercado import Mercado
 
 DATA_DIR = Path("data")
@@ -68,7 +68,7 @@ def exportar_acciones_reales_csv(ruta: Path = DATA_DIR / 'acciones_reales.csv') 
         csv_writer = csv.writer(archivo)
         csv_writer.writerow(['simbolo', 'nombre', 'precio_actual'])
         for acc in AccionReal._acciones_reales_registradas.values():
-            csv_writer.writerow([acc.simbolo, acc.nombre, acc.precio_actual])
+            csv_writer.writerow([acc.simbolo, acc.nombre, acc._precio_actual])
 
 def exportar_acciones_bancarrota_csv(ruta: Path = DATA_DIR / 'acciones_bancarrota.csv') -> None:
     """
@@ -88,7 +88,7 @@ def exportar_acciones_bancarrota_csv(ruta: Path = DATA_DIR / 'acciones_bancarrot
         csv_writer = csv.writer(archivo)
         csv_writer.writerow(['simbolo', 'nombre', 'fecha_bancarrota'])
         for acc in Accion._acciones_registradas.values():
-            if acc.precio_actual == 0:
+            if acc._precio_actual == 0:
                 fecha,_ = list(acc.historial_precios())[-1]
                 csv_writer.writerow([acc.simbolo, acc.nombre, fecha])
 
