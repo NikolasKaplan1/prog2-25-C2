@@ -740,6 +740,42 @@ def obtener_precio(nombre: str, simbolo: str) -> Union[dict[str, str], dict[str,
     else:
         return {"error": resultado}
 
+def eliminar_accion(nombre: str, simbolo: str) -> dict[str, str]:
+    """Este método sirve para eliminar una acción del mercado.
+
+    Parameters
+    ----------
+    nombre : str
+        Nombre del mercado
+    simbolo : str
+        El símbolo de la acción que queremos eliminar.
+
+    Returns
+    -------
+    dict[str,str]
+        Nos devuelve un diccionario con una clave str (que será "error" o "mensaje") y un valor
+        str que te dirá si ha habido un error o éxito.
+
+
+    Raises
+    ------
+    Error
+        Da error si no existe un mercado con el nombre que le pasamos.
+    Error
+        Da error si el símbolo que le pasamos no está asociado a ninguna acción del mercado.
+    Error
+        Da error si el simbolo de la acción que le pasamos no está en el mercado.
+    """
+    if nombre not in Mercado._mercados_registrados:
+        return {"error": f"No existe un mercado con el nombre {nombre}"}
+    if simbolo not in Accion._acciones_registradas:
+        return {"error": f"No existe una acción con el símbolo {simbolo}"}
+    try:
+        mercado = Mercado._mercados_registrados[nombre]
+        mercado.eliminar_accion(simbolo)
+        return {"mensaje": f"La acción {simbolo} se ha eliminado correctamente de {nombre}."}
+    except ValuError:
+        return {"error": f"La acción con el símbolo {simbolo} no está en el mercado {self.nombre}"}
 
 def bancarrota(nombre: str, simbolo: str) -> dict[str, str]:
     """
