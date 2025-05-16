@@ -457,10 +457,10 @@ def mostrar_transaccion_registrada(nombre: str) -> dict[str, str]:
     if nombre not in inversores_registrados:
         return {"error": f"El inversor '{nombre}' no está registrado"}
     inversor = inversores_registrados[nombre]
-    if not inversor._Inversor_transacciones:
+    if not inversor._transacciones:
         return {"mensaje": "Este inversor no ha realizado ninguna transacción."}
     resumen_transacciones = f"Historial de transacciones de {nombre}:\n"
-    for transaccion in inversor._Inversor_transacciones:
+    for transaccion in inversor._transacciones:
         resumen_transacciones += str(transaccion) + "\n"
     return {"mensaje": resumen_transacciones}
 
@@ -1029,8 +1029,8 @@ def crear_transaccion(nombre: str, simbolo: str, cantidad: int) -> dict[str, str
 
     if transaccion.validar_transaccion():
         transaccion.ejecutar_transaccion()
-        inversor._Inversor_transacciones.append(transaccion)
-        exportar_transacciones_csv(inversor._Inversor_transacciones)
+        inversor._transacciones.append(transaccion)
+        exportar_transacciones_csv(inversor._transacciones)
         return {"mensaje": f"Transacción realizada: {transaccion}"}
     else:
         return {"error": "Fondos insuficientes para realizar la operación"}
@@ -1058,7 +1058,7 @@ def calcula_total_transacciones(nombre: str) -> dict[str, str]:
     if nombre not in inversores_registrados:
         return {"error": f"El inversor '{nombre}' no está registrado"}
 
-    transacciones = inversores_registrados[nombre]._Inversor__transacciones
+    transacciones = inversores_registrados[nombre]._transacciones
     if not transacciones:
         return {"mensaje": "Este inversor no tiene transacciones registradas."}
 
