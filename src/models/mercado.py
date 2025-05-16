@@ -100,9 +100,11 @@ class Mercado(BaseMercado):
     Methods
     -------
     registrar_accion(accion: Accion)
-        Sirve para añadir una acción al mercado
+        Sirve para añadir una acción al mercado.
     obtener_precio(simbolo: str)
-        Te da el precio de una acción dado su símbolo
+        Te da el precio de una acción dado su símbolo.
+    eliminar_accion(simbolo: str)
+        Eliminas una acción de un mercado.
     bancarrota(simbolo: str)
         Declara en bancarrota una acción dado su símbolo.
     simular_movimientos()
