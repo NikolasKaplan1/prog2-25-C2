@@ -67,7 +67,7 @@ def exportar_acciones_reales_csv(ruta: Path = DATA_DIR / 'acciones_reales.csv') 
     with open(ruta, mode='w', newline='') as archivo:
         csv_writer = csv.writer(archivo)
         csv_writer.writerow(['simbolo', 'nombre', 'precio_actual'])
-        for acc in AccionReal.acciones_reales_registradas.values():
+        for acc in AccionReal._acciones_reales_registradas.values():
             csv_writer.writerow([acc.simbolo, acc.nombre, acc.precio_actual])
 
 def exportar_acciones_bancarrota_csv(ruta: Path = DATA_DIR / 'acciones_bancarrota.csv') -> None:
@@ -87,7 +87,7 @@ def exportar_acciones_bancarrota_csv(ruta: Path = DATA_DIR / 'acciones_bancarrot
     with open(ruta, mode='w', newline='') as archivo:
         csv_writer = csv.writer(archivo)
         csv_writer.writerow(['simbolo', 'nombre', 'fecha_bancarrota'])
-        for acc in Accion.acciones_registradas.values():
+        for acc in Accion._acciones_registradas.values():
             if acc.precio_actual == 0:
                 fecha,_ = list(acc.historial_precios())[-1]
                 csv_writer.writerow([acc.simbolo, acc.nombre, fecha])
@@ -109,8 +109,8 @@ def acciones_por_mercado_csv(ruta: Path = DATA_DIR / 'acciones_por_mercado.csv')
     with open(ruta, mode='w', newline='') as archivo:
         csv_writer = csv.writer(archivo)
         csv_writer.writerow(['nombre_mercado', 'simbolo'])
-        for nombre, mercado in Mercado.mercados_registrados.items():
-            for acc in mercado.lista_acciones:
+        for nombre, mercado in Mercado._mercados_registrados.items():
+            for acc in mercado._lista_acciones:
                 csv_writer.writerow([nombre, acc.simbolo])
 
 def exportar_transacciones_csv(transacciones: list[Transaccion], ruta: Path = DATA_DIR / "transacciones.csv") -> None:
@@ -161,7 +161,7 @@ def exportar_acciones_pickle(ruta: Path = DATA_DIR / 'acciones.pkl') -> None:
     """
     asegurar_directorio(ruta)
     with open(ruta, 'wb') as f:
-        pickle.dump(Accion.acciones_registradas, f)
+        pickle.dump(Accion._acciones_registradas, f)
 
 def importar_acciones_pickle(ruta: Path = DATA_DIR / 'acciones.pkl') -> dict[str, Accion]:
     """
@@ -207,7 +207,7 @@ def exportar_historiales_pickle(ruta: Path = DATA_DIR / 'historiales.pkl') -> No
     None
     """
     asegurar_directorio(ruta)
-    historiales = {simbolo: acc.historial_precios for simbolo, acc in Accion.acciones_registradas.items()}
+    historiales = {simbolo: acc.historial_precios for simbolo, acc in Accion._acciones_registradas.items()}
     with open(ruta, 'wb') as f:
         pickle.dump(historiales, f)
 
@@ -255,7 +255,7 @@ def exportar_mercados_registrados_pickle(ruta: Path = DATA_DIR / 'mercados_regis
     """
     asegurar_directorio(ruta)
     with open(ruta, 'wb') as f:
-        pickle.dump(Mercado.mercados_registrados, f)
+        pickle.dump(Mercado._mercados_registrados, f)
 
 def importar_mercados_registrados_pickle(ruta: Path = DATA_DIR / 'mercados_registrados.pkl') -> dict[str, Mercado]:
     """
