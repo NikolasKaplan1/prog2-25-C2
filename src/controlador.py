@@ -775,8 +775,8 @@ def eliminar_accion(nombre: str, simbolo: str) -> dict[str, str]:
         mercado = Mercado._mercados_registrados[nombre]
         mercado.eliminar_accion(simbolo)
         return {"mensaje": f"La acción {simbolo} se ha eliminado correctamente de {nombre}."}
-    except ValuError:
-        return {"error": f"La acción con el símbolo {simbolo} no está en el mercado {self.nombre}"}
+    except ValueError:
+        return {"error": f"La acción con el símbolo {simbolo} no está en el mercado {nombre}"}
 
 def bancarrota(nombre: str, simbolo: str) -> dict[str, str]:
     """
