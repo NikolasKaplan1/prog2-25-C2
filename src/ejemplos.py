@@ -1,5 +1,6 @@
 import controlador as control
 
+
 def crear_accion() -> None:
     """
     Esta función crea una nueva acción.
@@ -20,8 +21,9 @@ def crear_accion() -> None:
     simbolo = input("Ingrese símbolo de la acción: ")
     nombre = input("Ingrese nombre de la acción: ")
     precio_actual = float(input("Ingrese el precio actual de la acción: "))
-    historial_input = input("Ingrese el historial de precios en formato fecha:precio separados por comas (ej: 2024-01-01:100,2024-01-02:102.5): ")
-    
+    historial_input = input(
+        "Ingrese el historial de precios en formato fecha:precio separados por comas (ej: 2024-01-01:100,2024-01-02:102.5): ")
+
     historial_precios = {}
     try:
         for entrada in historial_input.split(","):
@@ -31,6 +33,7 @@ def crear_accion() -> None:
         print("Error en el formato del historial. Asegúrate de escribirlo como fecha:precio, separados por comas.")
     resultado = control.crear_accion(simbolo, nombre, precio_actual, historial_precios)
     print(resultado.get("error") or resultado.get("mensaje"))
+
 
 def crear_accion_real() -> None:
     """
@@ -48,6 +51,7 @@ def crear_accion_real() -> None:
     resultado = control.crear_accion_real(simbolo)
     print(resultado.get("error") or resultado.get("mensaje"))
 
+
 def actualizar_precio() -> None:
     """
     Esta función actualiza el precio de una acción.
@@ -62,8 +66,9 @@ def actualizar_precio() -> None:
     """
     simbolo = input("Ingrese el símbolo de la acción: ")
     nuevo_precio = float(input("Ingrese el precio nuevo de la acción: "))
-    resultado = control.actualizar_precio(simbolo,nuevo_precio)
+    resultado = control.actualizar_precio(simbolo, nuevo_precio)
     print(resultado.get("error") or resultado.get("mensaje"))
+
 
 def actualizar_precio_real() -> None:
     """
@@ -81,6 +86,7 @@ def actualizar_precio_real() -> None:
     resultado = control.actualizar_precio_real(simbolo)
     print(resultado.get("error") or resultado.get("mensaje"))
 
+
 def datos_accion() -> None:
     """
     Esta función nos muestra los datos de una acción.
@@ -97,6 +103,7 @@ def datos_accion() -> None:
     resultado = control.datos_accion(simbolo)
     print(resultado.get("error") or resultado.get("mensaje"))
 
+
 def menor_que() -> None:
     """
     Esta función sirve para comparar si una acción es menor a otra en base a su precio.
@@ -111,8 +118,9 @@ def menor_que() -> None:
     """
     simbolo1 = input("Ingrese el símbolo de la primera acción: ")
     simbolo2 = input("Ingrese el símbolo de la segunda acción: ")
-    resultado = control.menor_que(simbolo1,simbolo2)
+    resultado = control.menor_que(simbolo1, simbolo2)
     print(resultado.get("error") or resultado.get("mensaje"))
+
 
 def mayor_que() -> None:
     """
@@ -128,8 +136,9 @@ def mayor_que() -> None:
     """
     simbolo1 = input("Ingrese el símbolo de la primera acción: ")
     simbolo2 = input("Ingrese el símbolo de la segunda acción: ")
-    resultado = control.mayor_que(simbolo1,simbolo2)
+    resultado = control.mayor_que(simbolo1, simbolo2)
     print(resultado.get("error") or resultado.get("mensaje"))
+
 
 def crea_inversor() -> None:
     """
@@ -149,6 +158,7 @@ def crea_inversor() -> None:
     resultado = control.crea_inversor(nombre, capital, tipo)
     print(resultado.get("error") or resultado.get("mensaje"))
 
+
 def datos_inversor() -> None:
     """
     Esta función devuelve los datos de un inversor.
@@ -167,6 +177,7 @@ def datos_inversor() -> None:
         print(resultado.get("error"))
     else:
         print(f"Nombre: {resultado["nombre"]}, capital: {resultado["capital"]}, tipo: {resultado["tipo"]}")
+
 
 def mostrar_cartera() -> None:
     """
@@ -203,7 +214,7 @@ def comprar_accion() -> None:
     resultado = control.comprar_accion(nombre, simbolo, cantidad)
     print(resultado.get("error") or resultado.get("mensaje"))
 
-    
+
 def vender_accion() -> None:
     """
     Esta función sirve para que un inversor venda una acción.
@@ -221,6 +232,7 @@ def vender_accion() -> None:
     cantidad = int(input("Ingrese la cantidad de acciones que quiere vender: "))
     resultado = control.vender_accion(nombre, simbolo, cantidad)
     print(resultado.get("error") or resultado.get("mensaje"))
+
 
 def mostrar_transaccion_registrada() -> None:
     """
@@ -276,6 +288,7 @@ def vender_acciones_con_operador() -> None:
     resultado = control.vender_accion_con_operador(nombre, simbolo, cantidad)
     print(resultado.get("error") or resultado.get("mensaje"))
 
+
 def crear_mercado() -> None:
     """
     Esta función sirve para crear un mercado financiero.
@@ -292,6 +305,23 @@ def crear_mercado() -> None:
     lista_acciones = input("Ingrese las acciones con sus símbolos (simbolo1, simbolo2, ...): ").split(", ")
     resultado = control.crear_mercado(nombre, lista_acciones)
     print(resultado.get("error") or resultado.get("mensaje"))
+
+
+def datos_mercado() -> None:
+    """
+    Esta función sirve para imprimir los datos del mercado con el nombre que le pasamos.
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    None
+    """
+    nombre = input("Ingrese el nombre del mercado: ")
+    resultado = control.datos_mercado(nombre)
+    print(resultado.get("error") or resultado.get("mensaje"))
+
 
 def registrar_accion() -> None:
     """
@@ -310,6 +340,7 @@ def registrar_accion() -> None:
     resultado = control.registrar_accion(nombre, simbolo)
     print(resultado.get("error") or resultado.get("mensaje"))
 
+
 def obtener_precio() -> None:
     """
     Esta función sirve para obtener el precio de una acción que está en un mercado.
@@ -326,6 +357,23 @@ def obtener_precio() -> None:
     simbolo = input("Ingrese el símbolo de la acción de la que quiere obtener el precio: ")
     resultado = control.obtener_precio(nombre, simbolo)
     print(resultado.get("error") or resultado.get("precio"))
+
+def eliminar_accion() -> None:
+    """
+    Esta función sirve para eliminar una acción de un mercado.
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    None
+    """
+    nombre = input("Ingrese el nombre del mercado: ")
+    simbolo = input("Ingrese el símbolo de la acción que quiere eliminar: ")
+    resultado = control.eliminar_accion(nombre, simbolo)
+    print(resultado.get("error") or resultado.get("mensaje"))
 
 def bancarrota() -> None:
     """
@@ -344,6 +392,7 @@ def bancarrota() -> None:
     resultado = control.bancarrota(nombre, simbolo)
     print(resultado.get("error") or resultado.get("mensaje"))
 
+
 def simular_movimientos() -> None:
     """
     Esta función sirve para simular movimientos en un mercado.
@@ -359,6 +408,7 @@ def simular_movimientos() -> None:
     nombre = input("Ingrese el nombre del mercado: ")
     resultado = control.simular_movimientos(nombre)
     print(resultado.get("error") or resultado.get("mensaje"))
+
 
 def tamaño() -> None:
     """
@@ -376,6 +426,7 @@ def tamaño() -> None:
     resultado = control.tamaño(nombre)
     print(resultado.get("error") or resultado.get("mensaje"))
 
+
 def obtener_accion() -> None:
     """
     Esta función sirve para obtener la acción de un mercado dado un item.
@@ -390,8 +441,9 @@ def obtener_accion() -> None:
     """
     nombre = input("Ingrese el nombre del mercado: ")
     item = int(input("Ingrese el índice de la acción: "))
-    resultado = control.obtener_accion(nombre)
+    resultado = control.obtener_accion(nombre, item)
     print(resultado.get("error") or resultado.get("mensaje"))
+
 
 def contener() -> None:
     """
@@ -425,7 +477,7 @@ def igual_mercado() -> None:
     """
     nombre1 = input("Ingrese el nombre del primer mercado: ")
     nombre2 = input("Ingrese el nombre del segundo mercado: ")
-    resultado = control.igual_mercado(nombre1,nombre2)
+    resultado = control.igual_mercado(nombre1, nombre2)
     print(resultado.get("error") or resultado.get("mensaje"))
 
 
@@ -443,7 +495,7 @@ def no_igual_mercado() -> None:
     """
     nombre1 = input("Ingrese el nombre del primer mercado: ")
     nombre2 = input("Ingrese el nombre del segundo mercado: ")
-    resultado = control.no_igual_mercado(nombre1,nombre2)
+    resultado = control.no_igual_mercado(nombre1, nombre2)
     print(resultado.get("error") or resultado.get("mensaje"))
 
 
@@ -461,7 +513,7 @@ def suma_mercados() -> None:
     """
     nombre1 = input("Ingrese el nombre del primer mercado: ")
     nombre2 = input("Ingrese el nombre del segundo mercado: ")
-    resultado = control.suma_mercados(nombre1,nombre2)
+    resultado = control.suma_mercados(nombre1, nombre2)
     print(resultado.get("error") or resultado.get("mensaje"))
 
 
@@ -479,25 +531,170 @@ def suma_propia() -> None:
     """
     nombre1 = input("Ingrese el nombre del primer mercado: ")
     nombre2 = input("Ingrese el nombre del segundo mercado: ")
-    resultado = control.suma_propia(nombre1,nombre2)
+    resultado = control.suma_propia(nombre1, nombre2)
     print(resultado.get("error") or resultado.get("mensaje"))
 
 
 def crear_transaccion() -> None:
+    """
+    Esta función sirve para crear una transacción.
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    None
+    """
     nombre = input("Ingrese el nombre del inversor: ")
     simbolo = input("Ingrese el símbolo de la acción: ")
     cantidad = int(input("Ingrese la cantidad de acciones de la transacción: "))
     resultado = control.crear_transaccion(nombre, simbolo, cantidad)
     print(resultado.get("error") or resultado.get("mensaje"))
 
+
 def calcula_total_transacciones() -> None:
+    """
+    Esta función sirve para calcular el total de una transacción.
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    None
+    """
     nombre = input("Ingrese el nombre del inversor: ")
     resultado = control.calcula_total_transacciones(nombre)
     print(resultado.get("error") or resultado.get("mensaje"))
 
+
 def recomendacion() -> None:
+    """
+    Esta función sirve para obtener recomendación de compra de acciones.
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    None
+    """
     nombre = input("Ingrese el nombre del inversor al que quiere recomendar: ")
     resultado = control.recomendacion(nombre)
+    print(resultado.get("error") or resultado.get("mensaje"))
+
+
+def contiene_accion_inversor() -> None:
+    """
+    Esta función verifica si un inversor tiene una acción específica en su cartera.
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    None
+    """
+    nombre = input("Nombre del inversor: ")
+    simbolo = input("Simbolo de la accion: ")
+    resultado = control.contiene_accion(nombre, simbolo)
+    print(resultado.get("error") or resultado.get("mensaje"))
+
+
+def comparar_inversores() -> None:
+    """
+    Esta función compara si dos inversores han invertido en las mismas empresas.
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    None
+    """
+    nombre1 = input("Nombre del inversor: ")
+    nombre2 = input("Nombre del inversor: ")
+    resultado = control.comparar_inversores(nombre1, nombre2)
+    print(resultado.get("error") or resultado.get("mensaje"))
+
+
+def obtener_informacion_transaccion() -> None:
+    """
+    Esta función permite consultar un dato específico de una transacción realizada por un inversor.
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    None
+    """
+    nombre = input("Ingrese el nombre del inversor: ")
+    num_transaccion = int(input("Ingrese el número de transacción (posición en la lista): "))
+    campo = input("Ingrese dato a consultar (inversor, accion,simbolo, cantidad, precio, fecha): ")
+    resultado = control.datos_transaccion(nombre, index, campo)
+    print(resultado.get("error") or resultado.get("mensaje"))
+
+
+def contiene_accion_inversor() -> None:
+    """
+    Esta función verifica si un inversor tiene una acción específica en su cartera.
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    None
+    """
+    nombre = input("Nombre del inversor: ")
+    simbolo = input("Simbolo de la accion: ")
+    resultado = control.inversor_contiene_accion(nombre, simbolo)
+    print(resultado.get("error") or resultado.get("mensaje"))
+
+
+def comparar_inversores() -> None:
+    """
+    Esta función compara si dos inversores han invertido en las mismas empresas.
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    None
+    """
+    nombre1 = input("Nombre del inversor: ")
+    nombre2 = input("Nombre del inversor: ")
+    resultado = control.comparar_inversores(nombre1, nombre2)
+    print(resultado.get("error") or resultado.get("mensaje"))
+
+
+def obtener_informacion_transaccion() -> None:
+    """
+    Esta función permite consultar un dato específico de una transacción realizada por un inversor.
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    None
+    """
+    nombre = input("Ingrese el nombre del inversor: ")
+    num_transaccion = int(input("Ingrese el número de transacción (posición en la lista): "))
+    campo = input("Ingrese dato a consultar (inversor, accion,simbolo, cantidad, precio, fecha): ")
+    resultado = control.datos_transaccion(nombre, index, campo)
     print(resultado.get("error") or resultado.get("mensaje"))
 
 
@@ -534,20 +731,25 @@ def menu() -> None:
         '14': comprar_acciones_con_operador,
         '15': vender_acciones_con_operador,
         '16': crear_mercado,
-        '17': registrar_accion,
-        '18': obtener_precio,
-        '19': bancarrota,
-        '20': simular_movimientos,
-        '21': tamaño,
-        '22': obtener_accion,
-        '23': contener,
-        '24': igual_mercado,
-        '25': no_igual_mercado,
-        '26': suma_mercados,
-        '27': suma_propia,
-        '28': crear_transaccion,
-        '29': calcula_total_transacciones,
-        '30': recomendacion,
+        '17': datos_mercado,
+        '18': registrar_accion,
+        '19': obtener_precio,
+        '20': eliminar_accion,
+        '21': bancarrota,
+        '22': simular_movimientos,
+        '23': tamaño,
+        '24': obtener_accion,
+        '25': contener,
+        '26': igual_mercado,
+        '27': no_igual_mercado,
+        '28': suma_mercados,
+        '29': suma_propia,
+        '30': crear_transaccion,
+        '31': calcula_total_transacciones,
+        '32': recomendacion,
+        '33': contiene_accion_inversor,
+        '34': comparar_inversores,
+        '35': obtener_informacion_transaccion,
         '0': guardar_y_salir
     }
 
@@ -569,20 +771,25 @@ def menu() -> None:
         print("14. Comprar acciones con el operador")
         print("15. Vender acciones con el operador")
         print("16. Crear un mercado")
-        print("17. Registrar una acción en un mercado")
-        print("18. Obtener el precio de una acción en un mercado")
-        print("19. Declarar en bancarrota una acción que está en un mercado")
-        print("20. Simular un movimiento de bolsa en un mercado")
-        print("21. Ver el tamaño de un mercado (la cantidad de acciones que tiene)")
-        print("22. Ver una acción que está en una posición determinada del mercado")
-        print("23. Comprobar si una acción está en un mercado")
-        print("24. Comprobar si dos mercados son iguales en base a sus acciones")
-        print("25. Comprobar si dos mercados no son iguales en base a sus acciones")
-        print("26. Sumar dos mercados")
-        print("27. Sumar al primer mercado el segundo mercado")
-        print("28. Crear una transacción")
-        print("29. Calcular el total de transacciones que ha hecho un inversor")
-        print("30. Recomienda unas acciones para un inversor")
+        print("17. Ver los datos de un mercado")
+        print("18. Registrar una acción en un mercado")
+        print("19. Obtener el precio de una acción en un mercado")
+        print("20. Eliminar una acción de un mercado")
+        print("21. Declarar en bancarrota una acción que está en un mercado")
+        print("22. Simular un movimiento de bolsa en un mercado")
+        print("23. Ver el tamaño de un mercado (la cantidad de acciones que tiene)")
+        print("24. Ver una acción que está en una posición determinada del mercado")
+        print("25. Comprobar si una acción está en un mercado")
+        print("26. Comprobar si dos mercados son iguales en base a sus acciones")
+        print("27. Comprobar si dos mercados no son iguales en base a sus acciones")
+        print("28. Sumar dos mercados")
+        print("29. Sumar al primer mercado el segundo mercado")
+        print("30. Crear una transacción")
+        print("31. Calcular el total de transacciones que ha hecho un inversor")
+        print("32. Recomienda unas acciones para un inversor")
+        print("33. Verificar si un inversor tiene una acción (operador 'in')")
+        print("34. Comparar si dos inversores tienen las mismas empresas en su cartera")
+        print("35. Consultar un campo específico de una transacción")
         print("0. Guardar y salir")
 
         opcion = input("Seleccione una opción: ")
@@ -597,10 +804,12 @@ def menu() -> None:
         else:
             print("Opción no válida. Intente de nuevo.")
 
+
 # -----------------------------
 # Función principal
 # -----------------------------
 
 if __name__ == "__main__":
     menu()
-   
+
+
