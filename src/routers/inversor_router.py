@@ -1,45 +1,57 @@
 
 """
-Módulo de rutas para la gestión de inversores en la API Flask.
+Módulo de rutas para la gestión de inversores en la API Flask
 
 Proporciona endpoints RESTful para consultar y registrar inversores en la base de 
 datos, utiliza SQLModel para el manejo de datos relacional y Flask Blueprint para 
 la organización modular del código
 
-Dependencias
+
+Dependencies
 ------------
 - Flask
 - SQLModel
 - models (InversorDB)
-- main (engine de conexión a la base de datos)
 """
-
 from flask import Blueprint, request, jsonify, abort
 from sqlmodel import Session, select
-from models import InversorDB  
-from main import engine  
-from datetime import datetime
+from models import InversorDB
+import logging                      
+
+# Creamos un logger para este módulo
+logger = logging.getLogger(__name__)
 
 inversor_bp = Blueprint("inversor", __name__)
 
-@inversor_bp.route("/inversores", methods=["GET"])
-def get_inversor():
+# Evitamos dependencias circulares al importar engine donde es necesario
+def get_engine():
+    from main import engine
+    return engine
+
+@inversor_bp.route("/", methods=["GET"])
+def get_inversores():
     """
-    Obtener todos los inversores registrados en la base de datos
+    Obtenemos todos los inversores registrados en la base de datos
 
     Returns
     -------
     Response:
         Lista de objetos JSON que representan los inversores
     """
-    session = Session(engine)
-    inversores = session.exec(select(InversorDB)).all()
-    return jsonify([inversor.model_dump() for inversor in inversores])
+    engine = get_engine()
+    with Session(engine) as session:
+        try:
+            inversores = session.exec(select(InversorDB)).all()
+            return jsonify([inversor.model_dump() for inversor in inversores])
+        except Exception as e:
+            logger.error(f"Error al obtener inversores: {str(e)}")
+            abort(500, description="Error al consultar la base de datos")
 
-@inversor_bp.route("/inversores/<int:inversor_id>", methods=["GET"])
+
+@inversor_bp.route("//<int:inversor_id>", methods=["GET"])
 def get_inversor_id(inversor_id):
     """
-    Obtener un inversor específico por su identificador
+    Obtiene un inversor específico por su identificador
 
     Parameters
     ----------
@@ -54,18 +66,24 @@ def get_inversor_id(inversor_id):
     Raises
     ------
     404 Not Found:
-        Si no se encuentra un inversor con el ID indicado
+        Si el inversor con el ID indicado no es encotrado
     """
-    session = Session(engine)
-    inversor = session.get(InversorDB, inversor_id)
-    if inversor is None:
-        abort(404, description="Inversor no encontrado")
-    return jsonify(inversor.model_dump())
+    engine = get_engine()
+    with Session(engine) as session:
+        try:
+            inversor = session.get(InversorDB, inversor_id)
+            if inversor is None:
+                abort(404, description="Inversor no encontrado")
+            return jsonify(inversor.model_dump())
+        except Exception as e:
+            logger.error(f"Error al obtener inversor {inversor_id}: {str(e)}")
+            abort(500, description="Error al consultar la base de datos")
 
-@inversor_bp.route("/inversores", methods=["POST"])
+
+@inversor_bp.route("/", methods=["POST"])
 def post_nuevo_inversor():
     """
-    Registrar un nuevo inversor en la base de datos
+    Registra un nuevo inversor en la base de datos
 
     El cuerpo de la solicitud debe contener los siguientes campos:
     "nombre", "apellidos", "email", "contrasena", "tarjeta_credito" y "capital"
@@ -78,15 +96,129 @@ def post_nuevo_inversor():
     Raises
     ------
     400 Bad Request:
-        Si falta alguno de los campos requeridos en la solicitud
+        Si falta alguno de los campos necesarios para la solicitud
     """
-    session = Session(engine)
-    data = request.get_json()
-    if not all(key in data for key in ("nombre", "apellidos", "email", "contrasena", "tarjeta_credito", "capital")):
-        abort(400, description= "Faltan campos obligatorios por completar")
-    
-    nuevo = InversorDB(nombre=data["nombre"], apellidos=data["apellidos"], email=data["email"], contrasena=data["contrasena"], tarjeta_credito=data["tarjeta_credito"], capital=data["capital"])
-    session.add(nuevo)
-    session.commit()
-    session.refresh(nuevo)
-    return jsonify(nuevo.model_dump()), 201
+    engine = get_engine()
+    with Session(engine) as session:
+        try:
+            data = request.get_json()
+            if not data:
+                abort(400, description="No se han encontrado datos JSON")
+                
+            required_fields = ["nombre", "apellidos", "email", "contrasena", "tarjeta_credito", "capital"]
+            for field in required_fields:
+                if field not in data:
+                    abort(400, description=f"Falta el campo obligatorio: {field}")
+            
+            nuevo = InversorDB(
+                nombre=data["nombre"], 
+                apellidos=data["apellidos"], 
+                email=data["email"], 
+                contrasena=data["contrasena"], 
+                tarjeta_credito=data["tarjeta_credito"], 
+                capital=data["capital"]
+            )
+            
+            session.add(nuevo)
+            session.commit()
+            session.refresh(nuevo)
+            logger.info(f"Nuevo inversor creado con ID: {nuevo.id}")
+            return jsonify(nuevo.model_dump()), 201
+        except ValueError as e:
+            logger.warning(f"Error de validación al crear inversor: {str(e)}")
+            abort(400, description=str(e))
+        except Exception as e:
+            logger.error(f"Error al crear inversor: {str(e)}")
+            session.rollback()
+            abort(500, description="Error al crear el inversor")
+
+
+@inversor_bp.route("/<int:inversor_id", methods=["PUT"])
+def update_inversor(inversor_id):
+    """
+    Corrige o modifica los datos de un inversor existente
+
+    Parameters
+    ----------
+    inversor_id : int
+        ID del inversor a actualizar
+
+    Returns
+    -------
+    Response:
+        Objeto JSON que representa el inversor actualizado
+
+    Raises
+    ------
+    404 Not Found:
+        Si no se encuentra un inversor con el ID indicado
+    400 Bad Request:
+        Si los datos proporcionados son inválidos
+    """
+    engine = get_engine()
+    with Session(engine) as session:
+        try:
+            data = request.get_json()
+            if not data:
+                abort(404, description="No se han encontrado datos JSON")
+
+            inversor = session.get(InversorDB, inversor_id)
+            if inversor is None:
+                abort(404, description="Inversor no encotrado")
+
+            for field in ["nombre", "apellidos", "email",  "contrasena", "tarjeta_credito", "capital"]:
+                if field in data:
+                    setattr(inversor, field, data[field])
+
+            session.add(inversor)
+            session.commit()
+            session.refresh(inversor)
+            logger.info(f"Inversor con el ID {inversor_id} actualizado correctamente")
+            return jsonify(inversor.model_dump())
+        
+        except ValueError as ve:
+            logger.warning(f"Error de validación al actualizar el inversor con ID {inversor_id}: {str(ve)}")
+            abort(404, desciption=str(ve))
+
+        except Exception as e:
+            logger.error(f"Error al actualizar inversor con ID {inversor_id}: {str(e)}")
+            session.rollback()
+            abort(500, description="Error al actualizar el inversor")
+
+
+@inversor_bp.route("/<int:inversor_id>", methods=["DELETE"])
+def delete_inversor(inversor_id):
+    """
+    Eliminana un inversor existente
+
+    Parameters
+    ----------
+    inversor_id : int
+        ID del inversor a eliminar
+
+    Returns
+    -------
+    Response:
+        Mensaje de confirmación de eliminación
+
+    Raises
+    ------
+    404 Not Found:
+        Si no se encuentra un inversor con el ID indicado
+    """
+    engine = get_engine()
+    with Session(engine) as session:
+        try:
+            inversor = session.get(InversorDB, inversor_id)
+            if inversor is None:
+                abort(404, description="Inversor no encontrado")
+            
+            session.delete(inversor)
+            session.commit()
+            logger.info(f"Inversor con ID {inversor_id} eliminado")
+            return jsonify({"message": f"Inversor con ID {inversor_id} eliminado correctamente"})
+        except Exception as e:
+            logger.error(f"Error al eliminar inversor con ID {inversor_id}: {str(e)}")
+            session.rollback()
+            abort(500, description="Error al eliminar el inversor")
+
