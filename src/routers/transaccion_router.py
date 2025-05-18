@@ -26,7 +26,7 @@ transaccion_bp = Blueprint('transaccion', __name__)
 
 # creamos una función para importar engine desde main
 def get_engine():
-    from main import engine
+    from app import engine
     return engine
 
 

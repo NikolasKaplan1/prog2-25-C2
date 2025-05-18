@@ -1,4 +1,4 @@
-from main import app, register_blueprints, init_db
+from app import app, register_blueprints, init_db
 import os
 
 if __name__ == "__main__":

@@ -25,7 +25,7 @@ inversor_bp = Blueprint("inversor", __name__)
 
 # Evitamos dependencias circulares al importar engine donde es necesario
 def get_engine():
-    from main import engine
+    from app import engine
     return engine
 
 @inversor_bp.route("/", methods=["GET"])

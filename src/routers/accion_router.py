@@ -24,7 +24,7 @@ accion_bp = Blueprint("accion", __name__)
 
 # Creamos una función para evitar la dependencia circular 
 def get_engine():
-    from main import engine
+    from app import engine
     return engine
 
 @accion_bp.route("/", methods=["GET"])
