@@ -21,6 +21,13 @@ def asegurar_directorio(path):
 # ---------------------- CSV ----------------------
 
 def exportar_acciones_csv(ruta: Path = DATA_DIR / "acciones.csv") -> None:
+
+def exportar_acciones_csv(ruta: Path = DATA_DIR / "acciones.csv"):
+def asegurar_directorio(path):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+# ---------------------- CSV ----------------------
+
+def exportar_acciones_csv(ruta: Path = DATA_DIR / "acciones.csv") -> None:
     with get_connection() as conn, ruta.open("w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(["simbolo", "nombre", "precio_actual"])
@@ -28,6 +35,9 @@ def exportar_acciones_csv(ruta: Path = DATA_DIR / "acciones.csv") -> None:
             writer.writerow(row)
 
 
+def exportar_historial_precios_csv(ruta: Path = DATA_DIR / "historial_precios.csv") -> None:
+<<<<<<< Updated upstream
+def exportar_historial_precios_csv(ruta: Path = DATA_DIR / "historial_precios.csv"):
 def exportar_historial_precios_csv(ruta: Path = DATA_DIR / "historial_precios.csv") -> None:
     with get_connection() as conn, ruta.open("w", newline="") as f:
         writer = csv.writer(f)
@@ -38,6 +48,9 @@ def exportar_historial_precios_csv(ruta: Path = DATA_DIR / "historial_precios.cs
             writer.writerow(row)
 
 
+def exportar_mercados_csv(ruta: Path = DATA_DIR / "mercados.csv") -> None:
+def exportar_mercados_csv(ruta: Path = DATA_DIR / "mercados.csv"):
+=======
 def exportar_mercados_csv(ruta: Path = DATA_DIR / "mercados.csv") -> None:
     with get_connection() as conn, ruta.open("w", newline="") as f:
         writer = csv.writer(f)
@@ -50,6 +63,7 @@ def exportar_mercados_csv(ruta: Path = DATA_DIR / "mercados.csv") -> None:
         ):
             writer.writerow([nombre, count, date.today()])
 
+def exportar_transacciones_csv(transacciones: list[Transaccion], ruta: Path = DATA_DIR / "transacciones.csv"):
 def exportar_acciones_reales_csv(ruta: Path = DATA_DIR / 'acciones_reales.csv') -> None:
     """
     Exporta a un archivo CSV la lista de acciones reales registradas.
@@ -144,6 +158,7 @@ def exportar_transacciones_csv(transacciones: list[Transaccion], ruta: Path = DA
                 t["fecha"].strftime("%Y-%m-%d %H:%M:%S")
             ])
 
+def exportar_inversores_pickle(lista_inversores: list[Inversor], ruta: Path = DATA_DIR / "inversores.pkl"):
 # ---------------------- PICKLE ----------------------
 
 def exportar_acciones_pickle(ruta: Path = DATA_DIR / 'acciones.pkl') -> None:
