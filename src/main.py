@@ -10,9 +10,13 @@ def listar_inversores():
     Realiza una solicitud Get al endpoint "/inversores" y devuelve el código
     de estado junto con la respuesta JSON
     """
-    r = requests.get(f"{BASE_URL}/inversores")
-    print(r.status_code, r.json())
-
+    try:
+        r = requests.get(f"{BASE_URL}/inversores")
+        print(r.status_code, r.json())
+    except requests.exceptions.ConnectionError:
+        print("No se ha podido conectar con el servidor. ¿Está en ejecución?")
+    except Exception as e:
+        print(f"Error inesperado: {e}")
 
 def crear_inversor():
     """
