@@ -54,7 +54,7 @@ class Accion:
         self.nombre = nombre
         self._precio_actual = precio_actual
         self.__historial_precios = historial_precios
-        Accion.acciones_registradas[simbolo] = self
+        Accion._acciones_registradas[simbolo] = self
 
     @property
     def historial_precios(self) -> dict[str, float]:
@@ -110,7 +110,7 @@ class Accion:
             cadena += f"{key}: {value} "
         return cadena
 
-    def __lt__(self, other: Accion) -> bool:
+    def __lt__(self, other: 'Accion') -> bool:
         """
         Este método sirve para definir la orden < en la clase Accion. Lo que hace es comparar
         los precios entre ambas acciones.
@@ -120,9 +120,9 @@ class Accion:
         bool
             Devolverá True si el precio de self es menor que el precio de other y False si no.
         """
-        return self._precio_actual < other.precio_actual
+        return self._precio_actual < other._precio_actual
 
-    def __gt__(self, other: Accion) -> bool:
+    def __gt__(self, other: 'Accion') -> bool:
         """
         Este método sirve para definir la orden > en la clase Accion. Lo que hace es comparar
         los precios entre ambas acciones.
@@ -132,7 +132,7 @@ class Accion:
         bool
             Devolverá True si el precio de self es mayor que el precio de other y False si no.
         """
-        return self._precio_actual > other.precio_actual
+        return self._precio_actual > other._precio_actual
 
 
 class AccionReal(Accion):
@@ -141,7 +141,7 @@ class AccionReal(Accion):
 
     Attributes
     ----------
-    acciones_reales_registradas : dict[str, AccionReal]
+    _acciones_reales_registradas : dict[str, AccionReal]
         Un atributo de clase que sirve para almacenar las acciones reales registradas
     simbolo : str
         El símbolo de la acción (e.g., "AAPL" para Apple).
@@ -151,7 +151,7 @@ class AccionReal(Accion):
     actualizar_precio():
         Actualiza el precio actual obteniéndolo desde Yahoo Finance.
     """
-    acciones_reales_registradas : dict[str, AccionReal] = {}
+    _acciones_reales_registradas : dict[str, 'AccionReal'] = {}
     def __init__(self, simbolo: str):
         """
         Inicializa una instancia de AccionReal obteniendo los datos de la acción desde Yahoo Finance.
@@ -183,9 +183,9 @@ class AccionReal(Accion):
         nombre = repr.info.get("shortName", simbolo)
 
         super().__init__(simbolo, nombre, precio_actual, historial)
-        AccionReal.acciones_reales_registradas[simbolo] = self
+        AccionReal._acciones_reales_registradas[simbolo] = self
 
-    def actualizar_precio(self) -> None:
+    def actualizar_precio_real(self) -> None:
         """
         Actualiza el precio de la acción obteniéndolo desde Yahoo Finance.
 
@@ -204,7 +204,7 @@ class AccionReal(Accion):
         if data.empty:
             raise ValueError(f"No se puede actualizar el precio de {self.simbolo}")
         
-        nuevo_precio = round(data['Close'][-1], 2)
+        nuevo_precio = round(data['Close'].iloc[-1], 2)
         self._precio_actual = nuevo_precio
         self.historial_precios[str(date.today())] = nuevo_precio
 

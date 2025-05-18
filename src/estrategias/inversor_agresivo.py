@@ -1,22 +1,32 @@
 from models.inversor import Inversor
 
-class InversorAgresivo(Inversor): # Busca ganancias rápidas y grandes
+class InversorAgresivo(Inversor): 
     """
-    Inversor con estrategia agresiva:
-    Prefiere comprar acciones de precio alto (potencial de ganancia rápido)
+    Inversor con estrategia agresiva.
+    Prefiere invertir en acciones de precio alto, buscando ganancias rápidas 
+    aunque implique mayor riesgo.
+
+    Hereda de:
+    ----------
+    Inversor
+
+    Methods
+    -------
+    recomendar_compra()
+        Recomienda las acciones más caras de la cartera a comprar.
     """
 
-    def recomendar_compra(self):
+    def recomendar_compra(self) -> list[str]:
         """
-        Recomienda las acciones más caras de la cartera
+        Recomienda las acciones más caras de la cartera.
 
         Returns
-        ---------
+        -------
         list[str]
-            lista con los nombres y precios de las acciones recomendadas
-
+            lista con los nombres y precios de las acciones más caras recomendadas.
+       
         """
-        acciones = list(self.cartera.values())
+        acciones = list(self._Inversor__cartera.values())
         lista_precios = []
         for accion, _ in acciones:
             lista_precios.append([accion, accion.precio_actual])

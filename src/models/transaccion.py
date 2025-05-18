@@ -2,12 +2,13 @@ from .accion import Accion
 from .inversor import Inversor
 from datetime import datetime
 
+
 class Transaccion:
     """
     Clase Transaccion que representa una operación bursátil realizada por un inversor.
 
-    Atributos
-    -----------------
+    Attributes
+    ----------
     inversor : Inversor
         El inversor que realiza la operación.
     accion : Accion
@@ -16,41 +17,48 @@ class Transaccion:
         Número de acciones que se compran o venden.
     precio : float
         Precio por acción en el momento de la transacción.
+    tipo : str
+        Tipo de transacción: "Compra" o "Venta".
     fecha_hora : datetime
         Fecha y hora en la que se realiza la operación.
 
-    Métodos
-    -----------------
+    Methods
+    -------
     calcular_total()
         Calcula el total de la operación (precio * cantidad).
     validar_transaccion()
         Verifica si el inversor tiene suficiente capital.
     ejecutar_transaccion()
         Ejecuta la operación si es válida, actualizando la cartera y el capital.
+    __getitem__(key)
+        Permite acceder a atributos por clave.
     __str__()
         Devuelve una descripción legible de la transacción.
     """
 
-    def __init__(self, inversor: Inversor, accion: Accion, cantidad: int):
+    def __init__(self, inversor: Inversor, accion: Accion, cantidad: int, precio: float, tipo: str):
         """
         Constructor de la clase Transaccion.
 
-        Parámetros
-        ----------------
+        Parameters
+        ----------
         inversor : Inversor
-            Objeto de la clase Inversor que realiza la transacción.
+            Objeto que realiza la transacción.
         accion : Accion
-            Objeto de la clase Accion que se compra o vende.
+            Acción sobre la que se realiza la operación.
         cantidad : int
-            Número de acciones involucradas en la transacción.
+            Cantidad de acciones involucradas.
         precio : float
-            Precio por acción en el momento de la transacción.
+            Precio por acción al momento de la operación.
+        tipo : str
+            "Compra" o "Venta"
         """
         self.inversor = inversor
         self.accion = accion
         self.cantidad = cantidad
-        self.precio = accion.precio_actual
-        self.fecha_hora = datetime.now()  # Fecha y hora de la transacción
+        self.precio = precio
+        self.tipo = tipo
+        self.fecha_hora = datetime.now()
 
     def calcular_total(self) -> float:
         """
@@ -63,43 +71,60 @@ class Transaccion:
         """
         return self.cantidad * self.precio
 
-    def validar_transaccion(self):
+    def validar_transaccion(self) -> bool:
         """
         Verifica si el inversor tiene suficiente capital para realizar la compra.
 
         Returns
-        -----------------
+        -------
         bool
             True si el capital es suficiente, False si no.
         """
         return self.inversor.capital >= self.calcular_total()
 
-    def ejecutar_transaccion(self):
+    def __getitem__(self, key: str) -> Union[str, int, float, datetime]:
         """
-        Ejecuta la transacción en caso de ser válida, actualizando el capital del inversor
-        y su cartera de acciones.
+        Permite acceder a los atributos de la transacción como si fuera un diccionario.
 
-        Si no es válida, informa que no hay fondos suficientes.
-        """
-        if self.validar_transaccion():
-            self.inversor.capital -= self.calcular_total()  # Descontamos el dinero del inversor
-            # Actualizamos la cartera del inversor
-            if self.accion.simbolo in self.inversor.cartera:
-                self.inversor.cartera[self.accion.simbolo][1] += self.cantidad  # Sumamos las acciones
-            else:
-                self.inversor.cartera[self.accion.simbolo] = [self.accion, self.cantidad]  # Añadimos nueva acción a la cartera
-            print(f"Transacción realizada correctamente: {self}")
-        else:
-            print("Fondos insuficientes para realizar la operación")
-
-    def __str__(self):
-        """
-        Devuelve una representación en cadena de la transacción.
+        Parameters
+        ----------
+        key : str
+            Nombre del campo a consultar: 'inversor', 'accion', 'simbolo', 'cantidad', 'precio', 'fecha'.
 
         Returns
-        -----------------
-        str
-            Descripción legible con fecha, nombre, acción, cantidad y precio.
+        -------
+        Union[str, int, float, datetime]
+            Valor del campo solicitado.
+
+        Raises
+        ------
+        KeyError
+            Si el campo no existe.
         """
-        return (f"{self.inversor.nombre} compró {self.cantidad} acciones de {self.accion.nombre} "
-                f"a {self.precio}$ cada una, el {self.fecha_hora.strftime('%Y-%m-%d %H:%M:%S')}.")
+        if key == "inversor":
+            return self.inversor._nombre
+        elif key == "accion":
+            return self.accion.nombre
+        elif key == "simbolo":
+            return self.accion.simbolo
+        elif key == "cantidad":
+            return self.cantidad
+        elif key == "precio":
+            return self.precio
+        elif key == "fecha":
+            return self.fecha_hora
+        else:
+            raise KeyError(f"{key} no es un campo válido en Transaccion.")
+
+    def __str__(self) -> str:
+        """
+        Devuelve una descripción legible de la transacción.
+
+        Returns
+        ---------
+        str
+            Texto con la operación realizada.
+        """
+        verbo = "compró" if self.tipo.lower() == "compra" else "vendió"
+        return (f"{self.inversor._nombre} {verbo} {self.cantidad} acciones de {self.accion.nombre} "
+                f"a {self.precio:.2f}€ cada una, el {self.fecha_hora.strftime('%Y-%m-%d %H:%M:%S')}.")

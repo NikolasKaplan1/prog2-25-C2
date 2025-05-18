@@ -6,52 +6,52 @@ class IA():
     """
     Clase IA encargada de recomendar inversiones para un inversor, basándose en su tipo (Agresivo/Pasivo), su capital disponible y las acciones existentes.
 
-    Atributos
-    ------------
-    inversor: Inversor
+    Attributes
+    ----------
+    inversor : Inversor
         Inversor que solicta recomendación.
     
-    Métodos
-    ------------
+    Methods
+    -------
     recomendacion()
-        Devuelve dos diccionarios con recomendaciones:
+        Devuelve dos diccionarios:
         - Uno con las mejores opciones según el tipo de inversor.
         - Otro que filtra posibles acciones nuevas que no tiene previamente.
     """
-    def __init__(self,inversor: Inversor):
+    def __init__(self,inversor: Inversor) -> None:
         """
         Constructor que inicializa la IA.
 
         Parámetros
         ------------
-        inversor: Inversor 
+        inversor : Inversor 
             Objeto que representa al inversor (puede ser pasivo o agresivo).
         """
         self.inversor = inversor
     
-    def recomendacion(self):
+    def recomendacion(self) -> tuple[dict[str, float ], dict[str, float]]:
         """
         Genera recomendaciones de acciones que el inversor podría adquirir, siempre dependiendo de que:
 
-        - Su tipo --> (Agresivo: prefiere acciones caras, ganancia rápida / Pasivo: prefiera acciones baratas, ganacia prolongada).
-        - Su capital disponible --> ya que de no tener, no podrá adquirir.
-        - Las acciones que ya posee --> no se le recomendaran acciones repetidas si ya pertenece a su cartera.
+        Tipo --> (Agresivo: prefiere acciones caras, ganancia rápida / Pasivo: prefiera acciones baratas, ganacia prolongada).
+        Capital disponible --> ya que de no tener, no podrá adquirir.
+        Acciones que ya posee --> no se le recomendaran acciones repetidas si ya pertenece a su cartera.
         
         Returns
-        ----------
+        -------
         tuple[dict, dict]
             - Primer diccionario: Recomendaciones generales para cada tipo (hasta 5).
             - Segundo diccionario: Solo nuevas acciones que no tiene el inversor.
 
-        Raises:
-        ---------------
+        Raises
+        ------
         ValueError 
             Si no tienes suficiente dinero para comprar ninguna acción
         """
         
         # Datos necesarios
-        capital = self.inversor.capital
-        cartera = self.inversor.cartera
+        capital = self.inversor._Inversor__capital
+        cartera = self.inversor._Inversor__cartera
         acciones_registradas = Accion.acciones_registradas
         acciones = []
         
