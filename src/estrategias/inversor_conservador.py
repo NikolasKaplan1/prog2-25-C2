@@ -24,7 +24,7 @@ class InversorConservador(Inversor):
         list[str]
             Lista con nombre y precio de las acciones más baratas recomendadas.
         """
-        acciones = list(self.cartera.values())  # lista de [Accion, cantidad]
+        acciones = list(self._Inversor__cartera.values())  # lista de [Accion, cantidad]
 
         lista_precios = []
         for accion, _ in acciones:
