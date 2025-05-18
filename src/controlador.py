@@ -1218,22 +1218,21 @@ def recomendacion(nombre: str) -> dict[str, str]:
     Error
         Da error si no hay suficiente capital para comprar ninguna acción.
     """
+
     if nombre not in inversores_registrados:
         return {"error": f"El inversor '{nombre}' no está registrado"}
-
+    if Accion._acciones_registradas == {}:
+        return {"error": "No hay acciones registradas."}
     inversor = inversores_registrados[nombre]
-
-    if isinstance(inversor, InversorAgresivo) or isinstance(inversor, InversorConservador):
-        recomendaciones = inversor.recomendar_compra()
-
+    ia = IA(inversor)
+    try:
+        recomendacion, recomendaciones_nuevas = ia.recomendacion()
         mensaje = "Recomendaciones de compra:\n"
-        for recomendacion in recomendaciones:
-            mensaje += "- " + recomendacion + "\n"
+        for accion, precio in recomendacion.items():
+            mensaje += f"- {accion}: {precio}€ \n"
+        mensaje += "Recomendaciones de compra nuevas:\n"
+        for accion, precio in recomendaciones_nuevas.items():
+            mensaje += f"- {accion}: {precio}€ \n"
         return {"mensaje": mensaje}
-    else:
-        return {"error": "Este inversor no tiene una estrategia definida para recomendar acciones."}
-
-
-
-
-
+    except ValueError as e:
+        return {"error": str(e)}
