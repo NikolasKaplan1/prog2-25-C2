@@ -588,11 +588,6 @@ def recomendacion() -> None:
     print(resultado.get("error") or resultado.get("mensaje"))
 
 
-<<<<<<< Updated upstream
-=======
-<<<<<<< Updated upstream
-=======
->>>>>>> Stashed changes
 def contiene_accion_inversor() -> None:
     """
     Esta función verifica si un inversor tiene una acción específica en su cartera.
@@ -626,33 +621,6 @@ def comparar_inversores() -> None:
     nombre1 = input("Nombre del inversor: ")
     nombre2 = input("Nombre del inversor: ")
     resultado = control.comparar_inversores(nombre1, nombre2)
-    print(resultado.get("error") or resultado.get("mensaje"))
-
-
-def obtener_informacion_transaccion() -> None:
-    """
-    Esta función permite consultar un dato específico de una transacción realizada por un inversor.
-
-    Parameters
-    ----------
-    None
-
-    Returns
-    -------
-    None
-    """
-    nombre = input("Ingrese el nombre del inversor: ")
-    num_transaccion = int(input("Ingrese el número de transacción (posición en la lista): "))
-    campo = input("Ingrese dato a consultar (inversor, accion,simbolo, cantidad, precio, fecha): ")
-<<<<<<< Updated upstream
-    resultado = control.datos_transaccion(nombre, index, campo)
-=======
-<<<<<<< Updated upstream
-    resultado = control.datos_transaccion(nombre, index, campo)
-=======
-    resultado = control.datos_transaccion(nombre, num_transaccion, campo)
->>>>>>> Stashed changes
->>>>>>> Stashed changes
     print(resultado.get("error") or resultado.get("mensaje"))
 
 
@@ -706,27 +674,15 @@ def obtener_informacion_transaccion() -> None:
     """
     nombre = input("Ingrese el nombre del inversor: ")
     num_transaccion = int(input("Ingrese el número de transacción (posición en la lista): "))
-<<<<<<< Updated upstream
-=======
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
     campo = input("Ingrese dato a consultar (inversor, accion,simbolo, cantidad, precio, fecha): ")
-    resultado = control.datos_transaccion(nombre, index, campo)
+    resultado = control.datos_transaccion(nombre, num_transaccion, campo)
     print(resultado.get("error") or resultado.get("mensaje"))
 
-
-<<<<<<< Updated upstream
-=======
-=======
     campo = input("Ingrese dato a consultar (inversor, accion, simbolo, cantidad, precio, fecha): ")
     resultado = control.datos_transaccion(nombre, num_transaccion, campo)
     print(resultado.get("error") or resultado.get("mensaje"))
 
 
->>>>>>> Stashed changes
->>>>>>> Stashed changes
->>>>>>> Stashed changes
->>>>>>> Stashed changes
 def guardar_y_salir() -> None:
     print("Saliendo del sistema...")
 
