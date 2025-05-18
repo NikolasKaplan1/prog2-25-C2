@@ -41,17 +41,15 @@ def validate_content_type():
             }), 415
 
 # Inicialización de la base de datos
-print("app es instancia de:", type(app))
-
-@app._got_first_request
 def init_db():
     try:
-        logger.info("Creando tablas de la base de datos...")
+        logger.info("Creando tablas de la base de datos")
         SQLModel.metadata.create_all(engine)
         logger.info("Base de datos creada y poblada con datos iniciales")
     except Exception as e:
         logger.error(f"Error al inicializar la base de datos: {str(e)}")
         raise
+
 
 # Ruta raíz
 @app.route("/")
