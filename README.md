@@ -52,7 +52,6 @@ graph TD
     wsgi["wsgi.py"]
   end
 
-  auth -->|usa JWT| routers
   data --> database
   database --> routers
   estrategias --> routers
