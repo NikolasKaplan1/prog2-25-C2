@@ -41,7 +41,9 @@ def validate_content_type():
             }), 415
 
 # Inicialización de la base de datos
-@app.before_first_request
+print("app es instancia de:", type(app))
+
+@app._got_first_request
 def init_db():
     try:
         logger.info("Creando tablas de la base de datos...")
