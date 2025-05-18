@@ -403,6 +403,7 @@ def comprar_accion(nombre: str, simbolo: str, cantidad: int) -> dict[str, str]:
     accion = Accion._acciones_registradas[simbolo]
     try:
         inversor.comprar(accion, cantidad)
+        exportar_inversores_pickle(list(inversores_registrados.values()))
         return {"mensaje": f"{nombre} ha comprado {cantidad} acciones de {accion.nombre} exitosamente"}
     except ValueError as e:
         return {"error": str(e)}
@@ -440,7 +441,8 @@ def vender_accion(nombre: str, simbolo: str, cantidad: int) -> dict[str, str]:
         return {"error": f"La acción con el símbolo {simbolo} no existe"}
     accion = Accion._acciones_registradas[simbolo]
     try:
-        inversor.vender(accion, cantidad)
+        inversor.vender(accion, cantidad, tipo = "Vendió")
+        exportar_inversores_pickle(list(inversores_registrados.values()))
         return {"mensaje": f"{nombre} ha vendido {cantidad} acciones de {accion.nombre} exitosamente"}
     except ValueError as e:
         return {"error": str(e)}
@@ -1112,7 +1114,7 @@ def crear_transaccion(nombre: str, simbolo: str, cantidad: int) -> dict[str, str
         return {"error": f"La acción con el símbolo {simbolo} no existe"}
     accion = Accion._acciones_registradas[simbolo]
     inversor = inversores_registrados[nombre]
-    transaccion = Transaccion(inversor, accion, cantidad)
+    transaccion = Transaccion(inversor, accion, cantidad, accion._precio_actual, "Compra")
 
     if transaccion.validar_transaccion():
         transaccion.ejecutar_transaccion()
@@ -1155,6 +1157,37 @@ def calcula_total_transacciones(nombre: str) -> dict[str, str]:
 
     return {"mensaje": f"Total invertido por {nombre}: {round(realizadas, 2)}€"}
 
+def datos_transaccion(nombre: str, index: int, campo: str) -> dict[str, str]:
+    """
+    Devuelve un campo específico de una transacción realizada por un inversor.
+
+    Parameters
+    ----------
+    nombre : str
+        Nombre del inversor.
+    index : int
+        Índice de la transacción dentro del historial.
+    campo : str
+        Campo que se desea consultar (inversor, accion, simbolo, cantidad, precio, fecha).
+
+    Returns
+    -------
+    dict[str, str]
+        Resultado con el valor del campo o mensaje de error.
+    """
+    if nombre not in inversores_registrados:
+        return {"error": f"El inversor '{nombre}' no está registrado"}
+
+    transacciones = inversores_registrados[nombre]._transacciones
+
+    if index < 0 or index >= len(transacciones):
+        return {"error": f"No existe la transacción número {index} para el inversor '{nombre}'"}
+
+    try:
+        valor = transacciones[index][campo]
+        return {"mensaje": str(valor)}
+    except KeyError:
+        return {"error": f"El campo '{campo}' no es válido. Prueba con: inversor, accion, simbolo, cantidad, precio o fecha"}
 
 # Clase IA
 def recomendacion(nombre: str) -> dict[str, str]:
@@ -1180,13 +1213,19 @@ def recomendacion(nombre: str) -> dict[str, str]:
         Da error si no hay suficiente capital para comprar ninguna acción.
     """
     if nombre not in inversores_registrados:
-        return {"error": f"No hay ningún inversor cuyo nombre es {nombre}"}
-    inversor = inversores_registrados[nombre]
-    try:
-        return {"mensaje": f"Las recomendaciones son {IA(inversor).recomendacion()}"}
-    except:
-        return {"error": "No tienes suficiente capital para comprar ninguna acción"}
+        return {"error": f"El inversor '{nombre}' no está registrado"}
 
+    inversor = inversores_registrados[nombre]
+
+    if isinstance(inversor, InversorAgresivo) or isinstance(inversor, InversorConservador):
+        recomendaciones = inversor.recomendar_compra()
+
+        mensaje = "Recomendaciones de compra:\n"
+        for recomendacion in recomendaciones:
+            mensaje += "- " + recomendacion + "\n"
+        return {"mensaje": mensaje}
+    else:
+        return {"error": "Este inversor no tiene una estrategia definida para recomendar acciones."}
 
 
 
