@@ -1,6 +1,5 @@
 import controlador as control
 
-
 def crear_accion() -> None:
     """
     Esta función crea una nueva acción.
@@ -20,7 +19,7 @@ def crear_accion() -> None:
     """
     simbolo = input("Ingrese símbolo de la acción: ")
     nombre = input("Ingrese nombre de la acción: ")
-    precio_actual = float(input("Ingrese el precio actual de la acción: "))
+    precio_actual = input("Ingrese el precio actual de la acción: ")
     historial_input = input(
         "Ingrese el historial de precios en formato fecha:precio separados por comas (ej: 2024-01-01:100,2024-01-02:102.5): ")
 
@@ -65,7 +64,7 @@ def actualizar_precio() -> None:
     None
     """
     simbolo = input("Ingrese el símbolo de la acción: ")
-    nuevo_precio = float(input("Ingrese el precio nuevo de la acción: "))
+    nuevo_precio = input("Ingrese el precio nuevo de la acción: ")
     resultado = control.actualizar_precio(simbolo, nuevo_precio)
     print(resultado.get("error") or resultado.get("mensaje"))
 
@@ -194,7 +193,6 @@ def mostrar_cartera() -> None:
     nombre = input("Ingrese el nombre del inversor: ")
     resultado = control.mostrar_cartera(nombre)
     print(resultado.get("error") or resultado.get("mensaje"))
-
 
 def comprar_accion() -> None:
     """
