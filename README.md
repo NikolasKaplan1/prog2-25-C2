@@ -11,9 +11,10 @@
 # Descripción
 Te damos la bienvenida al simulador de inversiones, una herramienta con la que podrás explorar y practicar en el mundo del mercado de valores. Podrás comprar y vender acciones con datos reales y tomar posiciones compradores y vendedoras y ver las evoluciones de tus operaciones con el tiempo. Por otro lado, contarás con la opción de simular distintas estrategias de inversión, ya sea a corto o a largo plazo, siempre en un entorno seguro y libre de pérdidas.
 
-# Qué necesitas saber antes de probar nuestro código
-Para que no haya errores a la hora de probar nuestro código, te recomendamos ejecutar todo el interior de requirements.txt
-En este archivo se incluye la instalación de todas las librerías necesarias para la ejecución del *SIMULADOR DE BOLSA*.
+# Dependencias necesarias
+Con tal de que no haya complicaciones, recomendamos instalar todas las dependencias listadas en el archivo `requirements.txt`. Para ello puedes ejecutar desde la terminal el siguiente comando:
+
+`pip install -r requirements.txt`
 
 # Distribución de tareas
 Patricia tiene como función principal desarrollar la API REST, para ello utiliza Flask para crear los distintos puntos finales requeridos: gestión de inversores, acciones y transacciones. Su trabajo también incluye el manejo de excepciones en las rutas con `abort` para asegurar que las respuestas sean claras y controladas en caso de errores. También se encarga de el desarrollo y la actualización de todas las pruebas automáticas, tanto unitarias como de integración.
