@@ -72,7 +72,7 @@ def health_check():
         # Verificar la conexión a la base de datos
         from sqlmodel import Session
         with Session(engine) as session:
-            session.execute("SELECT 1")
+            session.exec("SELECT 1")
         return jsonify({"status": "healthy", "database": "connected"})
     except Exception as e:
         logger.error(f"Error en health check: {str(e)}")
