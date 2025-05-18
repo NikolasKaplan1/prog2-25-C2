@@ -11,7 +11,7 @@ load_dotenv()
 
 # Configuración general de Flask
 app = Flask(__name__)
-app.config['JSON_SORT_KEYS'] = False  # Mantener orden de claves en JSON
+app.config['JSON_SORT_KEYS'] = False
 
 # Configuración de base de datos
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///simulador.db")
@@ -30,25 +30,20 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Middleware para verificar Content-Type en POST, PUT, PATCH
 @app.before_request
 def validate_content_type():
     if request.method in ['POST', 'PUT', 'PATCH']:
         if request.headers.get('Content-Type') != 'application/json' and request.get_json(silent=True) is not None:
             return jsonify({"error": "Content-Type debe ser application/json"}), 415
 
-# Inicialización de base de datos
 def init_db(seed: bool = False):
     try:
-        # 👇 IMPORTACIONES explícitas antes de crear las tablas
         from models.models import InversorDB, AccionDB, TransaccionDB
-
         logger.info("Creando tablas de la base de datos con SQLModel")
         SQLModel.metadata.create_all(engine)
 
         if seed:
             from sqlmodel import Session
-
             with Session(engine) as session:
                 apple = AccionDB(nombre="Apple Inc.", simbolo="AAPL", precio_actual=180.0, historial_precios="{}")
                 carlos = InversorDB(
@@ -59,12 +54,10 @@ def init_db(seed: bool = False):
                 session.add(carlos)
                 session.commit()
                 logger.info("Datos demo insertados correctamente")
-
     except Exception as e:
         logger.error(f"Error al inicializar la base de datos: {str(e)}")
         raise
 
-# Página raíz
 @app.route("/")
 def root():
     return jsonify({
@@ -78,7 +71,6 @@ def root():
         }
     })
 
-# Endpoint de verificación
 @app.route("/health")
 def health_check():
     try:
@@ -89,7 +81,6 @@ def health_check():
         logger.error(f"Error en health check: {str(e)}")
         return jsonify({"status": "unhealthy", "database": "disconnected", "error": str(e)}), 500
 
-# Manejador global de errores
 @app.errorhandler(Exception)
 def handle_exception(e):
     if isinstance(e, HTTPException):
@@ -97,7 +88,6 @@ def handle_exception(e):
     logger.error(f"Error inesperado: {str(e)}")
     return jsonify({"error": "Error interno del servidor", "status_code": 500}), 500
 
-# Registrar blueprints de rutas
 def register_blueprints():
     from routers.inversor_router import inversor_bp
     from routers.accion_router import accion_bp
@@ -106,16 +96,6 @@ def register_blueprints():
     app.register_blueprint(inversor_bp, url_prefix="/inversores")
     app.register_blueprint(accion_bp, url_prefix="/acciones")
     app.register_blueprint(transaccion_bp, url_prefix="/transacciones")
-
-# Exportaciones para otros módulos
+# Exportaciones para WSGI y dev_run.py
 __all__ = ["app", "engine", "init_db", "register_blueprints"]
 
-# Si quieres ejecutarlo directamente (normalmente usarás run.py)
-if __name__ == "__main__":
-    register_blueprints()
-    init_db(seed=True)
-    app.run(
-        host=os.getenv("HOST", "0.0.0.0"),
-        port=int(os.getenv("PORT", 8000)),
-        debug=os.getenv("DEBUG", "True") == "True"
-    )
