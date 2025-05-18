@@ -1,3 +1,17 @@
+
+"""
+Módulo principal de la API REST del simulador de bolsa
+
+En este módulo configuramos y ejecutamos la API Flask que proporciona endpoints
+para gestionar inversores, acciones, transacciones y autenticación de usuarios
+
+Attributes
+----------
+app : Flask
+    La aplicación Flask principal
+engine : Engine
+    Motor de SQLAlchemy conectado a la base de datos 
+"""
 from flask import Flask, jsonify, request
 from sqlmodel import SQLModel, create_engine, Session
 from werkzeug.exceptions import HTTPException
@@ -32,11 +46,29 @@ logger = logging.getLogger(__name__)
 
 @app.before_request
 def validate_content_type():
+    """
+    Valida que las peticiones POST y PUT tengan 'Content-Type: application/json'
+
+    Returns
+    -------
+    Response:
+        Mensaje de error en caso de que el Content-Type no sea correcto
+    """
     if request.method in ['POST', 'PUT', 'PATCH']:
         if request.headers.get('Content-Type') != 'application/json' and request.get_json(silent=True) is not None:
             return jsonify({"error": "Content-Type debe ser application/json"}), 415
 
 def init_db(seed: bool = False):
+    """
+    Inicializa las tablas de la base de datos
+
+    Si "seed" es True, se introducen datos de ejemplo en la base de datos
+
+    Parameters
+    ----------
+    seed : bool
+        Si se quiere rellenar la base de datos con datos de ejemplo
+    """
     try:
         from models.models import InversorDB, AccionDB, TransaccionDB
         logger.info("Creando tablas de la base de datos con SQLModel")
@@ -61,6 +93,14 @@ def init_db(seed: bool = False):
 
 @app.route("/")
 def root():
+    """
+    Endpoint raíz de la API
+
+    Returns
+    -------
+    Response:
+        Información general sobre la API y sus endpoints disponibles
+    """
     return jsonify({
         "api": "Simulador de Bolsa API",
         "version": "1.0.0",
@@ -75,6 +115,14 @@ def root():
 
 @app.route("/health")
 def health_check():
+    """
+    Endpoint de verificación del estado del servidor y conexión a la base de datos
+
+    Returns
+    -------
+    Response:
+        Estado de la aplicación y de la base de datos
+    """
     try:
         with Session(engine) as session:
             session.exec(text("SELECT 1"))
@@ -85,12 +133,28 @@ def health_check():
 
 @app.errorhandler(Exception)
 def handle_exception(e):
+    """
+    Controlador global de errores para toda la app
+
+    Parameters
+    ----------
+    e : Exception
+        Excepción lanzada
+
+    Returns
+    -------
+    Response:
+        Mensaje de error en formato JSON
+    """
     if isinstance(e, HTTPException):
         return jsonify({"error": e.description, "status_code": e.code}), e.code
     logger.error(f"Error inesperado: {str(e)}")
     return jsonify({"error": "Error interno del servidor", "status_code": 500}), 500
 
 def register_blueprints():
+    """
+    Registra los Blueprints de los diferentes módulos de la API
+    """
     from routers.inversor_router import inversor_bp
     from routers.accion_router import accion_bp
     from routers.transaccion_router import transaccion_bp
@@ -100,6 +164,7 @@ def register_blueprints():
     app.register_blueprint(accion_bp, url_prefix="/acciones")
     app.register_blueprint(transaccion_bp, url_prefix="/transacciones")
     app.register_blueprint(auth_bp, url_prefix="/autenticaciones")
+    
 # Exportaciones para WSGI y dev_run.py
 __all__ = ["app", "engine", "init_db", "register_blueprints"]
 
