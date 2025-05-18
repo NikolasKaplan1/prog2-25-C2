@@ -26,7 +26,7 @@ class InversorAgresivo(Inversor):
             lista con los nombres y precios de las acciones más caras recomendadas.
        
         """
-        acciones = list(self.cartera.values())
+        acciones = list(self._Inversor__cartera.values())
         lista_precios = []
         for accion, _ in acciones:
             lista_precios.append([accion, accion.precio_actual])
