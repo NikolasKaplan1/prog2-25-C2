@@ -1,6 +1,7 @@
 Flask==3.1.1
 Flask-Cors==4.0.0
 requests
-yfinance==0.2.36 
+yfinance==0.2.61
 pandas==2.2.2
-Werkzeug==2.3.7
+Werkzeug==3.1.0
+sqlmodel>=0.0.8
