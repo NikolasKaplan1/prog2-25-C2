@@ -48,7 +48,7 @@ def get_inversores():
             abort(500, description="Error al consultar la base de datos")
 
 
-@inversor_bp.route("//<int:inversor_id>", methods=["GET"])
+@inversor_bp.route("/<int:inversor_id>", methods=["GET"])
 def get_inversor_id(inversor_id):
     """
     Obtiene un inversor específico por su identificador
@@ -133,7 +133,7 @@ def post_nuevo_inversor():
             abort(500, description="Error al crear el inversor")
 
 
-@inversor_bp.route("/<int:inversor_id", methods=["PUT"])
+@inversor_bp.route("/<int:inversor_id>", methods=["PUT"])
 def update_inversor(inversor_id):
     """
     Corrige o modifica los datos de un inversor existente
