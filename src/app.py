@@ -99,7 +99,7 @@ def register_blueprints():
     app.register_blueprint(inversor_bp, url_prefix="/inversores")
     app.register_blueprint(accion_bp, url_prefix="/acciones")
     app.register_blueprint(transaccion_bp, url_prefix="/transacciones")
-    app.register_blueprint(auth_bp, url_prefix="/autenticacion")
+    app.register_blueprint(auth_bp, url_prefix="/autenticaciones")
 # Exportaciones para WSGI y dev_run.py
 __all__ = ["app", "engine", "init_db", "register_blueprints"]
 

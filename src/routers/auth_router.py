@@ -7,7 +7,7 @@ import logging
 # Creamos un logger para este módulo
 logger = logging.getLogger(__name__)
 
-auth_bp = Blueprint('transaccion', __name__)
+auth_bp = Blueprint('autenticacion', __name__)
 
 # Importamos engine
 def get_engine():
