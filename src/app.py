@@ -68,7 +68,8 @@ def root():
         "endpoints": {
             "inversores": "/inversores",
             "acciones": "/acciones",
-            "transacciones": "/transacciones"
+            "transacciones": "/transacciones",
+            "autenticaciones": "/autenticaciones"
         }
     })
 
