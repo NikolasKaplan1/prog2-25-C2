@@ -36,13 +36,13 @@ Por último, Adrián se ocupa de todo lo relacionado con la persistencia de dato
 ```mermaid
 graph TD
   subgraph src
-    auth["📦 auth"]
-    data["📦 data"]
-    database["📦 database"]
-    estrategias["📦 estrategias"]
-    logs["📦 logs"]
-    models["📦 models"]
-    routers["📦 routers"]
+    auth["auth"]
+    data["data"]
+    database["database"]
+    estrategias["estrategias"]
+    logs["logs"]
+    models["models"]
+    routers["routers"]
   end
 
   auth -->|usa JWT| routers
