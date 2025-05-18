@@ -7,11 +7,11 @@ import csv
 import os
 from pathlib import Path
 from datetime import date
-from src.database.db_manager import get_connection
-from src.models.accion import Accion, AccionReal
-from src.models.inversor import Inversor
-from src.models.transaccion import Transaccion
-from src.models.mercado import Mercado
+from database.db_manager import get_connection
+from models.accion import Accion, AccionReal
+from models.inversor import Inversor
+from models.transaccion import Transaccion
+from models.mercado import Mercado
 
 
 DATA_DIR = Path("data")
