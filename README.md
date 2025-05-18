@@ -36,7 +36,6 @@ Por último, Adrián se ocupa de todo lo relacionado con la persistencia de dato
 ```mermaid
 graph TD
   subgraph src
-    auth["auth"]
     data["data"]
     database["database"]
     estrategias["estrategias"]
@@ -44,11 +43,13 @@ graph TD
     models["models"]
     routers["routers"]
 
-    manejo_archivos["manejo_archivos.py"]
-    main["main.py"]
-    run["run.py"]
+    app["app.py"]
     controlador["controlador.py"]
+    dev_run["dev_run.py"]
     ejemplos["ejemplos.py"]
+    ejemplos["ejemplos.py"]
+    manejo_archivos["manejo_archivos.py"]
+    wsgi["wsgi.py"]
   end
 
   auth -->|usa JWT| routers
@@ -59,9 +60,6 @@ graph TD
   models --> estrategias
   logs --> routers
 
-  subgraph auth
-    jwt["jwt.py"]
-  end
 
   subgraph data
     archivos_csv["*.csv / *.pkl"]
@@ -70,13 +68,16 @@ graph TD
   subgraph database
     dbmanager["db_manager.py"]
     schema["schema.sql"]
-    db["simulador.db"]
   end
 
   subgraph estrategias
     ia["ia.py"]
     inv_agresivo["inversor_agresivo.py"]
     inv_conservador["inversor_conservador.py"]
+  end
+
+  subgraph logs
+    acciones["acciones.log"]
   end
 
   subgraph models
@@ -89,6 +90,7 @@ graph TD
 
   subgraph routers
     acc_router["accion_router.py"]
+    auth_router["auth_router.py"]
     inv_router["inversor_router.py"]
     trans_router["transaccion_router.py"]
   end
