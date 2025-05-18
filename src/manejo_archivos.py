@@ -7,12 +7,9 @@ import csv
 import os
 from pathlib import Path
 from datetime import date
-from database.db_manager import get_connection
-from models.accion import Accion, AccionReal
-from models.inversor import Inversor
-from models.transaccion import Transaccion
-from models.mercado import Mercado
-
+from database.db_manager import get_connection, init_db
+from models import Accion, AccionReal, Inversor, Transaccion, Mercado
+init_db()
 
 DATA_DIR = Path("data")
 DATA_DIR.mkdir(exist_ok=True)
