@@ -1,7 +1,7 @@
 import requests
 
 BASE_URL = "http://127.0.0.1:8000"
-
+access_token = None
 
 def listar_inversores():
     try:
@@ -311,6 +311,69 @@ def eliminar_transaccion():
         print(f"Error: {e}")
 
 
+def autenticacion():
+    global access_token
+
+    while True:
+        print("\n=== Bienvenido al Simulador de Bolsa ===")
+        print("1. Registrarse")
+        print("2. Iniciar sesión")
+        print("3. Salir")
+        opcion = input("Selecciona una opción (1-3): ")
+
+        if opcion == '1':
+            nombre = input("Nombre: ")
+            apellidos = input("Apellidos: ")
+            email = input("Email: ")
+            contrasena = input("Contraseña: ")
+            tarjeta_credito = input("Tarjeta de crédito: ")
+            capital = input("Capital inicial: ")
+
+            try:
+                capital_float = float(capital)
+            except ValueError:
+                print("Capital inválido.")
+                continue
+
+            try:
+                r = requests.post(
+                    f"{BASE_URL}/auth/register",
+                    json={
+                        "nombre": nombre,
+                        "apellidos": apellidos,
+                        "email": email,
+                        "contrasena": contrasena,
+                        "tarjeta_credito": tarjeta_credito,
+                        "capital": capital_float
+                    }
+                )
+                print(r.status_code, r.json())
+            except Exception as e:
+                print(f"Error: {e}")
+
+        elif opcion == '2':
+            email = input("Email: ")
+            contrasena = input("Contraseña: ")
+            try:
+                r = requests.post(
+                    f"{BASE_URL}/auth/login",
+                    json={"email": email, "contrasena": contrasena}
+                )
+                if r.status_code == 200:
+                    access_token = r.json().get("access_token")
+                    print("Inicio de sesión exitoso.")
+                    return True
+                else:
+                    print(f"Error: {r.status_code} - {r.json().get('detail')}")
+            except Exception as e:
+                print(f"Error: {e}")
+
+        elif opcion == '3':
+            print("Saliendo del cliente...")
+            exit()
+        else:
+            print("Opción no válida.")
+
 def menu():
     while True:
         print("\n=== Simulador de Bolsa - Menú Cliente ===")
@@ -374,4 +437,5 @@ def menu():
 
 
 if __name__ == "__main__":
-    menu()
+    if autenticacion():
+        menu()
