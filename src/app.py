@@ -56,6 +56,7 @@ def init_db(seed: bool = False):
                 logger.info("Datos demo insertados correctamente")
     except Exception as e:
         logger.error(f"Error al inicializar la base de datos: {str(e)}")
+        print(f"[ERROR init_db] {e}")  
         raise
 
 @app.route("/")
