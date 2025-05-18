@@ -34,46 +34,65 @@ Por último, Adrián se ocupa de todo lo relacionado con la persistencia de dato
 # Diagrama UML del Sistema
 
 ```mermaid
-flowchart TD
-    subgraph src["Paquete Principal: src"]
-        subgraph auth["auth"]
-            A[jwt.py]
-        end
+graph TD
+  subgraph src
+    auth["auth"]
+    data["data"]
+    database["database"]
+    estrategias["estrategias"]
+    logs["logs"]
+    models["models"]
+    routers["routers"]
 
-        subgraph database["database"]
-            B[db_manager.py]
-        end
+    manejo_archivos["manejo_archivos.py"]
+    main["main.py"]
+    run["run.py"]
+    controlador["controlador.py"]
+    ejemplos["ejemplos.py"]
+  end
 
-        subgraph estrategias["estrategias"]
-            C[ia.py]
-            D[inversor_agresivo.py]
-            E[inversor_conservador.py]
-        end
+  auth -->|usa JWT| routers
+  data --> database
+  database --> routers
+  estrategias --> routers
+  models --> routers
+  models --> estrategias
+  logs --> routers
 
-        subgraph models["models"]
-            F[accion.py]
-            G[inversor.py]
-            H[mercado.py]
-            I[transaction.py]
-            J[models.py]
-        end
+  subgraph auth
+    jwt["jwt.py"]
+  end
 
-        subgraph routers["routers"]
-            K[accion_router.py]
-            L[inversor_router.py]
-            M[transaction_router.py]
-        end
+  subgraph data
+    archivos_csv["*.csv / *.pkl"]
+  end
 
-        N[main.py]
-    end
+  subgraph database
+    dbmanager["db_manager.py"]
+    schema["schema.sql"]
+    db["simulador.db"]
+  end
 
-    %% Relaciones entre paquetes
-    routers --> models
-    routers --> auth
-    models --> database
-    estrategias --> models
-    main.py --> routers
-    main.py --> models
+  subgraph estrategias
+    ia["ia.py"]
+    inv_agresivo["inversor_agresivo.py"]
+    inv_conservador["inversor_conservador.py"]
+  end
+
+  subgraph models
+    accion["accion.py"]
+    inversor["inversor.py"]
+    mercado["mercado.py"]
+    transaccion["transaccion.py"]
+    models["models.py"]
+  end
+
+  subgraph routers
+    acc_router["accion_router.py"]
+    inv_router["inversor_router.py"]
+    trans_router["transaccion_router.py"]
+  end
+
 ```
 # Colaboradores
 
