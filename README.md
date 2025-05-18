@@ -9,13 +9,7 @@
 
 
 # Descripción
-Este simulador permitirá a los usuarios:
-
-· Comprar y vender acciones en base a datos reales del mercado.
-
-· Analizar el rendimiento de sus inversiones con gráficos.
-
-· Simular estrategais de inversión a corto y largo plazo.
+Te damos la bienvenida al simulador de inversiones, una herramienta con la que podrás explorar y practicar en el mundo del mercado de valores. Podrás comprar y vender acciones con datos reales y tomar posiciones compradores y vendedoras y ver las evoluciones de tus operaciones con el tiempo. Por otro lado, contarás con la opción de simular distintas estrategias de inversión, ya sea a corto o a largo plazo, siempre en un entorno seguro y libre de pérdidas.
 
 # Qué necesitas saber antes de probar nuestro código
 Para que no haya errores a la hora de probar nuestro código, te recomendamos ejecutar todo el interior de requirements.txt
@@ -95,6 +89,26 @@ graph TD
   end
 
 ```
+# Modo de empleo
+## Uso del archivo `ejemplos`
+Para ejecutar el programa es necesario darle los permisos necesarios de ejecución al archivo. Desde la terminal podemos usar el comando:
+`chmod +x ejemplos`
+Una vez otorgados los permisos correspondientes podemos inicial el programa:
+`./ejemplos`
+Al iniciar, el sistema mostrará un menú de opciones con las cuales el usuario puede llevar a cabo distintas operaciones sobre el mercado de valores, tales como crear acciones e inversores, simular compra/venta, actualizar precios, consultar carteras, consultar operaciones y muchos más.
+Simplemente debes escribir el número de la opción que deseas usar y seguir las instrucciones en pantalla. Por ejemplo, si eliges la opción 5, el programa te pedirá el símbolo de una acción para mostrar sus datos. 
+
+## Uso de la API
+Este sistemas es una API que incluye una interfaz en modo de texto, desde la cual el usuario puede interactuar directamente con los endpoints mediante un menú con diversas opciones. 
+Para poder interactuar con el sistema, primero debemos ejecutar el archivo `dev_run.py`, que inicializa la API de tal forma que pueda recibir peticiones ya que todas las operaciones depende de que la API esté activa.
+Una ejecutado el paso anterior abrimos una nueva terminal (ya que la API tiene que estar en constante ejecución) y le otorgamos los permisos de ejecución necesarios al main:
+`chmod +x main`
+Luego ejecutamos el archivo:
+`./main`
+Esto iniciará una interfaz de texto. El objetivo final es acceder al menú de clientes, pero antes debemos iniciar sesión o registrarnos en el caso de que no seamos invesores.
+Una vez iniciado sesión ya tenemos acceso completo al menú de cliente desde el cual podemos realizar operaciones para gestionar inversores, acciones o transacciones, además de consultar historiales. 
+Al finalizar y haber seleccionado la opción salir (17) en el menú, debemos volver a la terminal donde se está ejecutando la API y detenerla con `Ctrl + C` en la terminal.
+
 # Colaboradores
 
 <!-- readme: collaborators -start -->
