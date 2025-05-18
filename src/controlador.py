@@ -1,7 +1,4 @@
-from models.accion import Accion, AccionReal
-from models.mercado import Mercado
-from models.transaccion import Transaccion
-from models.inversor import Inversor
+from models import Accion, AccionReal, Mercado, Transaccion, Inversor
 from estrategias import InversorAgresivo, InversorConservador, IA
 from typing import Union
 import random
@@ -19,7 +16,6 @@ from manejo_archivos import (
     exportar_mercados_registrados_pickle,
     acciones_por_mercado_csv
 )
-from src.models import mercado
 
 
 # Clases Accion y AccionReal
@@ -49,15 +45,21 @@ def crear_accion(simbolo: str, nombre: str, precio_actual: float, historial_prec
     ------
     Error
         Nos dará error si ya existe una acción con el símbolo que le pasamos.
+    Valuerror
+        Dara error si el precio no es un número.
     """
     if simbolo in Accion._acciones_registradas:
         return {"error": f"Ya existe una acción con el símbolo {simbolo}"}
-    Accion(simbolo, nombre, precio_actual, historial_precios)
-    exportar_acciones_csv()
-    exportar_historial_precios_csv()
-    exportar_acciones_pickle()
-    exportar_historiales_pickle()
-    return {"mensaje": "Acción añadida correctamente"}
+    try:
+        precio_actual = float(precio_actual)
+        Accion(simbolo, nombre, precio_actual, historial_precios)
+        exportar_acciones_csv()
+        exportar_historial_precios_csv()
+        exportar_acciones_pickle()
+        exportar_historiales_pickle()
+        return {"mensaje": "Acción añadida correctamente"}
+    except ValueError:
+        return {"error": f"El precio tiene que ser un número"}
 
 
 def crear_accion_real(simbolo: str) -> dict[str, str]:
@@ -119,21 +121,25 @@ def actualizar_precio(simbolo: str, nuevo_precio: float) -> dict[str, str]:
     Error
         Nos dará error si no existe una acción con el símbolo que le pasamos.
     ValueError
+        Dara error si el precio no es un número.
+    ValueError
         Nos dará error si el precio nuevo que hemos puesto es el actual.
     """
     if simbolo not in Accion._acciones_registradas:
         return {"error": f"No existe una acción con el símbolo {simbolo}"}
-    Accion._acciones_registradas[simbolo].actualizar_precio(nuevo_precio)
-    return {"mensaje": "Precio actualizado correctamente"}
     try:
-        Accion._acciones_registradas[simbolo].actualizar_precio(nuevo_precio)
-        exportar_acciones_csv()
-        exportar_historial_precios_csv()
-        exportar_acciones_pickle()
-        exportar_historiales_pickle()
-        return {"mensaje": "Precio actualizado correctamente"}
+        nuevo_precio = float(nuevo_precio)
+        try:
+            Accion._acciones_registradas[simbolo].actualizar_precio(nuevo_precio)
+            exportar_acciones_csv()
+            exportar_historial_precios_csv()
+            exportar_acciones_pickle()
+            exportar_historiales_pickle()
+            return {"mensaje": "Precio actualizado correctamente"}
+        except ValueError:
+            return {"error": "El precio que has puesto es el actual"}
     except ValueError:
-        return {"error": "El precio que has puesto es el actual"}
+        return {"error": f"El precio tiene que ser un número"}
 
 
 def actualizar_precio_real(simbolo: str) -> dict[str, str]:
