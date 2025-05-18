@@ -1,9 +1,6 @@
 from .accion import Accion
 from typing import List
 
-from .accion import Accion
-from typing import List
-
 
 class Inversor:
     """
