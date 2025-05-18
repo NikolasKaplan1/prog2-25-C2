@@ -4,6 +4,11 @@ from werkzeug.exceptions import HTTPException
 import os
 import logging
 from dotenv import load_dotenv
+from sqlalchemy import text
+from models.accion import Accion
+from models.inversor import Inversor
+from models.transaccion import Transaccion
+
 
 
 # Cargamos las variables de entorno
@@ -72,7 +77,7 @@ def health_check():
         # Verificar la conexión a la base de datos
         from sqlmodel import Session
         with Session(engine) as session:
-            session.exec("SELECT 1")
+            session.exec(text("SELECT 1"))
         return jsonify({"status": "healthy", "database": "connected"})
     except Exception as e:
         logger.error(f"Error en health check: {str(e)}")
