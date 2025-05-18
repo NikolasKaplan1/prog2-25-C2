@@ -1,6 +1,7 @@
 from .accion import Accion
 from .inversor import Inversor
 from datetime import datetime
+from typing import Union
 
 
 class Transaccion:
