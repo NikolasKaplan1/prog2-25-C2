@@ -176,7 +176,7 @@ def datos_inversor() -> None:
     if "error" in resultado:
         print(resultado.get("error"))
     else:
-        print(f"Nombre: {resultado["nombre"]}, capital: {resultado["capital"]}, tipo: {resultado["tipo"]}")
+        print(f'Nombre: {resultado["nombre"]}, capital: {resultado["capital"]}, tipo: {resultado["tipo"]}')
 
 
 def mostrar_cartera() -> None:
@@ -266,7 +266,7 @@ def comprar_acciones_con_operador() -> None:
     nombre = input("Ingrese el nombre del inversor: ")
     simbolo = input("Ingrese el simbolo de la acción que quiere comprar: ")
     cantidad = int(input("Ingrese la cantidad de acciones que quiere comprar: "))
-    resultado = control.comprar_accion_con_operador(nombre, simbolo, cantidad)
+    resultado = control.comprar_acciones_con_operador(nombre, simbolo, cantidad)
     print(resultado.get("error") or resultado.get("mensaje"))
 
 
@@ -283,9 +283,9 @@ def vender_acciones_con_operador() -> None:
     None
     """
     nombre = input("Ingrese el nombre del inversor: ")
-    simbolo = input("Ingrese el simbolo de la acción que quiere comprar: ")
-    cantidad = int(input("Ingrese la cantidad de acciones que quiere comprar: "))
-    resultado = control.vender_accion_con_operador(nombre, simbolo, cantidad)
+    simbolo = input("Ingrese el simbolo de la acción que quiere vender: ")
+    cantidad = int(input("Ingrese la cantidad de acciones que quiere vender: "))
+    resultado = control.vender_acciones_con_operador(nombre, simbolo, cantidad)
     print(resultado.get("error") or resultado.get("mensaje"))
 
 
@@ -624,25 +624,6 @@ def comparar_inversores() -> None:
     print(resultado.get("error") or resultado.get("mensaje"))
 
 
-def obtener_informacion_transaccion() -> None:
-    """
-    Esta función permite consultar un dato específico de una transacción realizada por un inversor.
-
-    Parameters
-    ----------
-    None
-
-    Returns
-    -------
-    None
-    """
-    nombre = input("Ingrese el nombre del inversor: ")
-    num_transaccion = int(input("Ingrese el número de transacción (posición en la lista): "))
-    campo = input("Ingrese dato a consultar (inversor, accion,simbolo, cantidad, precio, fecha): ")
-    resultado = control.datos_transaccion(nombre, index, campo)
-    print(resultado.get("error") or resultado.get("mensaje"))
-
-
 def contiene_accion_inversor() -> None:
     """
     Esta función verifica si un inversor tiene una acción específica en su cartera.
@@ -694,7 +675,11 @@ def obtener_informacion_transaccion() -> None:
     nombre = input("Ingrese el nombre del inversor: ")
     num_transaccion = int(input("Ingrese el número de transacción (posición en la lista): "))
     campo = input("Ingrese dato a consultar (inversor, accion,simbolo, cantidad, precio, fecha): ")
-    resultado = control.datos_transaccion(nombre, index, campo)
+    resultado = control.datos_transaccion(nombre, num_transaccion, campo)
+    print(resultado.get("error") or resultado.get("mensaje"))
+
+    campo = input("Ingrese dato a consultar (inversor, accion, simbolo, cantidad, precio, fecha): ")
+    resultado = control.datos_transaccion(nombre, num_transaccion, campo)
     print(resultado.get("error") or resultado.get("mensaje"))
 
 
