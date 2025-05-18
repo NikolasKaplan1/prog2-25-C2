@@ -43,6 +43,10 @@ graph TD
     logs["logs"]
     models["models"]
     routers["routers"]
+
+    manejo_archivos["manejo_archivos.py"]
+    main["main.py"]
+    run["run.py"]
   end
 
   auth -->|usa JWT| routers
@@ -84,9 +88,6 @@ graph TD
     acc_router["accion_router.py"]
     inv_router["inversor_router.py"]
     trans_router["transaccion_router.py"]
-    archivos["manejo_archivos.py"]
-    main["main.py"]
-    run["run.py"]
   end
 
 ```
