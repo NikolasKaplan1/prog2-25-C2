@@ -1,62 +1,70 @@
 from flask import Flask, jsonify, request
-from sqlmodel import SQLModel, create_engine
+from sqlmodel import SQLModel, create_engine, Session
 from werkzeug.exceptions import HTTPException
-import os
-import logging
-from dotenv import load_dotenv
 from sqlalchemy import text
-from models.accion import Accion
-from models.inversor import Inversor
-from models.transaccion import Transaccion
+from dotenv import load_dotenv
+import logging
+import os
 
-
-
-# Cargamos las variables de entorno
+# Carga variables de entorno
 load_dotenv()
 
-# Configuración de la aplicación
+# Configuración general de Flask
 app = Flask(__name__)
-# Para mantener el orden de las claves ne las respuestas de JSON
-app.config['JSON_SORT_KEYS'] = False  
+app.config['JSON_SORT_KEYS'] = False  # Mantener orden de claves en JSON
 
-# Configuración de la base de datos
+# Configuración de base de datos
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///simulador.db")
-engine = create_engine(DATABASE_URL, echo=bool(os.getenv("SQL_ECHO", "False") == "True"))
+engine = create_engine(DATABASE_URL, echo=os.getenv("SQL_ECHO", "False") == "True")
 
-# Configuración de los logs
+# Configuración de logs
 log_level = getattr(logging, os.getenv("LOG_LEVEL", "INFO"))
 log_dir = os.getenv("LOG_DIR", "logs")
 os.makedirs(log_dir, exist_ok=True)
 
 logging.basicConfig(
     level=log_level,
-    filename=f'{log_dir}/acciones.log',
-    filemode='a',
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    filename=os.path.join(log_dir, "acciones.log"),
+    filemode="a",
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
-# Middleware para validar el tipo de contenido
+# Middleware para verificar Content-Type en POST, PUT, PATCH
 @app.before_request
 def validate_content_type():
     if request.method in ['POST', 'PUT', 'PATCH']:
         if request.headers.get('Content-Type') != 'application/json' and request.get_json(silent=True) is not None:
-            return jsonify({
-                "error": "Content-Type debe ser application/json"
-            }), 415
+            return jsonify({"error": "Content-Type debe ser application/json"}), 415
 
-# Inicialización de la base de datos
-def init_db():
+# Inicialización de base de datos
+def init_db(seed: bool = False):
     try:
-        logger.info("Creando tablas de la base de datos")
+        # 👇 IMPORTACIONES explícitas antes de crear las tablas
+        from models.models import InversorDB, AccionDB, TransaccionDB
+
+        logger.info("Creando tablas de la base de datos con SQLModel")
         SQLModel.metadata.create_all(engine)
-        logger.info("Base de datos creada y poblada con datos iniciales")
+
+        if seed:
+            from sqlmodel import Session
+
+            with Session(engine) as session:
+                apple = AccionDB(nombre="Apple Inc.", simbolo="AAPL", precio_actual=180.0, historial_precios="{}")
+                carlos = InversorDB(
+                    nombre="Carlos", apellidos="Pérez", email="carlos@example.com",
+                    contrasena="1234", tarjeta_credito="1234-5678-1234-5678", capital=10000.0
+                )
+                session.add(apple)
+                session.add(carlos)
+                session.commit()
+                logger.info("Datos demo insertados correctamente")
+
     except Exception as e:
         logger.error(f"Error al inicializar la base de datos: {str(e)}")
         raise
 
-
-# Ruta raíz
+# Página raíz
 @app.route("/")
 def root():
     return jsonify({
@@ -70,12 +78,10 @@ def root():
         }
     })
 
-# Ruta de verificación
+# Endpoint de verificación
 @app.route("/health")
 def health_check():
     try:
-        # Verificar la conexión a la base de datos
-        from sqlmodel import Session
         with Session(engine) as session:
             session.exec(text("SELECT 1"))
         return jsonify({"status": "healthy", "database": "connected"})
@@ -83,42 +89,33 @@ def health_check():
         logger.error(f"Error en health check: {str(e)}")
         return jsonify({"status": "unhealthy", "database": "disconnected", "error": str(e)}), 500
 
-# Controlador de errores globales
+# Manejador global de errores
 @app.errorhandler(Exception)
 def handle_exception(e):
     if isinstance(e, HTTPException):
-        response = {
-            "error": e.description,
-            "status_code": e.code
-        }
-        status_code = e.code
-    else:
-        logger.error(f"Error inesperado: {str(e)}")
-        response = {
-            "error": "Error interno del servidor",
-            "status_code": 500
-        }
-        status_code = 500
-    
-    return jsonify(response), status_code
+        return jsonify({"error": e.description, "status_code": e.code}), e.code
+    logger.error(f"Error inesperado: {str(e)}")
+    return jsonify({"error": "Error interno del servidor", "status_code": 500}), 500
 
-# Importamos los blueprints tras definir engine para evitar dependencia circular
+# Registrar blueprints de rutas
 def register_blueprints():
     from routers.inversor_router import inversor_bp
     from routers.accion_router import accion_bp
     from routers.transaccion_router import transaccion_bp
-    
-    # Registra los blueprints 
+
     app.register_blueprint(inversor_bp, url_prefix="/inversores")
     app.register_blueprint(accion_bp, url_prefix="/acciones")
     app.register_blueprint(transaccion_bp, url_prefix="/transacciones")
 
+# Exportaciones para otros módulos
+__all__ = ["app", "engine", "init_db", "register_blueprints"]
+
+# Si quieres ejecutarlo directamente (normalmente usarás run.py)
 if __name__ == "__main__":
-    # Registra los blueprints antes de iniciar la aplicación
     register_blueprints()
-    
-    port = int(os.getenv("PORT", 8000))
-    debug = bool(os.getenv("DEBUG", "True") == "True")
-    host = os.getenv("HOST", "0.0.0.0")
-    
-    app.run(host=host, port=port, debug=debug)
+    init_db(seed=True)
+    app.run(
+        host=os.getenv("HOST", "0.0.0.0"),
+        port=int(os.getenv("PORT", 8000)),
+        debug=os.getenv("DEBUG", "True") == "True"
+    )
