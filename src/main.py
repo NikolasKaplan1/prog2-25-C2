@@ -4,6 +4,16 @@ BASE_URL = "http://127.0.0.1:8000"
 access_token = None
 
 def listar_inversores():
+    """
+    Realiza una solicitud GET para obtener un listado de los inversores
+
+    Raises
+    ------
+    requests.exceptions.ConnectionError:
+        Si no se puede establecer conexión con el servidor
+    Exception:
+        Si hay otro error inesperado
+    """
     try:
         r = requests.get(f"{BASE_URL}/inversores")
         print(r.status_code, r.json())
@@ -14,6 +24,17 @@ def listar_inversores():
 
 
 def buscar_inversor():
+    """
+    Solicita el ID del inversor para realiza una solicitud GET y mostrar la 
+    informaión de dicho inversor
+
+    Raises
+    ------
+    ValueError:
+        Si el ID proporcionado no es correcto
+    Exception:
+        Si hay algún error en la solicitud HTTP
+    """
     inversor_id = input("ID del inversor: ")
     try:
         id_int = int(inversor_id)
@@ -29,6 +50,17 @@ def buscar_inversor():
 
 
 def crear_inversor():
+    """
+    Solicita los datos para poder crear un nuevo inversor, los valida y sube al servidor
+    utilizando POST
+
+    Raises
+    ------
+    ValueError:
+        Si el capital ingresado no es un número
+    Exception:
+        Si hay algún error en la solicitud HTTP
+    """
     nombre = input("Nombre del inversor: ")
     apellidos = input("Apellidos del inversor: ")
     email = input("Email del inversor: ")
@@ -60,6 +92,17 @@ def crear_inversor():
 
 
 def modificar_inversor():
+    """
+    Modifica los datos de un inversor existente, omitiendo los campos en los que no
+    se introducen datos para modificar
+
+    Raises
+    ------
+    ValueError:
+        Si el ID o el nuevo capital no son válidos
+    Exception:
+        Si hay algún error en la solicitud HTTP
+    """
     inversor_id = input("ID del inversor a modificar: ")
 
     try:
@@ -68,7 +111,7 @@ def modificar_inversor():
         print("ID inválido, debe ser un número entero")
         return
 
-    print("Deja vacío cualquier campo que no quieras modificar.")
+    print("Deja vacío cualquier campo que no quieras modificar")
     nombre = input("Nuevo nombre: ")
     apellidos = input("Nuevos apellidos: ")
     email = input("Nuevo email: ")
@@ -102,6 +145,16 @@ def modificar_inversor():
 
 
 def eliminar_inversor():
+    """
+    Elimina un inversor dado su ID
+
+    Raises
+    ------
+    ValueError:
+        Si el ID no es un entero
+    Exception:
+        Si hay algún error en la solicitud HTTP
+    """
     inversor_id = input("ID del inversor: ")
     try:
         id_int = int(inversor_id)
@@ -117,6 +170,14 @@ def eliminar_inversor():
 
 
 def listar_acciones():
+    """
+    Realiza una solicitud GET para obtener un listado de las acciones
+
+    Raises
+    ------
+    Exception:
+        Si hay un error inesperado
+    """
     try:
         r = requests.get(f"{BASE_URL}/acciones")
         print(r.status_code, r.json())
@@ -125,6 +186,17 @@ def listar_acciones():
 
 
 def buscar_accion():
+    """
+    Solicita el ID de la acción para realiza una solicitud GET y mostrar la 
+    informaión de dicho acción
+
+    Raises
+    ------
+    ValueError:
+        Si el ID proporcionado no es correcto
+    Exception:
+        Si hay algún error en la solicitud HTTP
+    """
     accion_id = input("ID de la acción: ")
     try:
         id_int = int(accion_id)
@@ -140,6 +212,17 @@ def buscar_accion():
 
 
 def crear_accion():
+    """
+    Solicita los datos para poder crear una nueva acción, los valida y sube al servidor
+    utilizando POST
+
+    Raises
+    ------
+    ValueError:
+        Si el precio ingresado no es un número
+    Exception:
+        Si hay algún error en la solicitud HTTP
+    """
     nombre = input("Nombre de la acción: ")
     simbolo = input("Símbolo: ")
     precio = input("Precio inicial: ")
@@ -148,7 +231,7 @@ def crear_accion():
     try:
         precio_float = float(precio)
     except ValueError:
-        print("Precio inválido. Debe ser un número.")
+        print("El precio debe ser un número")
         return
 
     try:
@@ -167,9 +250,20 @@ def crear_accion():
 
 
 def modificar_accion():
+    """
+    Modifica los datos de una acción existente, omitiendo los campos en los que no
+    se introducen datos para modificar
+
+    Raises
+    ------
+    ValueError:
+        Si el ID o el nuevo precio no son válidos
+    Exception:
+        Si hay algún error en la solicitud HTTP
+    """
     accion_id = input("ID de la acción: ")
 
-    print("Completa solo los campos necesarios (intro si no quieres hacer cambios)")
+    print("Deja vacío cualquier campo que no quieras modificar")
     nombre = input("Nombre: ")
     simbolo = input("Símbolo: ")
     precio_actual = input("Precio actual: ")
@@ -197,6 +291,16 @@ def modificar_accion():
 
 
 def eliminar_accion():
+    """
+    Elimina una acción dado su ID
+
+    Raises
+    ------
+    ValueError:
+        Si el ID no es un entero
+    Exception:
+        Si hay algún error en la solicitud HTTP
+    """
     accion_id = input("ID de la acción: ")
     try:
         id_int = int(accion_id)
@@ -212,6 +316,14 @@ def eliminar_accion():
 
 
 def listar_transacciones():
+    """
+    Realiza una solicitud GET para obtener un listado de las transacciones
+
+    Raises
+    ------
+    Exception:
+        Si hay un error inesperado
+    """
     try:
         r = requests.get(f"{BASE_URL}/transacciones")
         print(r.status_code, r.json())
@@ -220,6 +332,17 @@ def listar_transacciones():
 
 
 def buscar_transaccion():
+    """
+    Solicita el ID de la transacción para realiza una solicitud GET y mostrar la 
+    informaión de la transacción
+
+    Raises
+    ------
+    ValueError:
+        Si el ID proporcionado no es correcto
+    Exception:
+        Si hay algún error en la solicitud HTTP
+    """
     transaccion_id = input("ID de la transacción: ")
     try:
         id_int = int(transaccion_id)
@@ -235,6 +358,17 @@ def buscar_transaccion():
 
 
 def buscar_transaccion_inversor():
+    """
+    Solicita el ID del inversor para realiza una solicitud GET y mostrar la 
+    informaión de la transacción relacionada con el inversor
+
+    Raises
+    ------
+    ValueError:
+        Si el ID proporcionado no es correcto
+    Exception:
+        Si hay algún error en la solicitud HTTP
+    """
     inversor_id = input("ID del inversor: ")
     try:
         id_int = int(inversor_id)
@@ -250,6 +384,17 @@ def buscar_transaccion_inversor():
 
 
 def buscar_transaccion_accion():
+    """
+    Solicita el ID de la acción para realiza una solicitud GET y mostrar la 
+    informaión de la transacción relacionada con la acción
+
+    Raises
+    ------
+    ValueError:
+        Si el ID proporcionado no es correcto
+    Exception:
+        Si hay algún error en la solicitud HTTP
+    """
     accion_id = input("ID de la acción: ")
     try:
         id_int = int(accion_id)
@@ -265,6 +410,17 @@ def buscar_transaccion_accion():
 
 
 def crear_transaccion():
+    """
+    Solicita los datos para poder crear una nueva transacción, los valida y sube al servidor
+    utilizando POST
+
+    Raises
+    ------
+    ValueError:
+        Si la cantidad o precio ingresados no son valores numéricos
+    Exception:
+        Si hay algún error en la solicitud HTTP
+    """
     inversor_id = input("ID del inversor: ")
     accion_id = input("ID de la acción: ")
     tipo = input("Tipo (compra | venta): ")
@@ -276,7 +432,7 @@ def crear_transaccion():
         cantidad_int = int(cantidad)
         precio_float = float(precio)
     except ValueError:
-        print("Cantidad y precio deben ser numéricos.")
+        print("Cantidad y precio deben ser números")
         return
 
     try:
@@ -297,11 +453,21 @@ def crear_transaccion():
 
 
 def eliminar_transaccion():
+    """
+    Elimina una transacción dado su ID
+
+    Raises
+    ------
+    ValueError:
+        Si el ID no es un entero
+    Exception:
+        Si hay algún error en la solicitud HTTP
+    """
     transaccion_id = input("ID de la transacción: ")
     try:
         id_int = int(transaccion_id)
     except ValueError:
-        print("ID inválido, debe ser un número entero")
+        print("ID debe ser un número entero")
         return
 
     try:
@@ -312,11 +478,20 @@ def eliminar_transaccion():
 
 
 def autenticacion():
+    """
+    Gestiona el proceso de registro e inicio de sesión del usuario, necesario para
+    acceder al menú principal del cliente
+
+    Returns
+    -------
+    bool:
+        True si la autenticación fue exitosa, False en caso contrario.
+    """
     global access_token
 
     while True:
-        print("\n=== Bienvenido al Simulador de Bolsa ===")
-        print("1. Registrarse")
+        print("\n***** INICIO DE SESIÓN *****")
+        print("1. Registro")
         print("2. Iniciar sesión")
         print("3. Salir")
         opcion = input("Selecciona una opción (1-3): ")
@@ -332,12 +507,12 @@ def autenticacion():
             try:
                 capital_float = float(capital)
             except ValueError:
-                print("Capital inválido.")
+                print("El capital debe ser un número")
                 continue
 
             try:
                 r = requests.post(
-                    f"{BASE_URL}/auth/register",
+                    f"{BASE_URL}/autenticaciones/register",
                     json={
                         "nombre": nombre,
                         "apellidos": apellidos,
@@ -356,12 +531,12 @@ def autenticacion():
             contrasena = input("Contraseña: ")
             try:
                 r = requests.post(
-                    f"{BASE_URL}/auth/login",
+                    f"{BASE_URL}/autenticaciones/login",
                     json={"email": email, "contrasena": contrasena}
                 )
                 if r.status_code == 200:
                     access_token = r.json().get("access_token")
-                    print("Inicio de sesión exitoso.")
+                    print("Sesión iniciada correctamente")
                     return True
                 else:
                     print(f"Error: {r.status_code} - {r.json().get('detail')}")
@@ -369,14 +544,17 @@ def autenticacion():
                 print(f"Error: {e}")
 
         elif opcion == '3':
-            print("Saliendo del cliente...")
+            print("Saliendo...")
             exit()
         else:
-            print("Opción no válida.")
+            print("Opción no válida")
 
 def menu():
+    """
+    Muestra un menú con todas las acciones que puede realizar un cliente
+    """
     while True:
-        print("\n=== Simulador de Bolsa - Menú Cliente ===")
+        print("\n***** MENÚ CLIENTE *****")
         print("1. Listar inversores")
         print("2. Buscar inversor")
         print("3. Crear inversor")
