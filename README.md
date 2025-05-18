@@ -47,6 +47,8 @@ graph TD
     manejo_archivos["manejo_archivos.py"]
     main["main.py"]
     run["run.py"]
+    controlador["controlador.py"]
+    ejemplos["ejemplos.py"]
   end
 
   auth -->|usa JWT| routers
@@ -82,6 +84,7 @@ graph TD
     inversor["inversor.py"]
     mercado["mercado.py"]
     transaccion["transaccion.py"]
+    models["models.py"]
   end
 
   subgraph routers
