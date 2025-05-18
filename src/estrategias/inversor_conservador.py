@@ -1,16 +1,30 @@
 from models.inversor import Inversor
 
-class InversorConservador(Inversor): # prefiere seguridad y estabilidad
-    def recomendar_compra(self):
+class InversorConservador(Inversor):
+    """
+    Clase que representa a un inversor de perfil conservador.
+    Prioriza la seguridad y estabilidad en sus inversiones.
+
+    Hereda de:
+    ----------
+    Inversor
+    
+    Methods
+    -------
+    recomendar_compra()
+        Recomienda las dos acciones más baratas actualmente en la cartera.
+
+    """
+    def recomendar_compra(self) -> list[str]:
         """
         Recomienda las dos acciones más baratas de la cartera.
 
         Returns
-        -------------
+        -------
         list[str]
-            Lista con nombre y precio de las acciones recomendadas.
+            Lista con nombre y precio de las acciones más baratas recomendadas.
         """
-        acciones = list(self.cartera.values())  # lista de [Accion, cantidad]
+        acciones = list(self._Inversor__cartera.values())  # lista de [Accion, cantidad]
 
         lista_precios = []
         for accion, _ in acciones:
