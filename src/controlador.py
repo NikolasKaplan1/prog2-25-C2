@@ -7,7 +7,7 @@ from typing import Union
 import random
 import yfinance as yf
 
-from routers.manejo_archivos import (
+from manejo_archivos import (
     exportar_transacciones_csv,
     exportar_inversores_pickle,
     exportar_acciones_csv,
