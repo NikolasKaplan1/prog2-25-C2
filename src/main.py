@@ -1,4 +1,5 @@
 import requests
+from sys import exit
 
 BASE_URL = "http://127.0.0.1:8000"
 access_token = None
