@@ -9,20 +9,15 @@
 
 
 # Descripción
-Este simulador permitirá a los usuarios:
+Te damos la bienvenida al simulador de inversiones, una herramienta con la que podrás explorar y practicar en el mundo del mercado de valores. Podrás comprar y vender acciones con datos reales y tomar posiciones compradores y vendedoras y ver las evoluciones de tus operaciones con el tiempo. Por otro lado, contarás con la opción de simular distintas estrategias de inversión, ya sea a corto o a largo plazo, siempre en un entorno seguro y libre de pérdidas.
 
-· Comprar y vender acciones en base a datos reales del mercado.
+# Dependencias necesarias
+Con tal de que no haya complicaciones, recomendamos instalar todas las dependencias listadas en el archivo `requirements.txt`. Para ello puedes ejecutar desde la terminal el siguiente comando:
 
-· Analizar el rendimiento de sus inversiones con gráficos.
-
-· Simular estrategais de inversión a corto y largo plazo.
-
-# Qué necesitas saber antes de probar nuestro código
-Para que no haya errores a la hora de probar nuestro código, te recomendamos ejecutar todo el interior de requirements.txt
-En este archivo se incluye la instalación de todas las librerías necesarias para la ejecución del *SIMULADOR DE BOLSA*.
+`pip install -r requirements.txt`
 
 # Distribución de tareas
-Patricia tiene como función principal desarrollar la API REST, para ello utiliza Flask para crear los distintos puntos finales requeridos: gestión de inversores, acciones y transacciones. Su trabajo también incluye el manejo de excepciones en las rutas con `abort` para asegurar que las respuestas sean claras y controladas en caso de errores. También se encarga de el desarrollo y la actualización de todas las pruebas automáticas, tanto unitarias como de integración.
+Patricia tiene como función principal desarrollar la API REST, para ello utiliza Flask para crear los distintos puntos finales requeridos: gestión de inversores, acciones y transacciones. Su trabajo también incluye el manejo de excepciones en las rutas con `abort` y `logging` para asegurar que las respuestas sean claras y controladas en caso de errores. También se encarga de el desarrollo y la actualización de todas las pruebas automáticas, tanto unitarias como de integración.
 
 Mohamed, en cambio, se enfoca en el núcleo del mercado financiero simulado. Su tarea principal es diseñar e implementar las clases `Accion` y `Mercado`. Estas clases ayudan a modelar el comportamiento de los valores del mercado, mostrando su evolución en el tiempo, ya sea de manera aleatoria o con datos reales obtenidos a través de yfinance. Además, Mohamed se asegura de manejar posibles errores en este proceso, como problemas al conseguir precios o acciones que no existen. 
 
@@ -34,47 +29,97 @@ Por último, Adrián se ocupa de todo lo relacionado con la persistencia de dato
 # Diagrama UML del Sistema
 
 ```mermaid
-flowchart TD
-    subgraph src["Paquete Principal: src"]
-        subgraph auth["auth"]
-            A[jwt.py]
-        end
+graph TD
+  subgraph src
+    data["data"]
+    database["database"]
+    estrategias["estrategias"]
+    logs["logs"]
+    models["models"]
+    routers["routers"]
 
-        subgraph database["database"]
-            B[db_manager.py]
-        end
+    app["app.py"]
+    controlador["controlador.py"]
+    dev_run["dev_run.py"]
+    ejemplos["ejemplos.py"]
+    ejemplos["ejemplos.py"]
+    manejo_archivos["manejo_archivos.py"]
+    wsgi["wsgi.py"]
+  end
 
-        subgraph estrategias["estrategias"]
-            C[ia.py]
-            D[inversor_agresivo.py]
-            E[inversor_conservador.py]
-        end
+  data --> database
+  database --> routers
+  estrategias --> routers
+  models --> routers
+  models --> estrategias
+  logs --> routers
 
-        subgraph models["models"]
-            F[accion.py]
-            G[inversor.py]
-            H[mercado.py]
-            I[transaction.py]
-            J[models.py]
-        end
 
-        subgraph routers["routers"]
-            K[accion_router.py]
-            L[inversor_router.py]
-            M[transaction_router.py]
-        end
+  subgraph data
+    archivos_csv["*.csv / *.pkl"]
+  end
 
-        N[main.py]
-    end
+  subgraph database
+    dbmanager["db_manager.py"]
+    schema["schema.sql"]
+  end
 
-    %% Relaciones entre paquetes
-    routers --> models
-    routers --> auth
-    models --> database
-    estrategias --> models
-    main.py --> routers
-    main.py --> models
+  subgraph estrategias
+    ia["ia.py"]
+    inv_agresivo["inversor_agresivo.py"]
+    inv_conservador["inversor_conservador.py"]
+  end
+
+  subgraph logs
+    acciones["acciones.log"]
+  end
+
+  subgraph models
+    accion["accion.py"]
+    inversor["inversor.py"]
+    mercado["mercado.py"]
+    transaccion["transaccion.py"]
+    models["models.py"]
+  end
+
+  subgraph routers
+    acc_router["accion_router.py"]
+    auth_router["auth_router.py"]
+    inv_router["inversor_router.py"]
+    trans_router["transaccion_router.py"]
+  end
+
 ```
+# Modo de empleo
+## Uso del archivo `ejemplos`
+Para ejecutar el programa es necesario darle los permisos necesarios de ejecución al archivo. Desde la terminal podemos usar el comando:
+
+`chmod +x ejemplos`
+
+Una vez otorgados los permisos correspondientes podemos inicial el programa:
+
+`./ejemplos`
+
+Al iniciar, el sistema mostrará un menú de opciones con las cuales el usuario puede llevar a cabo distintas operaciones sobre el mercado de valores, tales como crear acciones e inversores, simular compra/venta, actualizar precios, consultar carteras, consultar operaciones y muchos más.
+Simplemente debes escribir el número de la opción que deseas usar y seguir las instrucciones en pantalla. Por ejemplo, si eliges la opción 5, el programa te pedirá el símbolo de una acción para mostrar sus datos. 
+
+## Uso de la API
+Este sistemas es una API que incluye una interfaz en modo de texto, desde la cual el usuario puede interactuar directamente con los endpoints mediante un menú con diversas opciones. 
+
+Para poder interactuar con el sistema, primero debemos ejecutar el archivo `dev_run.py`, que inicializa la API de tal forma que pueda recibir peticiones ya que todas las operaciones depende de que la API esté activa.
+
+Una ejecutado el paso anterior abrimos una nueva terminal (ya que la API tiene que estar en constante ejecución) y le otorgamos los permisos de ejecución necesarios al main:
+
+`chmod +x main`
+
+Luego ejecutamos el archivo:
+
+`./main`
+
+Esto iniciará una interfaz de texto. El objetivo final es acceder al menú de clientes, pero antes debemos iniciar sesión o registrarnos en el caso de que no seamos invesores.
+Una vez iniciado sesión ya tenemos acceso completo al menú de cliente desde el cual podemos realizar operaciones para gestionar inversores, acciones o transacciones, además de consultar historiales. 
+Al finalizar y haber seleccionado la opción salir (17) en el menú, debemos volver a la terminal donde se está ejecutando la API y detenerla con `Ctrl + C` en la terminal.
+
 # Colaboradores
 
 <!-- readme: collaborators -start -->

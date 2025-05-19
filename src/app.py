@@ -25,7 +25,7 @@ load_dotenv()
 
 # Configuración general de Flask
 app = Flask(__name__)
-app.config['JSON_SORT_KEYS'] = False
+app.config['JSON_SORT_KEYS'] = False 
 
 # Configuración de base de datos
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///simulador.db")
