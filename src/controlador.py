@@ -14,7 +14,8 @@ from manejo_archivos import (
     exportar_acciones_reales_csv,
     exportar_mercados_csv,
     exportar_mercados_registrados_pickle,
-    acciones_por_mercado_csv
+    exportar_acciones_por_mercado_csv,
+    exportar_acciones_bancarrota_csv
 )
 
 
@@ -54,6 +55,7 @@ def crear_accion(simbolo: str, nombre: str, precio_actual: float, historial_prec
         precio_actual = float(precio_actual)
         Accion(simbolo, nombre, precio_actual, historial_precios)
         exportar_acciones_csv()
+        exportar_acciones_bancarrota_csv()
         exportar_historial_precios_csv()
         exportar_acciones_pickle()
         exportar_historiales_pickle()
@@ -92,6 +94,7 @@ def crear_accion_real(simbolo: str) -> dict[str, str]:
         return {"error": f"Ya existe una acción con el símbolo {simbolo}"}
     AccionReal(simbolo)
     exportar_acciones_csv()
+    exportar_acciones_bancarrota_csv()
     exportar_historial_precios_csv()
     exportar_acciones_pickle()
     exportar_historiales_pickle()
@@ -131,6 +134,7 @@ def actualizar_precio(simbolo: str, nuevo_precio: float) -> dict[str, str]:
         nuevo_precio = float(nuevo_precio)
         try:
             Accion._acciones_registradas[simbolo].actualizar_precio(nuevo_precio)
+            exportar_acciones_bancarrota_csv()
             exportar_acciones_csv()
             exportar_historial_precios_csv()
             exportar_acciones_pickle()
@@ -172,6 +176,7 @@ def actualizar_precio_real(simbolo: str) -> dict[str, str]:
     try:
         accion.actualizar_precio_real()
         exportar_acciones_csv()
+        exportar_acciones_bancarrota_csv()
         exportar_historial_precios_csv()
         exportar_acciones_pickle()
         exportar_historiales_pickle()
@@ -515,6 +520,7 @@ def comprar_acciones_con_operador(nombre: str, simbolo: str, cantidad: int) -> d
     accion = Accion._acciones_registradas[simbolo]
     try:
         inversor + (accion, cantidad)
+        exportar_inversores_pickle(list(inversores_registrados.values()))
         return {"mensaje": f"{nombre} ha comprado {cantidad} acciones de {accion.nombre} usando el operador '+'."}
     except Exception as e:
         return {"error": str(e)}
@@ -547,6 +553,7 @@ def vender_acciones_con_operador(nombre: str, simbolo: str, cantidad: int) -> di
     accion = Accion._acciones_registradas[simbolo]
     try:
         inversor - (accion, cantidad)
+        exportar_inversores_pickle(list(inversores_registrados.values()))
         return {"mensaje": f"{nombre} ha vendido {cantidad} acciones de {accion.nombre} usando el operador '-'."}
     except Exception as e:
         return {"error": str(e)}
@@ -574,7 +581,7 @@ def inversor_contiene_accion(nombre: str, simbolo: str) -> dict[str, str]:
         Si el inversor no está registrado
     """
     if nombre not in inversores_registrados:
-        return {"error": f"El inversor '{nombre} no está registrado"}
+        return {"error": f"El inversor {nombre} no está registrado"}
     if simbolo in inversores_registrados[nombre]:
         return {"mensaje": f"El inversor {nombre} tiene acciones de {simbolo}."}
     return {"mensaje": f"El inversor {nombre} NO tiene acciones de {simbolo}."}
@@ -644,7 +651,7 @@ def crear_mercado(nombre: str, lista_acciones: list[str]) -> dict[str, str]:
         lista_acciones[i] = Accion._acciones_registradas[simbolo]
     Mercado(nombre, lista_acciones)
     exportar_mercados_csv()
-    acciones_por_mercado_csv()
+    exportar_acciones_por_mercado_csv()
     exportar_mercados_registrados_pickle()
     return {"mensaje": "Mercado creado correctamente"}
 
@@ -709,7 +716,7 @@ def registrar_accion(nombre: str, simbolo: str) -> dict[str, str]:
         return {"error": f"La acción con el símbolo {simbolo} ya está en el mercado {nombre}"}
     Mercado._mercados_registrados[nombre].registrar_accion(accion)
     exportar_mercados_csv()
-    acciones_por_mercado_csv()
+    exportar_acciones_por_mercado_csv()
     exportar_mercados_registrados_pickle()
     return {"mensaje": "Acción registrada correctamente"}
 
@@ -782,6 +789,9 @@ def eliminar_accion(nombre: str, simbolo: str) -> dict[str, str]:
     try:
         mercado = Mercado._mercados_registrados[nombre]
         mercado.eliminar_accion(simbolo)
+        exportar_mercados_csv()
+        exportar_mercados_registrados_pickle()
+        exportar_acciones_por_mercado_csv()
         return {"mensaje": f"La acción {simbolo} se ha eliminado correctamente de {nombre}."}
     except ValueError:
         return {"error": f"La acción con el símbolo {simbolo} no está en el mercado {nombre}"}
@@ -819,9 +829,10 @@ def bancarrota(nombre: str, simbolo: str) -> dict[str, str]:
     resultado = mercado.bancarrota(simbolo)
     if resultado is None:
         exportar_mercados_csv()
-        acciones_por_mercado_csv()
+        exportar_acciones_por_mercado_csv()
         exportar_mercados_registrados_pickle()
         exportar_acciones_csv()
+        exportar_acciones_bancarrota_csv()
         exportar_historial_precios_csv()
         exportar_acciones_pickle()
         exportar_historiales_pickle()
@@ -856,6 +867,13 @@ def simular_movimientos(nombre: str) -> dict[str, str]:
         return {"error": f"No existe un mercado con el nombre {nombre}"}
     mercado = Mercado._mercados_registrados[nombre]
     mercado.simular_movimientos()
+    exportar_mercados_csv()
+    exportar_mercados_registrados_pickle()
+    exportar_acciones_csv()
+    exportar_historial_precios_csv()
+    exportar_acciones_pickle()
+    exportar_historiales_pickle()
+    exportar_acciones_reales_csv()
     return {"mensaje": "Movimiento simulado exitosamente"}
 
 
@@ -1051,6 +1069,9 @@ def suma_mercados(nombre1: str, nombre2: str) -> dict[str, str]:
     mercado2 = Mercado._mercados_registrados[nombre2]
     try:
         mercado = mercado1 + mercado2
+        exportar_mercados_csv()
+        exportar_mercados_registrados_pickle()
+        exportar_acciones_por_mercado_csv()
         return {"mensaje": f"Los mercados {nombre1} y {nombre2} se han sumado correctamente creando {mercado.nombre}"}
     except:
         return {"error": f"Ya existe un mercado con el nombre combinado {nombre1 + '_' + nombre2}"}
@@ -1085,6 +1106,9 @@ def suma_propia(nombre1: str, nombre2: str) -> dict[str, str]:
     mercado1 = Mercado._mercados_registrados[nombre1]
     mercado2 = Mercado._mercados_registrados[nombre2]
     mercado1 += mercado2
+    exportar_mercados_csv()
+    exportar_mercados_registrados_pickle()
+    exportar_acciones_por_mercado_csv()
     return {"mensaje": "La suma se ha efectuado correctamente"}
 
 
@@ -1100,7 +1124,7 @@ def crear_transaccion(nombre: str, simbolo: str, cantidad: int) -> dict[str, str
         Nombre del inversor registrado
     simbolo : str
         Simbolo de la accion a comprar.
-    cantindad : int
+    cantidad : int
         Numero de acciones a adquirir.
 
     Returns
@@ -1212,7 +1236,7 @@ def recomendacion(nombre: str) -> dict[str, str]:
         str que te dirá si ha habido un error o las recomendaciones deseadas.
 
     Raises
-    ---------------
+    ------
     Error
         Da error si no existe un inversor con el nombre que le pasamos.
     Error
