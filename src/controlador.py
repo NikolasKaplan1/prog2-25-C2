@@ -81,26 +81,30 @@ def crear_accion_real(simbolo: str) -> dict[str, str]:
 
     Raises
     ------
-    Error
+    ValueError
         Nos dará error si no se han encontrado datos reales para la acción que le hemos pasado.
     Error
         Nos dará error si ya existe una acción con el símbolo que le pasamos.
+    HTTPError
+        Nos dará error si no existe ninguna acción real con ese simbolo
     """
-    repr = yf.Ticker(simbolo)  # esto da una representación de la acción real con su símbolo
-    data = repr.history(period="365d")  # nos da los datos del último año
-    if data.empty:
-        return {"error": f"No se encontraron datos para la acción con el símbolo {simbolo} en este último año"}
+
     if simbolo in Accion._acciones_registradas:
         return {"error": f"Ya existe una acción con el símbolo {simbolo}"}
-    AccionReal(simbolo)
-    exportar_acciones_csv()
-    exportar_acciones_bancarrota_csv()
-    exportar_historial_precios_csv()
-    exportar_acciones_pickle()
-    exportar_historiales_pickle()
-    exportar_acciones_reales_csv()
-    return {"mensaje": "Acción añadida correctamente"}
-
+    try:
+        AccionReal(simbolo)
+        exportar_acciones_csv()
+        exportar_acciones_bancarrota_csv()
+        exportar_historial_precios_csv()
+        exportar_acciones_pickle()
+        exportar_historiales_pickle()
+        exportar_acciones_reales_csv()
+        return {"mensaje": "Acción añadida correctamente"}
+    except ValueError:
+        return {"error": f"No se encontraron datos para la acción con el símbolo {simbolo} en este último año"}
+    except Exception as e:
+        if "404" in str(e) or "HTTP Error" in str(e):
+            return {"error": f"No se encontraron datos para el símbolo '{simbolo}'."}
 
 def actualizar_precio(simbolo: str, nuevo_precio: float) -> dict[str, str]:
     """
