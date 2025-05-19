@@ -108,7 +108,11 @@ Este sistemas es una API que incluye una interfaz en modo de texto, desde la cua
 
 Para poder interactuar con el sistema, primero debemos ejecutar el archivo `dev_run.py`, que inicializa la API de tal forma que pueda recibir peticiones ya que todas las operaciones depende de que la API esté activa.
 
-Una ejecutado el paso anterior abrimos una nueva terminal (ya que la API tiene que estar en constante ejecución) y le otorgamos los permisos de ejecución necesarios al main:
+En el caso de querer probar el archivo `main.py` simplemente debemos abrir una nueva terminal y  utilizar el comando:
+
+`python src/main.py`
+
+Si por lo contrario lo que queremos probar es el ejecutable, abrimos una nueva terminal (ya que la API tiene que estar en constante ejecución) y le otorgamos los permisos de ejecución necesarios al main:
 
 `chmod +x main`
 
@@ -119,6 +123,13 @@ Luego ejecutamos el archivo:
 Esto iniciará una interfaz de texto. El objetivo final es acceder al menú de clientes, pero antes debemos iniciar sesión o registrarnos en el caso de que no seamos invesores.
 Una vez iniciado sesión ya tenemos acceso completo al menú de cliente desde el cual podemos realizar operaciones para gestionar inversores, acciones o transacciones, además de consultar historiales. 
 Al finalizar y haber seleccionado la opción salir (17) en el menú, debemos volver a la terminal donde se está ejecutando la API y detenerla con `Ctrl + C` en la terminal.
+
+### GET/inversores
+Con este endpoint podemos obtener un listado de todos los inversores almacenados en el sistema.
+Al tener un menú dentro de `main.py` la solicitud se envía de forma automatizada y dicha solicitud llega al archivo `inversor_router.py` dentro de la carpeta `routers`. La función asociada a GET consulta la base de datos, recupera la lista de inversores y la devuelve en formato JSON.
+
+### POST/acciones
+Este endpoint se utiliza para crear una nueva acción en el sistema. Al ordenar la opción "Crear acción" se lanza una solicitud que va al router `accion_router.py`, donde una ruta toma los datos proporcionados, los convierte en un objeto de base de datos y los almacena.
 
 # Colaboradores
 
