@@ -1,9 +1,6 @@
 from .accion import Accion
 from typing import List
 
-from .accion import Accion
-from typing import List
-
 
 class Inversor:
     """
@@ -35,6 +32,10 @@ class Inversor:
         método para comprar una cantidad de acciones.
     __sub__(other: tuple[Accion, int])
         método para vender una cantidad de acciones.
+    __contains__(accion: Accion)
+        Método para saber si un inversor contiene una acción.
+    __eq__(accion: Accion, cantidad: int)
+        Método para saber si dos inversores han invertido en las mismas empresas.
     """
 
     def __init__(self, nombre: str, capital: float) -> None:

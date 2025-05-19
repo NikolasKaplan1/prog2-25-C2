@@ -45,20 +45,23 @@ class IA():
 
         Raises
         ------
+        Valuerror
+            Si no hay acciones registradas.
         ValueError 
             Si no tienes suficiente dinero para comprar ninguna acción
         """
-        
+        acciones_registradas = Accion._acciones_registradas
+        if acciones_registradas == {}:
+            raise ValueError("No hay acciones registradas")
         # Datos necesarios
         capital = self.inversor._Inversor__capital
         cartera = self.inversor._Inversor__cartera
-        acciones_registradas = Accion.acciones_registradas
         acciones = []
         
         for accion in acciones_registradas:
             # vamos añadiendo acciones al diccionario acciones en el que las claves sean los símbolos
             # y sus valores los precios actuales
-            acciones.append({"Simbolo": accion, "Precio": acciones_registradas[accion].precio_actual})
+            acciones.append({"Simbolo": accion, "Precio": acciones_registradas[accion]._precio_actual})
         
         # Creamos un dataframe con las acciones ordenados por su precio
         df_acciones = pd.DataFrame(acciones).sort_values(by='Precio', ascending = True) 
