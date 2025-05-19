@@ -9,7 +9,7 @@
 
 
 # Descripción
-Te damos la bienvenida al simulador de inversiones, una herramienta con la que podrás explorar y practicar en el mundo del mercado de valores. Podrás comprar y vender acciones con datos reales y tomar posiciones compradores y vendedoras y ver las evoluciones de tus operaciones con el tiempo. Por otro lado, contarás con la opción de simular distintas estrategias de inversión, ya sea a corto o a largo plazo, siempre en un entorno seguro y libre de pérdidas.
+Te damos la bienvenida al simulador de inversiones, una herramienta con la que podrás explorar y practicar en el mundo del mercado de valores. Permite comprar y vender acciones con datos reales, además de ver las evoluciones de tus operaciones con el tiempo. Por otro lado, contarás con la opción de simular distintas estrategias de inversión, ya sea a corto o a largo plazo, siempre en un entorno seguro y libre de pérdidas.
 
 # Dependencias necesarias
 Con tal de que no haya complicaciones, recomendamos instalar todas las dependencias listadas en el archivo `requirements.txt`. Para ello puedes ejecutar desde la terminal el siguiente comando:
