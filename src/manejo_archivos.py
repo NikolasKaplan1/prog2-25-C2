@@ -89,7 +89,7 @@ def exportar_acciones_bancarrota_csv(ruta: Path = DATA_DIR / 'acciones_bancarrot
                 fecha,_ = list(acc.historial_precios())[-1]
                 csv_writer.writerow([acc.simbolo, acc.nombre, fecha])
 
-def acciones_por_mercado_csv(ruta: Path = DATA_DIR / 'acciones_por_mercado.csv') -> None:
+def exportar_acciones_por_mercado_csv(ruta: Path = DATA_DIR / 'acciones_por_mercado.csv') -> None:
     """
     Exporta a un archivo CSV el número de acciones por mercado en los mercados registrados.
 
